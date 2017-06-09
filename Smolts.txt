@@ -1,11 +1,4 @@
 
-
-
-source("packages-and-paths.r")
-source("tidy-smolts-data.r")
-
-
-M1<-"
 model{
 
 # Abundance
@@ -132,68 +125,4 @@ sdP~dlnorm(0,1) #mu=1.6
 sum1<-sum(qD[1,1:14,4])
 sum31<-sum(qD[31,31:44,4])
 
-}"
-cat(M1,file="Smolts.txt")
-
-
-#schools<-read.table("input/Schools_03-06.txt", header=T)
-
-data<-list(
-  #s=schools,
-  flow=datF,
-  nDays=61,
-  nYears=6,
-  Nobs=S,                     
-  Temp=datT
-)
-
-initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
-               #                    aB=2,bB=0.03),
-               list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears)))#,
-               #                    aB=2,bB=0.03)
-)
-
-system.time(jm<-jags.model('Smolts.txt',inits=initials,
-                           n.adapt=100,
-                           data=data,n.chains=2))
-
-
-system.time(chains1<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sum1","sum31",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB","etaB",#  "aB","bB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=50000, 
-                                  thin=100)) #5h
-
-system.time(chains2<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sum1","sum31",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB","etaB",#  "aB","bB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=150000, 
-                                  thin=100)) #150k=22h
-
-chains<-combine.mcmc(list(chains1,chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_17_04_26.RData")
-
+}
