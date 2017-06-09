@@ -4,7 +4,12 @@ load.module("mix")
 library(xlsx)
 library(tidyverse)
 library(ggmcmc)
-#setwd("C:/R/UtsjokiSmolts")
+
+# Path for input data
+pathIn<-"H:/Projects/ISAMA/data/der/input/Utsjoki-smolts/"
+
+# Path for simulation output
+pathOut<-"H:/Projects/ISAMA/prg/output/Utsjoki-smolts/"
 
 
 source("tidy-functions.r")
@@ -14,13 +19,12 @@ source("my-palette.r")
 #######################
 # Load simulations
 
-path<-"H:/Projects/ISAMA/prg/Utsjoki_smolts/"
-load(file=paste(sep="",path,"output/Smolts_17_04_26.RData")) # vaikuttaa lupaavalta, konvergenssi 1vrk jälkeen?
+load(file=paste(sep="",pathOut,"Smolts_17_04_26.RData")) # vaikuttaa lupaavalta, konvergenssi 1vrk jälkeen?
 
 chains<-window(chains,start=100000, thin=1)
 
 # Unupdated priors
-load(file=paste(sep="",path,"output/Smolts_17_04_priors.RData"))
+load(file=paste(sep="",pathOut,"Smolts_17_04_priors.RData"))
 #chains<-chainsP
 
 # Data

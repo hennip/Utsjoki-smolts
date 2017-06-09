@@ -4,10 +4,8 @@
 
 library(tidyverse)
 
-path<-"H:/Projects/ISAMA/prg/Utsjoki_smolts/"
-
 # Smolts
-S<-read.table(paste(sep="",path,"input/Smolts_6years.txt"),header=T)
+S<-read.table(paste(sep="",pathIn,"Smolts_6years.txt"),header=T)
 S2<-cbind(S, 1:61)
 colnames(S2)<-c(2003:2006,2008,2014, "day")
 (S2<-as.tibble(S2))
@@ -19,9 +17,8 @@ ts1<- S2%>%
 ts1<-select(ts1, year, everything()) 
 
 # Temperature
-temp1<-read.table(paste(sep="",path,"input/Temperature_4years.txt"),header=T)
-source(paste(sep="",path,"model/UtsjokiWaterTemperature2005.r"))
-source(paste(sep="",path,"model/UtsjokiWaterTemperature2014.r"))
+temp1<-read.table(paste(sep="",pathIn,"Temperature_4years.txt"),header=T)
+source("water-temperature.r")
 temp<-cbind(temp1[,1:2],round(DailyTemp,1), temp1[,3],temp1[,4],round(DailyTemp14,1))
 temp<-cbind(temp,1:61)
 colnames(temp)<-c(2003:2006,2008,2014, "day")
@@ -35,7 +32,7 @@ tt1
 ts2<-full_join(ts1,tt1, by=NULL)
 
 # Flow
-flow<-read.table(paste(sep="",path,"input/FlowPatoniva_03-14.txt"), header=T)
+flow<-read.table(paste(sep="",pathIn,"FlowPatoniva_03-14.txt"), header=T)
 datF<-cbind(flow[,1:4], flow[,6], flow[,12])
 flow<-cbind(flow,1:61)
 colnames(flow)<-c(2003:2014, "day")
