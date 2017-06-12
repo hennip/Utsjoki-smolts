@@ -1,4 +1,5 @@
 source("packages-and-paths.r")
+source("tidy-functions.r")
 
 # simuloidaan dataa jonka avulla voidaan sovittaa priorit 
 # virtaaman vaikutukselle havaitsemistodennakoisyyteen
@@ -25,6 +26,8 @@ ggplot(tF) +
   labs(title=paste(sep="","a=",a," b=",b))
 
 
+Flow<-seq(10,150, by=10)
+nF<-length(Flow)
 
 M2<-"
 model{
@@ -56,6 +59,18 @@ system.time(chains1<-coda.samples(jm,
                                   n.iter=5000,
                                   thin=1))
 
+
+df<-boxplot.jags.df(chains1,"p",Flow)
+
+
+ggplot(df, aes(x))+
+  geom_boxplot(
+    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity"
+  )
+
+
+
 #source("sample-obsprop.r")
 c1<-chainsM[[1]]
 
@@ -78,25 +93,5 @@ for(j in 1:n_samp){
     
   }
 }
-
-
-df<-boxplot.df(p_samp, Temp)
-df.prior<-boxplot.df(p_sampP, Temp)
-
-
-# In black and white
-ggplot(df, aes(x))+
-  #  theme_bw()+
-  geom_boxplot(
-    data=df.prior,
-    mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity",
-    colour="grey", fill="grey99")+
-  geom_boxplot(
-    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity")+
-  labs(x="Temperature (degrees celsius)", y="Probability", title="Probability to begin migration")+
-  geom_line(aes(x,q50))+
-  geom_line(data=df.prior, aes(x,q50),col="grey")
 
 
