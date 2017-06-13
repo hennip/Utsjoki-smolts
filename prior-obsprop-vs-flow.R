@@ -26,22 +26,30 @@ ggplot(tF) +
   labs(title=paste(sep="","a=",a," b=",b))
 
 
-Flow<-seq(10,150, by=10)
+Flow<-seq(10,150, by=1)
 nF<-length(Flow)
 
 M2<-"
 model{
 for(i in 1:n){
-logit(p[i])<-P[i]
+#p[i]<-0.65*p2[i]+0.25
+#logit(p2[i])<-P[i]
 P[i]~dnorm(muB[i],tauB)
 muB[i]<-aB-bB*Flow[i]
 }
-sdB<-0.01
 tauB<-1/pow(sdB,2)
 
-aB~dnorm(5,1/pow(0.1,2))
-bB~dlnorm(log(0.1)-0.5*pow(0.01,2),1/pow(0.01,2))
+#sdB<-0.7
+#aB~dnorm(5,1)
+#bB~dlnorm(log(1)-0.5/tau_bB,tau_bB)
+#cv_bB<-0.3
+#tau_bB<-1/log(cv_bB*cv_bB+1)
 
+aB~dnorm(1,0.01)
+bB~dlnorm(0.1,1)
+sdB~dlnorm(1,0.1)
+#sdB~dlnorm(log(0.7)-0.5/tau_sdB,tau_sdB)
+#tau_sdB<-1
 }"
 
 cat(M2,file="prior-obs.txt")
@@ -54,10 +62,80 @@ system.time(jm<-jags.model('prior-obs.txt',
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "aB","bB", "sdB","p"
+                                  "aB","bB", "sdB"
                                   ),
                                   n.iter=5000,
                                   thin=1))
+
+chainsM<-chains1
+summary(chainsM)
+
+
+  
+
+
+# Sitten katsotaan millaista matskua saadut priorit tuottaisivat
+
+# odotusarvot ja hajonnat edellisesta ajosta
+muaB<-5 
+sdaB<- 0.13
+tauaB<-1/(sdaB*sdaB)
+muaB;tauaB
+
+mubB<-0.1 
+sdbB<- 0.003
+cvbB<-sdbB/mubB
+taubB<-1/log(cvbB*cvbB+1)
+MbB<-log(mubB)-0.5/taubB
+MbB;taubB
+
+musdB<-0.7
+sdsdB<-0.1
+cvsdB<-sdsdB/musdB
+tausdB<-1/log(cvsdB*cvsdB+1)
+MsdB<-log(musdB)-0.5/tausdB
+MsdB;tausdB
+
+Flow<-seq(10,150, by=10)
+nF<-length(Flow)
+
+M2<-"
+model{
+for(i in 1:n){
+p[i]<-0.65*p2[i]+0.25
+logit(p2[i])<-P[i]
+P[i]~dnorm(muB[i],tauB)
+muB[i]<-aB-bB*Flow[i]
+}
+tauB<-1/pow(sdB,2)
+
+aB~dnorm(5,59)
+bB~dlnorm(-2.3,111)
+sdB~dlnorm(-0.4,50)
+
+}"
+
+cat(M2,file="prior-obs.txt")
+
+data<-list(Flow=Flow, n=nF)
+
+system.time(jm<-jags.model('prior-obs.txt',
+                           n.adapt=100,data=data,n.chains=2))
+
+
+system.time(chains1<-coda.samples(jm,
+                                  variable.names=c(
+                                    "p"
+                                  ),
+                                  n.iter=5000,
+                                  thin=1))
+
+chainsM<-chains1
+summary(chainsM)
+
+
+
+
 
 
 df<-boxplot.jags.df(chains1,"p",Flow)
@@ -65,33 +143,11 @@ df<-boxplot.jags.df(chains1,"p",Flow)
 
 ggplot(df, aes(x))+
   geom_boxplot(
+    
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity"
-  )
+  )+
+  coord_cartesian(ylim=c(0,1))
 
-
-
-#source("sample-obsprop.r")
-c1<-chainsM[[1]]
-
-# Posterior
-n_samp<-length(c1[,"aB"])
-aB_samp<-c1[,"aB"]
-bB_samp<-c1[,"bB"]
-sdB_samp<-c1[,"sdB"]
-
-muD_samp<-array(NA, dim=c(n_samp,nF))
-mumuD_samp<-array(NA, dim=c(n_samp,nF))
-sdmuD_samp<-array(NA, dim=c(n_samp,nF))
-#cvmuD<-0.1
-for(j in 1:n_samp){
-  for(i in 1:nF){
-    muB_samp[j,i]<-aB_samp[j]-bB_samp[j]*Flow[i]
-    
-    sdB_samp[j,i]<-mumuD_samp[j,i]*cvmuD_samp[j]
-    PB_samp[j,i]<-rnorm(1,muB_samp[j,i], sdB_samp[j,i])
-    
-  }
-}
 
 
