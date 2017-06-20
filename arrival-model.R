@@ -8,6 +8,24 @@ source("tidy-smolts-data.r")
 M1<-"
 model{
 
+# Observation process
+# ====================
+for(y in 1:nYears){
+for(i in 1:nDays){ # 61 days in June-July
+Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y]) # observed number of fish  
+
+logit(muB[i,y])<-BB[i,y]
+BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
+
+#    etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
+
+}
+}
+aB~dnorm(2.9,60)
+bB~dlnorm(-2.6,984)
+sdBB<-0.1#~dlnorm(-0.23,210)
+etaB<-10#~dunif(0.001,100000)
+
 # Abundance
 # ==============
 for(y in 1:nYears){
@@ -19,15 +37,6 @@ for(i in 1:(nDays-1)){
 N[i,y]<-round(qN[i,y]*Ntot[y])
 }
 N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))    
-}
-
-# Observation process
-# ====================
-for(y in 1:nYears){
-for(i in 1:nDays){ # 61 days in June-July
-# Fixed probability to be seen
-Nobs[i,y]~dbetabin(100,10,N[i,y]) # observed number of fish  
-}
 }
 
 # Timig of the smolt run
@@ -55,9 +64,7 @@ for(i in 1:nDays){
 # p: probability to start migration at day t, if haven't done so earlier
 # departure probability depends on temperature
 logit(p[i,y])<-P[i,y]
-
-P[i,y]~dnorm(muP[i,y],1/pow(sdP,2))
-muP[i,y]<-aP+bP*Temp[i,y]  # later: hier. structure for annual a and b
+P[i,y]~dnorm(aP+bP*Temp[i,y],1/pow(sdP,2))
 }
 }
 
@@ -78,13 +85,11 @@ qD[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
 
 MD[i,y]<-log(muD[i,y])-0.5/TD
 
-muD[i,y]~dlnorm(MmuD[i,y], 1/log(cvmuD*cvmuD+1))
-MmuD[i,y]<-log(mumuD[i,y])-0.5*log(cvmuD*cvmuD+1)
-mumuD[i,y]<-exp(aD-bD*flow[i,y])
+muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/taumuD, taumuD)
 }
 }
-#cvD<-0.1#~dunif(0.001,1)
 cvD~dunif(0.001,1)
+taumuD<-1/log(cvmuD*cvmuD+1)
 TD<-1/log(cvD*cvD+1)
 SD<-1/sqrt(TD)
 
@@ -123,7 +128,6 @@ eta_alphaN~dunif(0.001,100000)
 
 aP~dnorm(-20,1) #mu=-20
 bP~dlnorm(0.6,10) #mu=1.91
-#sdP<-1
 sdP~dlnorm(0,1) #mu=1.6
 #exp(0.6+0.5/10)
 #exp(0.5/1)
@@ -166,15 +170,17 @@ system.time(chains1<-coda.samples(jm,
                                     
                                     "aP","bP","sdP",
                                     "aD","bD",
-                                    #"muB","etaB",#  "aB","bB",
+                                    #"muB",
+                                    "etaB",  
+                                    "aB","bB","sdBB",
                                     
                                     "eta_alphaN",
                                     
                                     "Ntot","N"
                                     
                                   ),
-                                  n.iter=50000, 
-                                  thin=100)) #5h
+                                  n.iter=100000, 
+                                  thin=100)) 
 
 system.time(chains2<-coda.samples(jm,
                                   variable.names=c(
@@ -184,16 +190,39 @@ system.time(chains2<-coda.samples(jm,
                                     
                                     "aP","bP","sdP",
                                     "aD","bD",
-                                    #"muB","etaB",#  "aB","bB",
+                                    #"muB",
+                                    "etaB",  "aB","bB","cvBB",
                                     
                                     "eta_alphaN",
                                     
                                     "Ntot","N"
                                     
                                   ),
-                                  n.iter=150000, 
-                                  thin=100)) #150k=22h
+                                  n.iter=50000, 
+                                  thin=100))
 
 chains<-combine.mcmc(list(chains1,chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_17_04_26.RData")
+save(chains, file=paste(sep="", pathOut,"Smolts_19_06_16.RData"))
+
+system.time(chains3<-coda.samples(jm,
+                                  variable.names=c(
+                                    "cvD", "cvmuD",
+                                    
+                                    "sum1","sum31",
+                                    
+                                    "aP","bP","sdP",
+                                    "aD","bD",
+                                    #"muB",
+                                    "etaB",  "aB","bB","cvBB",
+                                    
+                                    "eta_alphaN",
+                                    
+                                    "Ntot","N"
+                                    
+                                  ),
+                                  n.iter=50000, 
+                                  thin=100))
+
+chains<-combine.mcmc(list(chains1,chains2,chains3))
+save(chains, file=paste(sep="", pathOut,"Smolts_19_06_16.RData"))
 
