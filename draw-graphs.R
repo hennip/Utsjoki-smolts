@@ -2,6 +2,7 @@
 source("tidy-functions.r")
 source("tidy-smolts-data.r")
 source("my-palette.r")
+source("packages-and-paths.r")
 
 
 #######################
@@ -12,7 +13,8 @@ load(file=paste(sep="",pathOut,"Smolts_17_04_26.RData")) # vaikuttaa lupaavalta,
 chains<-window(chains,start=100000, thin=1)
 
 # Unupdated priors
-load(file=paste(sep="",pathOut,"Smolts_17_04_priors.RData"))
+#load(file=paste(sep="",pathOut,"Smolts_17_04_priors.RData"))
+load(file=paste(sep="",pathOut,"Smolts_15_06_priors.RData"))
 #chains<-chainsP
 
 # Data
@@ -31,7 +33,7 @@ ggplot(data = ts1,mapping = aes(x = day, y = num_smolts)) +
 # Temperature
 ggplot(data = filter(ts, year==2003:2006 | year==2008 | year==2014)) + 
   geom_line(mapping = aes(x = day, y = temperature, color=year), size=1.2)
-  
+
 # Flow
 ggplot(data = filter(ts, year==2003:2006 | year==2008 | year==2014)) + 
   geom_line(mapping = aes(x = day, y = flow, color=year), size=1.2)
@@ -69,7 +71,7 @@ ggplot(df, aes(x))+
     stat = "identity"
   )
 
-  
+
 # Smolts in 2005
 df<-boxplot.jags.df2(chains, "N[","3]",1:61)
 
@@ -82,7 +84,7 @@ ggplot(df, aes(x))+
   geom_point(data=filter(ts,year==2005), mapping=aes(x=day,y=num_smolts), 
              color="blue", shape=17, size=2)+
   labs(x="Day (in June-July)", y="Number of smolts")
-  
+
 
 
 
@@ -98,7 +100,7 @@ df.prior<-boxplot.df(p_sampP, Temp)
 
 # In black and white
 ggplot(df, aes(x))+
-#  theme_bw()+
+  #  theme_bw()+
   geom_boxplot(
     data=df.prior,
     mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
@@ -110,7 +112,7 @@ ggplot(df, aes(x))+
   labs(x="Temperature (degrees celsius)", y="Probability", title="Probability to begin migration")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50),col="grey")
-  
+
 # In color
 ggplot(df, aes(x))+
   geom_boxplot(
@@ -126,7 +128,7 @@ ggplot(df, aes(x))+
   labs(x="Temperature (degrees celsius)", y="Probability", title="Probability to begin migration")+
   geom_line(aes(x,q50), col=2)
 
-  
+
 
 #################################
 # Travel time to video vs flow
@@ -191,12 +193,12 @@ ggplot(tmp)+
 
 ggplot(tmp)+
   geom_boxplot()
-  
+
 ?geom_boxplot
 
 # Next, time series Ntot
 (tmp<-filter(chains, Parameter=="Ntot[1]"))
-  (tmp<-filter(chains, Parameter==starts_with("Ntot")))
+(tmp<-filter(chains, Parameter==starts_with("Ntot")))
 
 levels(chains$Parameter)
 
