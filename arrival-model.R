@@ -23,8 +23,8 @@ model{
   }
   aB~dnorm(2.9,60)
   bB~dlnorm(-2.6,984)
-  sdBB<-0.1#~dlnorm(-0.23,210)
-  etaB<-10#~dunif(0.001,100000)
+  sdBB~dlnorm(-0.23,210)
+  etaB~dunif(0.001,100000)
   
   # Abundance
   # ==============
