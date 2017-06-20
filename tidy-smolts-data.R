@@ -19,7 +19,7 @@ ts1<-select(ts1, year, everything())
 
 # Temperature
 temp1<-read.table(paste(sep="",pathIn,"Temperature_4years.txt"),header=T)
-source("water-temperature.r")
+source("data-water-temperature.r")
 datT<-cbind(temp1[,1:2],round(DailyTemp,1), temp1[,3],temp1[,4],round(DailyTemp14,1))
 temp2<-cbind(datT,1:61)
 colnames(temp2)<-c(2003:2006,2008,2014, "day")
@@ -47,5 +47,3 @@ tf1
 ts<-full_join(ts2,tf1, by=NULL)
 filter(ts, is.na(flow)==T) 
 #View(ts)
-
-
