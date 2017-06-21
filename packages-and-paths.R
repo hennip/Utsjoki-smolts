@@ -1,7 +1,7 @@
 library(rjags)
 library(runjags)
 load.module("mix")
-library(xlsx)
+#library(xlsx)
 library(tidyverse)
 library(ggmcmc)
 
