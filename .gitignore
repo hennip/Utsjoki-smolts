@@ -2,6 +2,7 @@
 example*
 *.Rproj
 *.txt
+*.pdf
 
 
 # History files
