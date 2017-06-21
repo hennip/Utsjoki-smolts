@@ -11,6 +11,7 @@ source("tidy-smolts-data.r")
 
 
 M1<-"
+
 model{
 
 # Observation process
@@ -19,7 +20,7 @@ for(y in 1:nYears){
 for(i in 1:nDays){ # 61 days in June-July
 Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y]) # observed number of fish  
 
-logit(muB[i,y])<-BB[i,y]
+muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
 BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
 
 #    etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
@@ -89,7 +90,6 @@ qD[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
 }
 
 MD[i,y]<-log(muD[i,y])-0.5/TD
-
 muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/taumuD, taumuD)
 }
 }
@@ -171,7 +171,7 @@ system.time(chains1<-coda.samples(jm,
                                     "sum1", "sum31",
                                     "cvD", "cvmuD",
                                     
-                                    "aB", "bB", "cvBB", "etaB",    
+                                    "aB", "bB", "sdBB", "etaB",    
                                     "aP","bP","sdP",
                                     "aD","bD",
                                     
@@ -187,7 +187,7 @@ system.time(chains2<-coda.samples(jm,
                                     "sum1", "sum31",
                                     "cvD", "cvmuD",
                                     
-                                    "aB", "bB", "cvBB", "etaB",    
+                                    "aB", "bB", "sdBB", "etaB",    
                                     
                                     "aP","bP","sdP",
                                     "aD","bD",
@@ -202,5 +202,5 @@ system.time(chains2<-coda.samples(jm,
 #chainsP<-chains1
 
 chainsP<-combine.mcmc(list(chains1,chains2))
-save(chainsP, file=paste(sep="", pathOut,"Smolts_15_06_priors.RData"))
+save(chainsP, file=paste(sep="", pathOut,"Smolts_21_06_priors.RData"))
 

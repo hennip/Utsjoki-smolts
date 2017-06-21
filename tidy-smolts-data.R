@@ -50,7 +50,7 @@ tf1<- tf1%>%
   gather(key="year", value="flow", `2003`:`2014`)
 tf1
 
-# Join datasets togeher (natural join)
+# Join datasets together (natural join)
 ts<-full_join(ts2,tf1, by=NULL)
 filter(ts, is.na(flow)==T) 
 #View(ts)
