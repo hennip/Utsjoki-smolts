@@ -190,7 +190,7 @@ system.time(chains2<-coda.samples(jm,
                                     "aP","bP","sdP",
                                     "aD","bD",
                                     #"muB",
-                                    "etaB",  "aB","bB","cvBB",
+                                    "etaB",  "aB","bB","sdBB",
                                     
                                     "eta_alphaN",
                                     
@@ -201,7 +201,7 @@ system.time(chains2<-coda.samples(jm,
                                   thin=100))
 
 chains<-combine.mcmc(list(chains1,chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_19_06_16.RData"))
+save(chains, file=paste(sep="", pathOut,"Smolts_21_06_16.RData"))
 
 system.time(chains3<-coda.samples(jm,
                                   variable.names=c(
@@ -212,7 +212,7 @@ system.time(chains3<-coda.samples(jm,
                                     "aP","bP","sdP",
                                     "aD","bD",
                                     #"muB",
-                                    "etaB",  "aB","bB","cvBB",
+                                    "etaB",  "aB","bB","sdBB",
                                     
                                     "eta_alphaN",
                                     
@@ -223,5 +223,5 @@ system.time(chains3<-coda.samples(jm,
                                   thin=100))
 
 chains<-combine.mcmc(list(chains1,chains2,chains3))
-save(chains, file=paste(sep="", pathOut,"Smolts_19_06_16.RData"))
+save(chains, file=paste(sep="", pathOut,"Smolts_21_06_16.RData"))
 
