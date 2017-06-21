@@ -136,7 +136,7 @@ model{
   sum31<-sum(qD[31,31:44,4])
 
 }"
-cat(M1,file="Smolts.txt")
+cat(M1,file=paste(sep="", pathOut,"Smolts.txt"))
 
 
 #schools<-read.table("input/Schools_03-06.txt", header=T)
