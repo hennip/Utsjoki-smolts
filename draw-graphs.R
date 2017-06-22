@@ -41,17 +41,25 @@ ggplot(data = filter(ts, year==2003:2006 | year==2008 | year==2014)) +
 
 # Number of smolts
 ##################################################
-df<-boxplot.jags.df(chains, "Ntot",1:6)
+Year<-c("2003","2004","2005","2006","2008","2014")
+df<-boxplot.jags.df(chains, "Ntot",Year)
 #as.tibble(df)
+Ntot<-c()
+for(i in 1:6){
+  Ntot[i]<-sum(filter(ts, year==Year[i])$num_smolts, na.rm=T) 
+}
+df<-mutate(df, Ntot)
 
 ggplot(df, aes(x))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity"
-  )
+    stat = "identity")+
+  labs(x="Year", y="Number of smolts")+
+  geom_point(aes(x=Year, y=Ntot))+
+  coord_cartesian(ylim=c(0,38000))
 
-# Smolts in 2005
-y<-c("2003","2004","2005","2006","2008","2014")
+
+# daily number
 for(i in 1:6){
   df<-boxplot.jags.df2(chains, "N[",paste(sep="", i,"]"),1:61)
   df<-mutate(df, year=y[i])
@@ -60,35 +68,24 @@ for(i in 1:6){
 df2<-as.tibble(df2)
 df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","year"))
 df<-full_join(df2,ts, by=NULL)
-
+df<-select(df,day, year, num_smolts, q50, everything())
 
 View(df)
 
+df1<-filter(df, year=="2003"| year=="2004")
+df1<-filter(df, year=="2005"| year=="2006")
+df1<-filter(df, year=="2008"| year=="2014")
 
-ggplot(df, aes(day))+
+ggplot(df1, aes(day))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity"
-  )+
+    stat = "identity")+
   geom_line(aes(day,q50))+
-#  facet_grid(.~year)
-  facet_wrap(~year,drop=T)+
-  geom_point(mapping=aes(day,num_smolts), 
-             color="blue", shape=17, size=2)+
+  facet_grid(.~year)+
+  geom_point(mapping=aes(day,num_smolts), color="blue", shape=17, size=2)+
+  geom_line(aes(day,num_smolts), col="blue")+
   labs(x="Day (in June-July)", y="Number of smolts")
-
-
-
-#df<-boxplot.jags.df2(chains, "N[","3]",1:61)
-ggplot(df, aes(x))+
-  geom_boxplot(
-    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity"
-  )+
-  geom_line(aes(x,q50))+
-  geom_point(data=filter(ts,year==2005), mapping=aes(x=day,y=num_smolts), 
-             color="blue", shape=17, size=2)+
-  labs(x="Day (in June-July)", y="Number of smolts")
+#  coord_cartesian(ylim=c(0,3800))
 
 
 
@@ -152,51 +149,6 @@ ggplot(df, aes(x))+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()
-
-
-
-# Testing, parameter aD
-aD<-filter(chains_ggs, Parameter=="aD" & Chain==1)
-(aD<-spread(aD, key=Parameter, value=value))
-
-y <- as.mcmc(chains[,"aD"][[1]])
-tmp<-summary(y)
-tmp<-summary(y,quantiles=c(0.05,0.25,0.5,0.75,0.95))
-
-df <- data.frame(
-  x = 1,
-  q2.5 = tmp$quantiles[1],
-  q25 = tmp$quantiles[2],
-  q50 = tmp$quantiles[3],
-  q75 = tmp$quantiles[4],
-  q97.5 = tmp$quantiles[5]
-)
-ggplot(df, aes(x)) +
-  geom_boxplot(
-    aes(ymin = q2.5, lower = q25, middle = q50, upper = q75, ymax = q97.5),
-    stat = "identity"
-  )
-
-
-
-
-
-
-#windows(record=T)
-par(mfrow=c(3,6))
-for(i in 1:61){
-  traceplot(chains[,paste(sep="","N[",i,",3]")],main=i, cex.main=1.5)
-}  
-
-colnames(qmu)<-c("mean","sd","2.5%","25%","50%","75%","97.5%")
-
-
-
-# Next, time series Ntot
-(tmp<-filter(chains, Parameter=="Ntot[1]"))
-(tmp<-filter(chains, Parameter==starts_with("Ntot")))
-
-levels(chains$Parameter)
 
 
 

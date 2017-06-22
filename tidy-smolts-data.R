@@ -7,13 +7,13 @@ library(tidyverse)
 # Smolts
 ############
 #S<-read.table(paste(sep="",pathIn,"Smolts_6years_2008weekendsOff.txt"),header=T)
-#S<-read_tsv(paste(sep="",pathIn,"Smolts_6years.txt"))
+S_all<-read_tsv(paste(sep="",pathIn,"Smolts_6years.txt"))
 S<-read_tsv(paste(sep="",pathIn,"Smolts_6years_2008weekendsOff.txt"))
 # Leave S as such, goes to JAGS model as input
 
 #day<-tibble(Day=1:61)
 #S2<-bind_cols(S, day)
-S2<-mutate(S, day=1:61) # same as previous but with one row
+S2<-mutate(S_all, day=1:61) # same as previous but with one row
 
 #tmp<-dplyr::rename(S2, N03=2003) # should work but does not
 S2<-setNames(S2,c(2003:2006,2008,2014, "day"))

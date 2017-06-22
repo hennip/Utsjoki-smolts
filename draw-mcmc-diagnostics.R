@@ -3,7 +3,6 @@ source("tidy-smolts-data.r")
 source("my-palette.r")
 source("packages-and-paths.r")
 
-
 source("load-simulations.r")
 
 
@@ -73,7 +72,7 @@ lines(density(chainsP[,"etaB"][[1]]), lty=2)
 plot(density(chains[,"cvD"][[1]]), main="cvD")
 lines(density(chains[,"cvD"][[2]]))
 lines(density(chainsP[,"cvD"][[1]]), lty=2)
-plot(density(chains[,"cvmuD"][[1]]), main="cvmuD")
+plot(density(chains[,"cvmuD"][[1]]), main="cvmuD", xlim=c(0,1))
 lines(density(chains[,"cvmuD"][[2]]))
 lines(density(chainsP[,"cvmuD"][[1]]), lty=2)
 
