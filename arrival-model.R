@@ -132,9 +132,6 @@ model{
   #exp(0.5/1)
   
   # check sums (should be close to 1, otherwise fish is lost)
-  #sum1<-sum(qD[1,1:14,4])
-  #sum31<-sum(qD[31,31:44,4])
-  
   for(i in 48:61){ # last 2 weeks of July 2006
     sums06[i]<-sum(qD[i,i:(i+13),4])
   }
