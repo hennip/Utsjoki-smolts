@@ -87,12 +87,12 @@ model{
       muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/taumuD, taumuD)
     }
   }
-  cvD~dunif(0.001,1)
+  cvD~dunif(0.001,2)
   taumuD<-1/log(cvmuD*cvmuD+1)
   TD<-1/log(cvD*cvD+1)
   SD<-1/sqrt(TD)
   
-  cvmuD~dunif(0.001,1)
+  cvmuD~dunif(0.001,2)
   
   aD~dlnorm(0.68,45) # mu=2,cv=0.15
   bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
@@ -132,8 +132,15 @@ model{
   #exp(0.5/1)
   
   # check sums (should be close to 1, otherwise fish is lost)
-  sum1<-sum(qD[1,1:14,4])
-  sum31<-sum(qD[31,31:44,4])
+  #sum1<-sum(qD[1,1:14,4])
+  #sum31<-sum(qD[31,31:44,4])
+  
+  for(i in 48:61){ # last 2 weeks of July 2006
+    sums06[i]<-sum(qD[i,i:(i+13),4])
+  }
+  for(i in 48:61){ # last 2 weeks of July 2014
+    sums14[i]<-sum(qD[i,i:(i+13),6])
+  }
 
 }"
 cat(M1,file=paste(sep="", pathOut,"Smolts.txt"))
@@ -201,27 +208,4 @@ system.time(chains2<-coda.samples(jm,
                                   thin=100))
 
 chains<-combine.mcmc(list(chains1,chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_02_08_16.RData"))
-
-system.time(chains3<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sum1","sum31",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB",
-                                    "etaB",  "aB","bB","sdBB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=50000, 
-                                  thin=100))
-
-chains<-combine.mcmc(list(chains1,chains2,chains3))
-save(chains, file=paste(sep="", pathOut,"Smolts_21_06_16.RData"))
-
+save(chains, file=paste(sep="", pathOut,"Smolts_cvDs_02_08_16.RData"))
