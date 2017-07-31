@@ -178,8 +178,8 @@ system.time(chains1<-coda.samples(jm,
                                     "Ntot","N"
                                     
                                   ),
-                                  n.iter=1000, 
-                                  thin=1)) 
+                                  n.iter=200000, 
+                                  thin=100)) 
 
 system.time(chains2<-coda.samples(jm,
                                   variable.names=c(
@@ -197,11 +197,11 @@ system.time(chains2<-coda.samples(jm,
                                     "Ntot","N"
                                     
                                   ),
-                                  n.iter=50000, 
+                                  n.iter=200000, 
                                   thin=100))
 
 chains<-combine.mcmc(list(chains1,chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_01_08_16.RData"))
+save(chains, file=paste(sep="", pathOut,"Smolts_02_08_16.RData"))
 
 system.time(chains3<-coda.samples(jm,
                                   variable.names=c(
