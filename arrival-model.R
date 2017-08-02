@@ -181,8 +181,8 @@ system.time(chains1<-coda.samples(jm,
                                     "Ntot","N"
                                     
                                   ),
-                                  n.iter=200000, 
-                                  thin=100)) 
+                                  n.iter=100000, 
+                                  thin=200)) 
 
 system.time(chains2<-coda.samples(jm,
                                   variable.names=c(
@@ -201,7 +201,48 @@ system.time(chains2<-coda.samples(jm,
                                     
                                   ),
                                   n.iter=200000, 
-                                  thin=100))
+                                  thin=200))
 
-chains<-combine.mcmc(list(chains1,chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_cvDs_02_08_16.RData"))
+system.time(chains3<-coda.samples(jm,
+                                  variable.names=c(
+                                    "cvD", "cvmuD",
+                                    
+                                    "sums06","sums14",
+                                    
+                                    "aP","bP","sdP",
+                                    "aD","bD",
+                                    #"muB",
+                                    "etaB",  "aB","bB","sdBB",
+                                    
+                                    "eta_alphaN",
+                                    
+                                    "Ntot","N"
+                                    
+                                  ),
+                                  n.iter=500000, 
+                                  thin=200))
+
+chains<-combine.mcmc(list(chains2, chains3))
+save(chains, file=paste(sep="", pathOut,"Smolts_cvDs_17_08_07.RData"))
+
+system.time(chains4<-coda.samples(jm,
+                                  variable.names=c(
+                                    "cvD", "cvmuD",
+                                    
+                                    "sums06","sums14",
+                                    
+                                    "aP","bP","sdP",
+                                    "aD","bD",
+                                    #"muB",
+                                    "etaB",  "aB","bB","sdBB",
+                                    
+                                    "eta_alphaN",
+                                    
+                                    "Ntot","N"
+                                    
+                                  ),
+                                  n.iter=500000, 
+                                  thin=200))
+
+chains<-combine.mcmc(list(chains2,chains3, chains4))
+save(chains, file=paste(sep="", pathOut,"Smolts_cvDs_17_08_07.RData"))
