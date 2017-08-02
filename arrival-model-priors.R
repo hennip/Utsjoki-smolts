@@ -138,8 +138,12 @@ sdP~dlnorm(0,1) #mu=1.6
 #exp(0.5/1)
 
 # check sums (should be close to 1, otherwise fish is lost)
-sum1<-sum(qD[1,1:14,4])
-sum31<-sum(qD[31,31:44,4])
+for(i in 48:61){ # last 2 weeks of July 2006
+sums06[i]<-sum(qD[i,i:(i+13),4])
+}
+for(i in 48:61){ # last 2 weeks of July 2014
+sums14[i]<-sum(qD[i,i:(i+13),6])
+}
 
 }"
 
@@ -167,8 +171,8 @@ system.time(jm<-jags.model('Smolts_priors.txt',#inits=initials,
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "N","Ntot",
-                                    "sum1", "sum31",
+                                    #"N","Ntot",
+                                    "sums06", "sums14",
                                     "cvD", "cvmuD",
                                     
                                     "aB", "bB", "sdBB", "etaB",    
@@ -183,8 +187,8 @@ system.time(chains1<-coda.samples(jm,
 
 system.time(chains2<-coda.samples(jm,
                                   variable.names=c(
-                                    "N","Ntot",
-                                    "sum1", "sum31",
+                                    #"N","Ntot",
+                                    "sums06", "sums14",
                                     "cvD", "cvmuD",
                                     
                                     "aB", "bB", "sdBB", "etaB",    
@@ -202,5 +206,5 @@ system.time(chains2<-coda.samples(jm,
 #chainsP<-chains1
 
 chainsP<-combine.mcmc(list(chains1,chains2))
-save(chainsP, file=paste(sep="", pathOut,"Smolts_21_06_priors.RData"))
+save(chainsP, file=paste(sep="", pathOut,"Smolts_17_08_02_priors.RData"))
 

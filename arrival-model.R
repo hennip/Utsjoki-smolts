@@ -169,13 +169,12 @@ system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
                                     "cvD", "cvmuD",
                                     
-                                    "sum1","sum31",
+                                    "sums06","sums14",
                                     
                                     "aP","bP","sdP",
                                     "aD","bD",
                                     #"muB",
-                                    "etaB",  
-                                    "aB","bB","sdBB",
+                                    "etaB","aB","bB","sdBB",
                                     
                                     "eta_alphaN",
                                     
@@ -189,7 +188,7 @@ system.time(chains2<-coda.samples(jm,
                                   variable.names=c(
                                     "cvD", "cvmuD",
                                     
-                                    "sum1","sum31",
+                                    "sums06","sums14",
                                     
                                     "aP","bP","sdP",
                                     "aD","bD",
