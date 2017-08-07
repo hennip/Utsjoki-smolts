@@ -140,7 +140,7 @@ model{
   }
 
 }"
-cat(M1,file=paste(sep="", pathOut,"Smolts.txt"))
+cat(M1,file="Smolts.txt")
 
 
 #schools<-read.table("input/Schools_03-06.txt", header=T)
