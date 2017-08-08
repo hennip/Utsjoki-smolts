@@ -94,11 +94,9 @@ model{
   
   cvmuD~dunif(0.001,2)
   
-  aD~dlnorm(0.68,45) # mu=2,cv=0.15
+  aD~dlnorm(0.51,9.7) # mu=1.75,cv=0.33
   bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
-  #aD~dlnorm(0.9,45) # mu=2.5,cv=0.2
-  #bD~dlnorm(-4.6,25) # mu=0.03,cv=0.2
-  
+
   # Proportion departing in each day  
   # ========================================
   for(y in 1:nYears){
