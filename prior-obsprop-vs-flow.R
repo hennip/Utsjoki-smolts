@@ -1,5 +1,3 @@
-source("packages-and-paths.r")
-source("tidy-functions.r")
 
 # simuloidaan dataa jonka avulla voidaan sovittaa priorit 
 # virtaaman vaikutukselle havaitsemistodennakoisyyteen

@@ -66,7 +66,7 @@ plot(density(chains[,"sdBB"][[1]]), main="sdBB")
 lines(density(chains[,"sdBB"][[2]]))
 lines(density(chainsP[,"sdBB"][[1]]), lty=2)
 
-plot(density(chains[,"etaB"][[1]]), main="etaB", xlim=c(0,65000))
+plot(density(chains[,"etaB"][[1]]), main="etaB", xlim=c(0,100000))
 lines(density(chains[,"etaB"][[2]]))
 lines(density(chainsP[,"etaB"][[1]]), lty=2)
 plot(density(chains[,"cvD"][[1]]), main="cvD")
