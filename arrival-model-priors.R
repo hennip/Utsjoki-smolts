@@ -11,7 +11,6 @@ source("tidy-smolts-data.r")
 
 
 M1<-"
-
 model{
 
 # Observation process
@@ -93,12 +92,12 @@ MD[i,y]<-log(muD[i,y])-0.5/TD
 muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/taumuD, taumuD)
 }
 }
-cvD~dunif(0.001,1)
+cvD~dunif(0.001,2)
 taumuD<-1/log(cvmuD*cvmuD+1)
 TD<-1/log(cvD*cvD+1)
 SD<-1/sqrt(TD)
 
-cvmuD~dunif(0.001,1)
+cvmuD~dunif(0.001,2)
 
 aD~dlnorm(0.51,9.7) # mu=1.75,cv=0.33
 bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
@@ -204,5 +203,5 @@ system.time(chains2<-coda.samples(jm,
 #chainsP<-chains1
 
 chainsP<-combine.mcmc(list(chains1,chains2))
-save(chainsP, file=paste(sep="", pathOut,"Smolts_17_08_02_priors.RData"))
+save(chainsP, file=paste(sep="", pathOut,"Smolts_cvDs_17_08_11_priors.RData"))
 
