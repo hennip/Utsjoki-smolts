@@ -34,7 +34,7 @@ ggplot(data = filter(ts, year==2003:2006 | year==2008 | year==2014)) +
 # MCMC output 
 
 # ggs imports mcmc samples into a ggs object that can be used by ggs_* graphical functions
-(chains_ggs<-ggs(chains))
+#(chains_ggs<-ggs(chains))
 #ggmcmc(chains)
 #ggs_traceplot(chains_ggs)
 
@@ -54,12 +54,13 @@ ggplot(df, aes(x))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+
-  labs(x="Year", y="Number of smolts")+
+  labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
   geom_point(aes(x=Year, y=Ntot))+
   coord_cartesian(ylim=c(0,38000))
 
 
 # daily number
+y<-c("2003","2004","2005","2006","2008","2014")
 for(i in 1:6){
   df<-boxplot.jags.df2(chains, "N[",paste(sep="", i,"]"),1:61)
   df<-mutate(df, year=y[i])
@@ -70,7 +71,7 @@ df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","year"))
 df<-full_join(df2,ts, by=NULL)
 df<-select(df,day, year, num_smolts, q50, everything())
 
-View(df)
+#View(df)
 
 df1<-filter(df, year=="2003"| year=="2004")
 df1<-filter(df, year=="2005"| year=="2006")
@@ -149,6 +150,28 @@ ggplot(df, aes(x))+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()
+
+
+#################################
+# Observation probability vs flow
+source("sample-obs-prob-flow.r")
+
+df<-boxplot.df(muB_samp, Flow)
+df.prior<-boxplot.df(muB_sampP, Flow)
+
+ggplot(df, aes(x))+
+  geom_boxplot(data=df.prior,
+               mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+               stat = "identity",
+               col="grey", fill="grey95")+
+  geom_boxplot(
+    mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity")+
+  labs(x="Flow (m3/s)", y="Probability", title="Probability to observe a smolt at given flow")+
+  geom_line(aes(x,q50))+
+  geom_line(data=df.prior, aes(x,q50), color="grey")+
+  theme_bw()+
+  coord_cartesian(ylim=c(0,1))
 
 
 
