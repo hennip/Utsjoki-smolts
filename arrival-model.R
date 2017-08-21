@@ -247,3 +247,47 @@ system.time(chains4<-coda.samples(jm,
 
 chains<-combine.mcmc(list(chains2,chains3, chains4))
 save(chains, file=paste(sep="", pathOut,"Smolts_aDbD_17_08_14.RData"))
+
+system.time(chains5<-coda.samples(jm,
+                                  variable.names=c(
+                                    "cvD", "cvmuD",
+                                    
+                                    "sums06","sums14",
+                                    
+                                    "aP","bP","sdP",
+                                    "aD","bD",
+                                    #"muB",
+                                    "etaB",  "aB","bB","sdBB",
+                                    
+                                    "eta_alphaN",
+                                    
+                                    "Ntot","N"
+                                    
+                                  ),
+                                  n.iter=500000, 
+                                  thin=200))
+
+chains<-combine.mcmc(list(chains3, chains4,chains5))
+save(chains, file=paste(sep="", pathOut,"Smolts_aDbD_17_08_14.RData"))
+
+system.time(chains6<-coda.samples(jm,
+                                  variable.names=c(
+                                    "cvD", "cvmuD",
+                                    
+                                    "sums06","sums14",
+                                    
+                                    "aP","bP","sdP",
+                                    "aD","bD",
+                                    #"muB",
+                                    "etaB",  "aB","bB","sdBB",
+                                    
+                                    "eta_alphaN",
+                                    
+                                    "Ntot","N"
+                                    
+                                  ),
+                                  n.iter=500000, 
+                                  thin=200))
+
+chains<-combine.mcmc(list(chains3, chains4,chains5,chains6))
+save(chains, file=paste(sep="", pathOut,"Smolts_aDbD_17_08_14.RData"))
