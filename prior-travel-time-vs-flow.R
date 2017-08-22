@@ -19,23 +19,28 @@ nF<-length(Flow)
 M2<-"
 model{
 for(i in 1:n){
-      muD[i]~dnorm(mumuD[i], taumuD[i])
+ #     muD[i]~dbeta(alphaD[i], betaD[i])
+ #     alphaD[i]<-mumuD[i]*etaD[i]
+ #     betaD[i]<-mumuD[i]*etaD[i]
+
+     muD[i]~dnorm(mumuD[i], taumuD[i])
       mumuD[i]<-exp(aD-bD*Flow[i])
       sdmuD[i]<-mumuD[i]*cvmuD
       taumuD[i]<-1/pow(sdmuD[i],2)
 }
-cvmuD<-0.1
+#cvmuD<-0.1
+cvmuD~dunif(0.001,0.8)
 
 #Priors:
-#muaD<-1.75 #2
-#cvaD<-0.33 # 0.15
-#mubD<-0.01
-#cvbD<-0.2
-#aD~dlnorm(log(muaD)-0.5*log(cvaD*cvaD+1),1/log(cvaD*cvaD+1)) 
-#bD~dlnorm(log(mubD)-0.5*log(cvbD*cvbD+1),1/log(cvbD*cvbD+1)) 
+muaD<-2 #1.75
+cvaD<-0.1 # 0.33
+mubD<-0.01
+cvbD<-0.2
+aD~dlnorm(log(muaD)-0.5*log(cvaD*cvaD+1),1/log(cvaD*cvaD+1)) 
+bD~dlnorm(log(mubD)-0.5*log(cvbD*cvbD+1),1/log(cvbD*cvbD+1)) 
 
-aD~dlnorm(0.51,9.7) # mu=1.75,cv=0.33
-bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
+#aD~dlnorm(0.51,9.7) # mu=1.75,cv=0.33
+#bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
 
 
 }"
