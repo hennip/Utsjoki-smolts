@@ -16,17 +16,15 @@ cvmuD_samp<-c1[,"cvmuD"]
 
 muD_samp<-array(NA, dim=c(n_samp,nF))
 mumuD_samp<-array(NA, dim=c(n_samp,nF))
-sdmuD_samp<-array(NA, dim=c(n_samp,nF))
-#cvmuD<-0.1
+MmuD_samp<-array(NA, dim=c(n_samp,nF))
+SDmuD_samp<-array(NA, dim=c(n_samp))
 for(j in 1:n_samp){
+  SDmuD_samp[j]<-sqrt(log(cvmuD_samp[j]^2+1))
   for(i in 1:nF){
-    mumuD_samp[j,i]<-exp(aD_samp[j]-bD_samp[j]*Flow[i])
-    sdmuD_samp[j,i]<-mumuD_samp[j,i]*cvmuD_samp[j]
-    muD_samp[j,i]<-rnorm(1,mumuD_samp[j,i], sdmuD_samp[j,i])
-    
+    MmuD_samp[j,i]<-log(exp(aD_samp[j]-bD_samp[j]*Flow[i]))-0.5*(SDmuD_samp[j]^2)
+    muD_samp[j,i]<-rlnorm(1,MmuD_samp[j,i], SDmuD_samp[j])
   }
 }
-#colnames(muD_samp)<-paste(sep="", "muD[",1:15,"]")
 
 # Prior
 n_samp<-length(c2[,"aD"])
@@ -36,12 +34,12 @@ cvmuD_samp<-c2[,"cvmuD"]
 
 muD_sampP<-array(NA, dim=c(n_samp,nF))
 mumuD_samp<-array(NA, dim=c(n_samp,nF))
-sdmuD_samp<-array(NA, dim=c(n_samp,nF))
-#cvmuD<-0.1
+MmuD_samp<-array(NA, dim=c(n_samp,nF))
+SDmuD_samp<-array(NA, dim=c(n_samp))
 for(j in 1:n_samp){
+  SDmuD_samp[j]<-sqrt(log(cvmuD_samp[j]^2+1))
   for(i in 1:nF){
-    mumuD_samp[j,i]<-exp(aD_samp[j]-bD_samp[j]*Flow[i])
-    sdmuD_samp[j,i]<-mumuD_samp[j,i]*cvmuD_samp[j]
-    muD_sampP[j,i]<-rnorm(1,mumuD_samp[j,i], sdmuD_samp[j,i])
+    MmuD_samp[j,i]<-log(exp(aD_samp[j]-bD_samp[j]*Flow[i]))-0.5*(SDmuD_samp[j]^2)
+    muD_sampP[j,i]<-rlnorm(1,MmuD_samp[j,i], SDmuD_samp[j])
   }
 }
