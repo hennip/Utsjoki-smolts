@@ -29,10 +29,13 @@ traceplot(chains[,"sdBB"],main=expression("sdBB"), cex.main=1.5)
 traceplot(chains[,"etaB"],main=expression("etaB"), cex.main=1.5)
 traceplot(chains[,"eta_alphaN"],main=expression("eta_alphaN"), cex.main=1.5)
 
-traceplot(chains[,"sum1"])
-traceplot(chains[,"sum31"])
-summary(chains[,"sum1"])
-summary(chains[,"sum31"])
+traceplot(chains[,"sums06[48]"])
+traceplot(chains[,"sums06[61]"])
+traceplot(chains[,"sums14[48]"])
+traceplot(chains[,"sums14[61]"])
+
+summary(chains[,"sums06[48]"])
+summary(chains[,"sums14[48]"])
 
 #################################
 # Densities
