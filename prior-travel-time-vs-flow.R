@@ -19,33 +19,28 @@ nF<-length(Flow)
 M2<-"
 model{
 for(i in 1:n){
- #     muD[i]~dbeta(alphaD[i], betaD[i])
- #     alphaD[i]<-mumuD[i]*etaD[i]
- #     betaD[i]<-mumuD[i]*etaD[i]
-
-     muD[i]~dnorm(mumuD[i], taumuD[i])
-      mumuD[i]<-exp(aD-bD*Flow[i])
-      sdmuD[i]<-mumuD[i]*cvmuD
-      taumuD[i]<-1/pow(sdmuD[i],2)
+  muD[i]~dlnorm(log(mumuD[i])-0.5/TmuD, TmuD)
+  mumuD[i]<-exp(aD-bD*Flow[i])
 }
-#cvmuD<-0.1
-cvmuD~dunif(0.001,0.8)
+TmuD<-1/log(cvmuD*cvmuD+1)
+cvmuD~dunif(0.001,1)
+
 
 #Priors:
-muaD<-2 #1.75
-cvaD<-0.1 # 0.33
-mubD<-0.01
-cvbD<-0.2
-aD~dlnorm(log(muaD)-0.5*log(cvaD*cvaD+1),1/log(cvaD*cvaD+1)) 
-bD~dlnorm(log(mubD)-0.5*log(cvbD*cvbD+1),1/log(cvbD*cvbD+1)) 
+#muaD<-1.75 #1.75
+#cvaD<-0.27 # 0.33
+#mubD<-0.01
+#cvbD<-0.2
+#aD~dlnorm(log(muaD)-0.5*log(cvaD*cvaD+1),1/log(cvaD*cvaD+1)) 
+#bD~dlnorm(log(mubD)-0.5*log(cvbD*cvbD+1),1/log(cvbD*cvbD+1)) 
 
-#aD~dlnorm(0.51,9.7) # mu=1.75,cv=0.33
-#bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
+aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
+bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
 
 
 }"
 #muaD<-1.75 
-#cvaD<-0.33 
+#cvaD<-0.27 
 #mubD<-0.01
 #cvbD<-0.2
 #log(muaD)-0.5*log(cvaD*cvaD+1)
@@ -69,7 +64,6 @@ system.time(chains1<-coda.samples(jm,
                                   n.iter=10000,
                                   thin=1))
 chainsP2<-chains1
-summary(chainsP2, quantiles = c(0.05,0.25,0.50,0.75,0.95))
 
 #source("functions/bx.r")
 #d<-as.matrix(chainsP2)       # transform to a matrix for boxplotting
@@ -91,6 +85,7 @@ ggplot(df, aes(x))+
   coord_cartesian(ylim=c(0,20))+
   theme_bw()
 
+summary(chainsP2, quantiles = c(0.05,0.25,0.50,0.75,0.95))
 
 
 

@@ -89,17 +89,17 @@ qD[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
 }
 
 MD[i,y]<-log(muD[i,y])-0.5/TD
-muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/taumuD, taumuD)
+muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
 }
 }
 cvD~dunif(0.001,2)
-taumuD<-1/log(cvmuD*cvmuD+1)
+TmuD<-1/log(cvmuD*cvmuD+1)
 TD<-1/log(cvD*cvD+1)
 SD<-1/sqrt(TD)
 
-cvmuD~dunif(0.001,2)
+cvmuD~dunif(0.001,1)
 
-aD~dlnorm(0.51,9.7) # mu=1.75,cv=0.33
+aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
 bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
 
 # Proportion departing in each day  
@@ -179,8 +179,8 @@ system.time(chains1<-coda.samples(jm,
                                     "eta_alphaN"
                                     
                                   ),
-                                  n.iter=10000, 
-                                  thin=10))
+                                  n.iter=100000, 
+                                  thin=100))
 
 system.time(chains2<-coda.samples(jm,
                                   variable.names=c(
@@ -196,12 +196,14 @@ system.time(chains2<-coda.samples(jm,
                                     "eta_alphaN"
                                     
                                   ),
-                                  n.iter=10000, 
-                                  thin=10))
+                                  n.iter=100000, 
+                                  thin=100))
 
 
 #chainsP<-chains1
 
 chainsP<-combine.mcmc(list(chains1,chains2))
-save(chainsP, file=paste(sep="", pathOut,"Smolts_cvDs_17_08_11_priors.RData"))
-
+save(chainsP, file=paste(sep="", pathOut,"Smolts_cvDs_17_08_14_priors.RData"))
+ 
+     
+     
