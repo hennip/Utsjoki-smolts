@@ -26,7 +26,7 @@ ts1<-select(ts1, year, everything())
 
 # Temperature
 temp1<-read_tsv(paste(sep="",pathIn,"Temperature_4years.txt"))
-source("data-water-temperature.r")
+source("01-Data/data-water-temperature.r")
 
 datT<-bind_cols(temp1[,1:2],round(DailyTemp05,1), temp1[,3],temp1[,4],round(DailyTemp14,1))
 temp2<-mutate(datT, day=1:61)

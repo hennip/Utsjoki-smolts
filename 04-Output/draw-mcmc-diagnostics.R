@@ -1,9 +1,10 @@
-source("tidy-functions.r")
-source("tidy-smolts-data.r")
-source("my-palette.r")
-source("packages-and-paths.r")
+#source("00-Functions/tidy-functions.r")
+#source("00-Functions/my-palette.r")
+#source("00-Functions/packages-and-paths.r")
+#source("01-Data/tidy-smolts-data.r")
 
-source("load-simulations.r")
+
+source("04-Output/load-simulations.r")
 
 
 # Traces

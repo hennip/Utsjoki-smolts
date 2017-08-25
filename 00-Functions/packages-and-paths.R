@@ -5,8 +5,6 @@ load.module("mix")
 library(tidyverse)
 library(ggmcmc)
 
-source("tidy-functions.r")
-
 # Path for input data
 pathIn<-"H:/Projects/ISAMA/data/der/input/Utsjoki-smolts/"
 

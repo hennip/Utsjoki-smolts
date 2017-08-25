@@ -5,20 +5,58 @@ date: "25 August 2017"
 output: html_document
 ---
 
+```{r echo=FALSE, cache= F}
+knitr::read_chunk('01-Data/draw-some-data.R')
+```
 
 ## Intro
 
 These are the notes and workflow documentation of Utsjoki smolt count model. All material (except data) is stored in Github <https://github.com/hennip/Utsjoki-smolts>
 
+### Functions, packages and paths
+
+First run from 00-Functions
+
+* packages-and-paths.r
+* tidy-functions.r
+* my-palette.r
+
+```{r include=FALSE}
+source("00-Functions/packages-and-paths.r")
+source("00-Functions/tidy-functions.r")
+source("00-Functions/my-palette.r")
+
+```
+
+
 ### Data
 
 * Annual video count data from 61 days in June-July
 
+Run script
+
+* 01-Data/tidy-smolts-data.r
+
+```{r include=FALSE}
+source("01-Data/tidy-smolts-data.r")
+
+```
+
+```{r draw-some-data-temp}
+```
+
+```{r draw-some-data-flow}
+```
+
+```{r draw-some-data-smolts}
+```
+
+
 ## Priors
 ```{r include=FALSE}
-source("prior-obsprop-vs-flow.r")
-source("prior-travel-time-vs-flow.r")
-source("prior-obsprop-vs-flow.r")
+#source("prior-obsprop-vs-flow.r")
+#source("prior-travel-time-vs-flow.r")
+#source("prior-obsprop-vs-flow.r")
 
 ```
 
@@ -31,20 +69,3 @@ source("prior-obsprop-vs-flow.r")
 
 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
