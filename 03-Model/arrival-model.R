@@ -12,6 +12,10 @@ model{
   # ====================
   for(y in 1:nYears){
     for(i in 1:nDays){ # 61 days in June-July
+
+      # Fixed probability to be seen
+      # Nobs[i,y]~dbetabin(100,10,N[i,y]) # observed number of fish  
+      
       Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y]) # observed number of fish  
 
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
