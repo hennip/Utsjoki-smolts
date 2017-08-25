@@ -1,9 +1,11 @@
 library(rjags)
 library(runjags)
 load.module("mix")
-library(xlsx)
+#library(xlsx)
 library(tidyverse)
 library(ggmcmc)
+
+source("tidy-functions.r")
 
 # Path for input data
 pathIn<-"H:/Projects/ISAMA/data/der/input/Utsjoki-smolts/"

@@ -1,7 +1,9 @@
 # My own adds:
 example*
+*.html
 *.Rproj
 *.txt
+*.pdf
 
 
 # History files
