@@ -1,4 +1,3 @@
-# Testing
 
 
 source("packages-and-paths.r")
@@ -88,18 +87,19 @@ model{
       }
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
+ #     muD[i,y]<-exp(aD-bD*flow[i,y])
       muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
     }
   }
-cvD~dunif(0.001,2)
-TmuD<-1/log(cvmuD*cvmuD+1)
-TD<-1/log(cvD*cvD+1)
-SD<-1/sqrt(TD)
-
-cvmuD~dunif(0.001,1)
-
 aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
 bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
+
+cvmuD~dunif(0.001,1)
+TmuD<-1/log(cvmuD*cvmuD+1)
+
+cvD~dunif(0.001,2)
+TD<-1/log(cvD*cvD+1)
+SD<-1/sqrt(TD)
 
   # Proportion departing in each day  
   # ========================================

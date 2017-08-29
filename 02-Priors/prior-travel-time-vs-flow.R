@@ -24,7 +24,7 @@ for(i in 1:n){
 }
 TmuD<-1/log(cvmuD*cvmuD+1)
 cvmuD~dunif(0.001,1)
-
+#cvmuD<-0.01
 
 #Priors:
 #muaD<-1.75 #1.75

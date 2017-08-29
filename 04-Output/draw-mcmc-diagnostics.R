@@ -1,7 +1,7 @@
-#source("00-Functions/tidy-functions.r")
-#source("00-Functions/my-palette.r")
-#source("00-Functions/packages-and-paths.r")
-#source("01-Data/tidy-smolts-data.r")
+source("00-Functions/tidy-functions.r")
+source("00-Functions/my-palette.r")
+source("00-Functions/packages-and-paths.r")
+source("01-Data/tidy-smolts-data.r")
 
 
 source("04-Output/load-simulations.r")
