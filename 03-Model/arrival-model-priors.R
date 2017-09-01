@@ -4,10 +4,9 @@
 
 
 
+source("00-Functions/packages-and-paths.r")
+source("01-Data/tidy-smolts-data.r")
 
-
-source("packages-and-paths.r")
-source("tidy-smolts-data.r")
 
 
 M1<-"

@@ -1,7 +1,7 @@
 
 
-source("packages-and-paths.r")
-source("tidy-smolts-data.r")
+source("00-Functions/packages-and-paths.r")
+source("01-Data/tidy-smolts-data.r")
 
 
 M1<-"
@@ -87,7 +87,6 @@ model{
       }
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
- #     muD[i,y]<-exp(aD-bD*flow[i,y])
       muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
     }
   }
