@@ -58,7 +58,7 @@ aD_samp<-c();bD_samp<-c()
 cvD_samp<-c();cvmuD_samp<-c()
 n<-1
 for(i in 1:1000){
-  if(chains1[,"sums"][[1]][i]>0.9){
+  if(chains1[,"sums"][[1]][i]>0.95){
     tmp[n]<-i
     aD_samp[n]<-chains1[,"aD"][[1]][i]
     bD_samp[n]<-chains1[,"bD"][[1]][i]
@@ -184,3 +184,9 @@ system.time(chains3<-coda.samples(jm,
                                   n.iter=10000, 
                                   thin=1)) 
 summary(chains3)
+
+# Save to 02-Priors
+priors_mvn<-list(R, mumu, sdmu)
+names(priors_mvn)<-c("R", "mumu", "sdmu")
+save(priors_mvn,file="C:/R/ISAMA/Utsjoki-smolts/02-Priors/priors-mvn.RData")
+
