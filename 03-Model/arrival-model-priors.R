@@ -167,7 +167,7 @@ load("02-Priors/priors-mvn.RData")
 
 data<-list(
   #s=schools,
-  ld_R=R,ld_mumu=mumu,ld_sdmu=sdmu,
+  ld_R=priors_mvn$R,ld_mumu=priors_mvn$mumu,ld_sdmu=priors_mvn$sdmu,
   flow=datF,
   nDays=61,
   nYears=6,
