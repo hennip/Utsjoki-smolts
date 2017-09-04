@@ -27,7 +27,7 @@ model{
   aB~dnorm(2.9,60)
   bB~dlnorm(-2.6,984)
   sdBB~dlnorm(-0.23,210)
-  etaB~dunif(0.001,100000)
+  etaB~dunif(1,1000)
   
   # Abundance
   # ==============
@@ -186,11 +186,11 @@ var_names<-c(
 
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
-                        n.iter=3000, thin=1)) #20min
+                        n.iter=100000, thin=200)) #8h
 
 system.time(
   chains2<-coda.samples(jm,variable.names=var_names,
-                        n.iter=3000, thin=1))
+                        n.iter=100000, thin=200))
 
 chains<-combine.mcmc(list(chains1, chains2))
 save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
