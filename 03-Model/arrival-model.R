@@ -87,18 +87,24 @@ model{
       }
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
-      muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
+      muD[i,y]~dlnorm(log(exp(d[1]-d[2]*flow[i,y]))-0.5/TmuD, TmuD)
     }
   }
-aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
-bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
-
-cvmuD~dunif(0.001,1)
-TmuD<-1/log(cvmuD*cvmuD+1)
-
-cvD~dunif(0.001,2)
-TD<-1/log(cvD*cvD+1)
-SD<-1/sqrt(TD)
+  TmuD<-1/log(d[4]*d[4]+1)
+  TD<-1/log(d[3]*d[3]+1)
+  SD<-1/sqrt(TD)
+  
+  # indices for logd: 
+  # [1]=log(aD), [2]=log(bD)
+  # [3]=log(cvD),[4]=log(cvmuD)
+  # Priors for logd are derived in travel-time-mvn.r 
+  # ==============================
+  logd[1:4]~dmnorm(ld_mu[1:4], ld_R[,]) 
+  for(i in 1:4){
+    d[i]<-exp(logd[i])
+    ld_mu[i]~dnorm(ld_mumu[i],ld_taumu[i])
+    ld_taumu[i]<-1/(ld_sdmu[i]*ld_sdmu[i])
+  }
 
   # Proportion departing in each day  
   # ========================================
@@ -145,9 +151,11 @@ cat(M1,file="Smolts.txt")
 
 
 #schools<-read.table("input/Schools_03-06.txt", header=T)
+load("C:/R/ISAMA/Utsjoki-smolts/02-Priors/priors-mvn.RData")
 
 data<-list(
   #s=schools,
+  ld_R=R,ld_mumu=mumu,ld_sdmu=sdmu,
   flow=datF,
   nDays=61,
   nYears=6,
@@ -162,135 +170,28 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
 )
 
 system.time(jm<-jags.model('Smolts.txt',inits=initials,
-                           n.adapt=100,
+                           n.adapt=500,
                            data=data,n.chains=2))
 
+var_names<-c(
+  "d", # =  "aD","bD","cvD","cvmuD",
+  
+  "sums06","sums14",
+  
+  "aP","bP","sdP",
+  "etaB","aB","bB","sdBB",
+  "eta_alphaN",
+  "Ntot","N"
+)
 
-system.time(chains1<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sums06","sums14",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB",
-                                    "etaB","aB","bB","sdBB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=100000, 
-                                  thin=200)) 
+system.time(
+  chains1<-coda.samples(jm,variable.names=var_names,
+                        n.iter=3000, thin=1)) #20min
 
-system.time(chains2<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sums06","sums14",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB",
-                                    "etaB",  "aB","bB","sdBB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=200000, 
-                                  thin=200))
+system.time(
+  chains2<-coda.samples(jm,variable.names=var_names,
+                        n.iter=3000, thin=1))
 
 chains<-combine.mcmc(list(chains1, chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_aDbD_17_08_30.RData"))
+save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
 
-system.time(chains3<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sums06","sums14",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB",
-                                    "etaB",  "aB","bB","sdBB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=500000, 
-                                  thin=200))
-
-chains<-combine.mcmc(list(chains2, chains3))
-save(chains, file=paste(sep="", pathOut,"Smolts_aDbD_17_08_30.RData"))
-
-system.time(chains4<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sums06","sums14",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB",
-                                    "etaB",  "aB","bB","sdBB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=500000, 
-                                  thin=200))
-
-chains<-combine.mcmc(list(chains2,chains3, chains4))
-save(chains, file=paste(sep="", pathOut,"Smolts_aDbD_17_08_30.RData"))
-
-system.time(chains5<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sums06","sums14",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB",
-                                    "etaB",  "aB","bB","sdBB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=500000, 
-                                  thin=200))
-
-chains<-combine.mcmc(list(chains3, chains4,chains5))
-save(chains, file=paste(sep="", pathOut,"Smolts_aDbD_17_08_30.RData"))
-
-system.time(chains6<-coda.samples(jm,
-                                  variable.names=c(
-                                    "cvD", "cvmuD",
-                                    
-                                    "sums06","sums14",
-                                    
-                                    "aP","bP","sdP",
-                                    "aD","bD",
-                                    #"muB",
-                                    "etaB",  "aB","bB","sdBB",
-                                    
-                                    "eta_alphaN",
-                                    
-                                    "Ntot","N"
-                                    
-                                  ),
-                                  n.iter=500000, 
-                                  thin=200))
-
-chains<-combine.mcmc(list(chains3, chains4,chains5,chains6))
-save(chains, file=paste(sep="", pathOut,"Smolts_aDbD_17_08_30.RData"))
