@@ -44,7 +44,7 @@ system.time(
                         n.iter=100000, thin=100)) 
 system.time(
   chains2<-coda.samples(jm,variable.names=var_names,
-                        n.iter=3000, thin=1))
+                        n.iter=100000, thin=100))
 
 chainsP<-combine.mcmc(list(chains1, chains2))
 

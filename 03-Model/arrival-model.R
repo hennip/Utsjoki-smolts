@@ -195,3 +195,16 @@ system.time(
 chains<-combine.mcmc(list(chains1, chains2))
 save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
 
+system.time(
+  chains3<-coda.samples(jm,variable.names=var_names,
+                        n.iter=300000, thin=200))
+
+chains<-combine.mcmc(list(chains2, chains3))
+save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
+
+system.time(
+  chains4<-coda.samples(jm,variable.names=var_names,
+                        n.iter=300000, thin=200))
+
+chains<-combine.mcmc(list(chains2, chains3, chains4))
+save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
