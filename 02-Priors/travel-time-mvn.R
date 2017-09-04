@@ -70,6 +70,9 @@ for(i in 1:1000){
 aD_samp
 n_samp<-length(tmp)
 dat_samp<-cbind(aD_samp,bD_samp, cvD_samp, cvmuD_samp)
+logdat_samp<-log(dat_samp)
+summary(dat_samp)
+summary(logdat_samp)
 
 # Next: fit multinormal distribution for this sample 
 # -> approximate distribution and see whether such could be used as a joint prior
@@ -79,14 +82,12 @@ M2<-
 "model{
   
   for(i in 1:N){
-    dat[i,1:4]~dmnorm(mu[1:4], R[,]) 
+    logdat[i,1:4]~dmnorm(mu[1:4], R[,]) 
   }
   
-  mu[1]~dlnorm(0.52,14) # mu(aD) 
-  mu[2]~dlnorm(-4.6,25) # mu(bD) 
-  mu[3]~dunif(0.001,1) # mu(cvD)  
-  mu[4]~dunif(0.001,2) # mu(cvmuD) 
-
+  for(i in 1:4){
+    mu[i]~dunif(-10,10)
+  }
   R[1:4,1:4]~dwish(omega[1:4,1:4],4)	
   covar[1:4,1:4]<-inverse(R[,])
 }
@@ -102,7 +103,7 @@ omega<-array(c(0.01,0,0,0,
 
 data<-list(
   N=n_samp,
-  dat=dat_samp,
+  logdat=logdat_samp,
   omega=omega
 )
 
@@ -151,32 +152,26 @@ TmuD<-1/log(d[4]*d[4]+1)
 TD<-1/log(d[3]*d[3]+1)
 SD<-1/sqrt(TD)
 
-
-d[1:4]~dmnorm(mu[1:4], R[,]) 
+logd[1:4]~dmnorm(mu[1:4], R[,]) 
 
 for(i in 1:4){
-  cvmu[i]<-sdmu[i]/mumu[i]
-  Tmu[i]<-1/log(cvmu[i]*cvmu[i]+1)
-  mu[i]~dlnorm(log(mumu[i])-0.5/Tmu[i],Tmu[i])
+  d[i]<-exp(logd[i])
+  # mu[i] logaritmiskaalalla
+  taumu[i]<-1/(sdmu[i]*sdmu[i])
+  mu[i]~dnorm(mumu[i],taumu[i])
 }
-R[1:4,1:4]~dwish(omega[1:4,1:4],4)	
-omega[1:4,1:4]<-inverse(covar[,])
 
 }"
 
 
 cat(M3,file="travel-time3.txt")
 
-round(summary(chains2)$statistics[,1], 3)
-round(summary(chains2)$statistics[,1], 3)[1:16]
-round(summary(chains2)$statistics[,1], 3)[17:20]
-
-# Expected values from previous run
-covar<-array(c(round(summary(chains2)$statistics[,1], 3)[1:16]), dim=c(4,4))
+# Statistics from previous run
+R<-array(c(round(summary(chains2)$statistics[,1], 3)[1:16]), dim=c(4,4))
 mumu<-round(summary(chains2)$statistics[,1], 4)[17:20]
 sdmu<-round(summary(chains2)$statistics[,2], 4)[17:20]
 
-data<-list(covar=covar, mumu=mumu, sdmu=sdmu)
+data<-list(R=R, mumu=mumu, sdmu=sdmu)
 
 system.time(jm<-jags.model('travel-time3.txt', data=data,
                            n.adapt=100,n.chains=1))
