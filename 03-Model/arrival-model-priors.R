@@ -163,7 +163,7 @@ model{
 
 cat(M1,file="Smolts_priors.txt")
 
-load("C:/R/ISAMA/Utsjoki-smolts/02-Priors/priors-mvn.RData")
+load("02-Priors/priors-mvn.RData")
 
 data<-list(
   #s=schools,

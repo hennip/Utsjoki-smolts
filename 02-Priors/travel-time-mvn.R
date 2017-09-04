@@ -188,5 +188,5 @@ summary(chains3)
 # Save to 02-Priors
 priors_mvn<-list(R, mumu, sdmu)
 names(priors_mvn)<-c("R", "mumu", "sdmu")
-save(priors_mvn,file="C:/R/ISAMA/Utsjoki-smolts/02-Priors/priors-mvn.RData")
+save(priors_mvn,file="02-Priors/priors-mvn.RData")
 

@@ -151,7 +151,7 @@ cat(M1,file="Smolts.txt")
 
 
 #schools<-read.table("input/Schools_03-06.txt", header=T)
-load("C:/R/ISAMA/Utsjoki-smolts/02-Priors/priors-mvn.RData")
+load("02-Priors/priors-mvn.RData")
 
 data<-list(
   #s=schools,
