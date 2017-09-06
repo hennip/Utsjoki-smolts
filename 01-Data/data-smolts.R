@@ -188,13 +188,3 @@ dat<-dat_smolts%>%
   full_join(dat_flow, by=NULL)%>%
   full_join(dat_temp, by=NULL)
 
-ggplot(dat)+
-  geom_line(aes(x = day, y = meanTemp, color=as.factor(Year)), size=1.2)
-
-ggplot(dat)+
-  geom_line(aes(x = day, y = flow, color=as.factor(Year)), size=1.2)+
-  coord_cartesian(ylim=c(0,160))
-
-
-ggplot(filter(dat, Year==2014))+
-  geom_line(aes(x = day, y = meanTemp, color=as.factor(Year)), size=1.2)
