@@ -1,8 +1,3 @@
-source("00-Functions/tidy-functions.r")
-source("00-Functions/my-palette.r")
-source("00-Functions/packages-and-paths.r")
-source("01-Data/tidy-smolts-data.r")
-
 
 source("04-Output/load-simulations.r")
 
@@ -19,11 +14,11 @@ traceplot(chains[,"Ntot[6]"],main="Ntot6", cex.main=1.5)
 traceplot(chains[,"aP"],main=expression("aP"), cex.main=1.5)
 traceplot(chains[,"bP"],main=expression("bP"), cex.main=1.5)
 traceplot(chains[,"sdP"],main=expression("sdP"), cex.main=1.5)
-traceplot(chains[,"aD"],main=expression("aD"), cex.main=1.5)
-traceplot(chains[,"bD"],main=expression("bD"), cex.main=1.5)
-traceplot(chains[,"cvD"],main=expression("cvD"), cex.main=1.5)
+traceplot(chains[,"d[1]"],main=expression("aD"), cex.main=1.5)
+traceplot(chains[,"d[2]"],main=expression("bD"), cex.main=1.5)
+traceplot(chains[,"d[3]"],main=expression("cvD"), cex.main=1.5)
 
-traceplot(chains[,"cvmuD"],main=expression("cvmuD"), cex.main=1.5)
+traceplot(chains[,"d[4]"],main=expression("cvmuD"), cex.main=1.5)
 traceplot(chains[,"aB"],main=expression("aB"), cex.main=1.5)
 traceplot(chains[,"bB"],main=expression("bB"), cex.main=1.5)
 traceplot(chains[,"sdBB"],main=expression("sdBB"), cex.main=1.5)

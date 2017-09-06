@@ -27,10 +27,18 @@ dat14.june<-mutate(filter(dat14, month==6), day2=day)
 dat14.july<-mutate(filter(dat14, month==7), day2=day+30)
 dat14<-bind_rows(dat1.june,dat14.july)
 
-DailyTemp<-c()
-for(i in 1:61){
-  DailyTemp[i]<-mean(filter(dat14, day2==i)$temperature)
-}
-DailyTemp14<-as.tibble(DailyTemp)
+dim(dat14.june)
+dim(dat14.july)
+dim(dat14)
+
+View(dat14)
+View(tmp)
+
+# Badly corrupted. Do not use this file.
+#DailyTemp<-c()
+#for(i in 1:61){
+#  DailyTemp[i]<-mean(filter(dat14, day2==i)$temperature)
+#}
+#DailyTemp14<-as.tibble(DailyTemp)
 #View(mutate(DailyTemp14,day=1:61))
 
