@@ -12,20 +12,25 @@
 #df_smolts[,1]<-filter(dat_all, Year==y)$smolts
 #df_smolts[,1]<-filter(dat_all, Year==y)[["smolts"]]
 
-smolts_data_to_jags<-function(x){ # x: vector of years of data to include
+# This is a function to choose desired years and maximum number of days
+# of Utsjoki smolts data and to provide that data in JAGS input format
+
+# x: vector of years of data to include
+# n: maximum number of days to include 
+smolts_data_to_jags<-function(x,n){ 
   nyears<-length(x)
   
-  df_tmp<-array(NA, dim=c(92,nyears))
+  df_tmp<-array(NA, dim=c(n,nyears))
   
   df_smolts<-df_tmp
   df_schools<-df_tmp
   df_flow<-df_tmp
   df_temp<-df_tmp
   for(i in 1:nyears){
-    df_smolts[,i]<-filter(dat_all, Year==x[i])$smolts
-    df_schools[,i]<-filter(dat_all, Year==x[i])$schools
-    df_flow[,i]<-filter(dat_all, Year==x[i])$flow
-    df_temp[,i]<-filter(dat_all, Year==x[i])$meanTemp
+    df_smolts[,i]<-filter(dat_all, Year==x[i], day<=n)$smolts
+    df_schools[,i]<-filter(dat_all, Year==x[i], day<=n)$schools
+    df_flow[,i]<-filter(dat_all, Year==x[i], day<=n)$flow
+    df_temp[,i]<-filter(dat_all, Year==x[i], day<=n)$meanTemp
   }
   colnames(df_smolts)<-x
   colnames(df_schools)<-x
@@ -40,8 +45,4 @@ smolts_data_to_jags<-function(x){ # x: vector of years of data to include
   return(df)
 }
 
-#years<-c(2005:2009,2011,2013:2014) # temp data missing for 2012 and partly for 2010
-#years<-2014
-
-#smolts_data_to_jags(years)
 
