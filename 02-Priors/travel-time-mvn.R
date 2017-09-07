@@ -56,10 +56,12 @@ chains1
 tmp<-c()
 aD_samp<-c();bD_samp<-c()
 cvD_samp<-c();cvmuD_samp<-c()
+sums_samp<-c()
 n<-1
 for(i in 1:1000){
   if(chains1[,"sums"][[1]][i]>0.95){
     tmp[n]<-i
+    sums_samp[n]<-chains1[,"sums"][[1]][i]
     aD_samp[n]<-chains1[,"aD"][[1]][i]
     bD_samp[n]<-chains1[,"bD"][[1]][i]
     cvD_samp[n]<-chains1[,"cvD"][[1]][i]
@@ -67,12 +69,85 @@ for(i in 1:1000){
     n<-n+1
   }
 }
-aD_samp
 n_samp<-length(tmp)
 dat_samp<-cbind(aD_samp,bD_samp, cvD_samp, cvmuD_samp)
 logdat_samp<-log(dat_samp)
-summary(dat_samp)
-summary(logdat_samp)
+summary(as.mcmc(dat_samp))
+summary(as.mcmc(logdat_samp))
+summary(as.mcmc(sums_samp))
+
+#samp<-dat_samp
+samp<-logdat_samp
+Mu<-summary(as.mcmc(samp))$statistics[,1]
+Covar<-cov(samp,samp)
+
+# Approximate sample using mu and covar and mvn distribution
+# ->see whether such could be used as a joint prior
+# for d(aD, bD, cvD, cvmuD)
+
+M2<-
+"model{
+  for(i in 1:4){
+    d[i]<-exp(logd[i])
+  }
+  logd[1:4]~dmnorm(mu[1:4], R[,]) 
+  R[1:4,1:4]<-inverse(covar[,])
+  
+  qD[1]<-phi((log(0.5)-MD)/SD)
+  for(j in 2:14){ 
+    qD[j]<-phi((log(j-1+0.5)-MD)/SD)-phi((log(j-1-0.5)-MD)/SD)
+  }
+  MD<-log(muD)-0.5/TD
+  # Minimum flow: 10m3/s
+  muD~dlnorm(log(exp(d[1]-d[2]*10))-0.5/TmuD, TmuD)
+  
+  TD<-1/log(d[3]*d[3]+1)
+  SD<-1/sqrt(TD)
+  TmuD<-1/log(d[4]*d[4]+1)
+  sums<-sum(qD[1:14])
+}"
+cat(M2,file="travel-time2.txt")
+
+Covar<-array(c(
+0.056018694, -0.002957019, -0.058850033,  0.033005537,
+-0.002957019,  0.036199137,  0.009183025, -0.005852199,
+-0.058850033,  0.009183025,  1.195676155,  0.033760309,
+0.033005537, -0.005852199,  0.033760309,  0.871501186), dim=c(4,4))
+
+data<-list(
+mu=Mu,
+covar=Covar
+)
+
+
+system.time(jm<-jags.model('travel-time2.txt',data=data,
+                           n.adapt=100,n.chains=2))
+
+
+system.time(chains2<-coda.samples(jm,
+                                  variable.names=c(
+                                    "d", "sums"
+                                  ),
+                                  n.iter=1000, 
+                                  thin=1)) 
+summary(chains2)
+
+summary(chains1)
+
+
+
+# Save to 02-Priors
+priors_mvn<-list(Mu, Covar)
+names(priors_mvn)<-c("Mu_d", "Covar_d")
+save(priors_mvn,file="02-Priors/priors-mvn.RData")
+
+
+
+
+
+
+
+####### The rest probably unnecessary
 
 # Next: fit multinormal distribution for this sample 
 # -> approximate distribution and see whether such could be used as a joint prior
@@ -186,7 +261,7 @@ system.time(chains3<-coda.samples(jm,
 summary(chains3)
 
 # Save to 02-Priors
-priors_mvn<-list(R, mumu, sdmu)
-names(priors_mvn)<-c("R", "mumu", "sdmu")
-save(priors_mvn,file="02-Priors/priors-mvn.RData")
+#priors_mvn<-list(R, mumu, sdmu)
+#names(priors_mvn)<-c("R", "mumu", "sdmu")
+#save(priors_mvn,file="02-Priors/priors-mvn.RData")
 

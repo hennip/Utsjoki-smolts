@@ -98,12 +98,11 @@ model{
   # [3]=log(cvD),[4]=log(cvmuD)
   # Priors for logd are derived in travel-time-mvn.r 
   # ==============================
-  logd[1:4]~dmnorm(ld_mu[1:4], ld_R[,]) 
   for(i in 1:4){
     d[i]<-exp(logd[i])
-    ld_mu[i]~dnorm(ld_mumu[i],ld_taumu[i])
-    ld_taumu[i]<-1/(ld_sdmu[i]*ld_sdmu[i])
   }
+  logd[1:4]~dmnorm(ld_mu[1:4], ld_R[,]) 
+  ld_R[1:4,1:4]<-inverse(ld_covar[,])
 
   # Proportion departing in each day  
   # ========================================
@@ -157,7 +156,8 @@ load("02-Priors/priors-mvn.RData")
 
 data<-list(
   #s=df$Schools,
-  ld_R=priors_mvn$R,ld_mumu=priors_mvn$mumu,ld_sdmu=priors_mvn$sdmu,
+  ld_covar=priors_mvn$Covar_d,
+  ld_mu=priors_mvn$Mu_d,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -186,6 +186,10 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
   "Ntot","N"
 )
 
+system.time(
+  chains0<-coda.samples(jm,variable.names=var_names,
+                         n.iter=1000, thin=1)) #8h
+ 
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
                         n.iter=100000, thin=200)) #8h
