@@ -148,7 +148,8 @@ model{
 cat(M1,file="Smolts.txt")
 
 # full data; temp data missing for 2012 and partly for 2010
-years<-c(2005:2009,2011,2013:2014) 
+#years<-c(2005:2009,2011,2013:2014) 
+years<-c(2005:2006,2008,2014) # 4 years of data for testing  
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
