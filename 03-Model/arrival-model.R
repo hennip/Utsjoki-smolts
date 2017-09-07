@@ -193,11 +193,11 @@ system.time(
  
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
-                        n.iter=100000, thin=200)) #8h
+                        n.iter=60000, thin=200)) #8h
 
 system.time(
   chains2<-coda.samples(jm,variable.names=var_names,
-                        n.iter=100000, thin=200))
+                        n.iter=60000, thin=200))
 
 chains<-combine.mcmc(list(chains1, chains2))
 save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
