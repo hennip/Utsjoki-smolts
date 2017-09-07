@@ -22,5 +22,5 @@ pathIn2<-"H:/Projects/ISAMA/data/orig/"
 pathOut<-"H:/Projects/ISAMA/prg/output/Utsjoki-smolts/"
 
 
+source("01-Data/data-smolts-covariates.r")
 
-source("01-Data/tidy-smolts-data.r")
