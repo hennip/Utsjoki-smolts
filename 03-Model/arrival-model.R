@@ -86,23 +86,27 @@ model{
       }
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
-      muD[i,y]~dlnorm(log(exp(d[1]-d[2]*flow[i,y]))-0.5/TmuD, TmuD)
+      muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
     }
   }
-  TmuD<-1/log(d[4]*d[4]+1)
-  TD<-1/log(d[3]*d[3]+1)
   SD<-1/sqrt(TD)
-  
-  # indices for logd: 
-  # [1]=log(aD), [2]=log(bD)
-  # [3]=log(cvD),[4]=log(cvmuD)
-  # Priors for logd are derived in travel-time-mvn.r 
-  # ==============================
-  for(i in 1:4){
-    d[i]<-exp(logd[i])
-  }
-  logd[1:4]~dmnorm(ld_mu[1:4], ld_R[,]) 
-  ld_R[1:4,1:4]<-inverse(ld_covar[,])
+  TmuD<-1/log(cvmuD*cvmuD+1)
+  TD<-1/log(cvD*cvD+1)
+
+  aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
+  bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
+  cvmuD~dunif(0.001,1)
+  cvD~dunif(0.001,2)
+ 
+#  # MVN-Priors for logd are derived in travel-time-mvn.r 
+#  # ==============================
+#    aD<-exp(logd[1])
+#    bD<-exp(logd[2])
+#    cvD<-exp(logd[3])
+#    cvmuD<-exp(logd[4])
+
+#  logd[1:4]~dmnorm(ld_mu[1:4], ld_R[,]) 
+#  ld_R[1:4,1:4]<-inverse(ld_covar[,])
 
   # Proportion departing in each day  
   # ========================================
@@ -173,7 +177,7 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
 )
 
 system.time(jm<-jags.model('Smolts.txt',inits=initials,
-                           n.adapt=1000,
+                           n.adapt=100,
                            data=data,n.chains=2))
 
  var_names<-c(

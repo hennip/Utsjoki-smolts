@@ -74,7 +74,16 @@ dat_samp<-cbind(aD_samp,bD_samp, cvD_samp, cvmuD_samp)
 logdat_samp<-log(dat_samp)
 summary(as.mcmc(dat_samp))
 summary(as.mcmc(logdat_samp))
-summary(as.mcmc(sums_samp))
+summary(as.mcmc(cbind(aD_samp,bD_samp, cvD_samp, cvmuD_samp, sums_samp)))
+
+windows()
+par(mfrow=c(2,3))
+plot(dat_samp[,1],dat_samp[,2], xlab="aD", ylab="bD")
+plot(dat_samp[,1],dat_samp[,3], xlab="aD", ylab="cvD")
+plot(dat_samp[,1],dat_samp[,4], xlab="aD", ylab="cvmuD")
+plot(dat_samp[,2],dat_samp[,3], xlab="bD", ylab="cvD")
+plot(dat_samp[,2],dat_samp[,4], xlab="bD", ylab="cvmuD")
+plot(dat_samp[,3],dat_samp[,4], xlab="cvD", ylab="cvmuD")
 
 #samp<-dat_samp
 samp<-logdat_samp
@@ -132,7 +141,27 @@ system.time(chains2<-coda.samples(jm,
                                   thin=1)) 
 summary(chains2)
 
-summary(chains1)
+
+aD_mvn<-as.data.frame(chains2[,"d[1]"][[1]])
+bD_mvn<-as.data.frame(chains2[,"d[2]"][[1]])
+cvD_mvn<-as.data.frame(chains2[,"d[3]"][[1]])
+cvmuD_mvn<-as.data.frame(chains2[,"d[4]"][[1]])
+
+par(mfrow=c(2,3))
+plot(aD_mvn[,1],bD_mvn[,1], xlab="aD", ylab="bD")
+plot(aD_mvn[,1],cvD_mvn[,1], xlab="aD", ylab="cvD")
+plot(aD_mvn[,1],cvmuD_mvn[,1], xlab="aD", ylab="cvmuD")
+plot(bD_mvn[,1],cvD_mvn[,1], xlab="bD", ylab="cvD")
+plot(bD_mvn[,1],cvmuD_mvn[,1], xlab="bD", ylab="cvmuD")
+plot(cvD_mvn[,1],cvmuD_mvn[,1], xlab="cvD", ylab="cvmuD")
+
+
+
+plot(dat_samp[,1],dat_samp[,3], xlab="aD", ylab="cvD")
+plot(dat_samp[,1],dat_samp[,4], xlab="aD", ylab="cvmuD")
+plot(dat_samp[,2],dat_samp[,3], xlab="bD", ylab="cvD")
+plot(dat_samp[,2],dat_samp[,4], xlab="bD", ylab="cvmuD")
+plot(dat_samp[,3],dat_samp[,4], xlab="cvD", ylab="cvmuD")
 
 
 
