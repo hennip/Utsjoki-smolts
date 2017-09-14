@@ -5,17 +5,24 @@
 
 
 source("00-Functions/packages-and-paths.r")
-source("01-Data/tidy-smolts-data.r")
+
+# full data; temp data missing for 2012 and partly for 2010
+#years<-c(2005:2009,2011,2013:2014) 
+years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+n_days<-61
+df<-smolts_data_to_jags(years, n_days) # 61: only june & july
+
 load("02-Priors/priors-mvn.RData")
 
 data<-list(
-  #s=schools,
-  ld_R=priors_mvn$R,ld_mumu=priors_mvn$mumu,ld_sdmu=priors_mvn$sdmu,
-  flow=datF,
-  nDays=61,
-  nYears=6,
-  #  Nobs=S,                     
-  Temp=datT
+  #s=df$Schools,
+  #  ld_covar=priors_mvn$Covar_d,
+  #  ld_mu=priors_mvn$Mu_d,
+  flow=df$Flow,
+#  Nobs=df$Smolts,                     
+  Temp=df$Temp,
+  nDays=n_days,
+  nYears=length(years)
 )
 
 initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
@@ -29,9 +36,9 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
                            data=data,n.chains=2))
 
 var_names<-c(
-  "d", # =  "aD","bD","cvD","cvmuD",
+  "aD","bD","cvD","cvmuD",
   
-  "sums06","sums14",
+#  "sums1","sums2",
   
   "aP","bP","sdP",
   "etaB","aB","bB","sdBB",

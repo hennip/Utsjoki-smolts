@@ -188,10 +188,9 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
 
 
  var_names<-c(
-  #"d", # =  
   "aD","bD","cvD","cvmuD",
   
-  "sums1","sums2",
+#  "sums1","sums2",
   
   "aP","bP","sdP",
   "etaB","aB","bB","sdBB",
