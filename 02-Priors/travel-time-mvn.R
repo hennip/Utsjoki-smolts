@@ -22,10 +22,17 @@ muD~dlnorm(log(exp(aD-bD*10))-0.5/TmuD, TmuD)
 aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
 bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
 
-cvmuD~dunif(0.001,1)
-TmuD<-1/log(cvmuD*cvmuD+1)
+#cvD~dunif(0.001,2)
+#cvmuD~dunif(0.001,1)
+cvD~dlnorm(-0.0196,25.5)
+cvmuD~dlnorm(-0.7128,25.5)
+logit(cvD)<-y1+0.001
+logit(cvmuD)<-y2*2+0.001
 
-cvD~dunif(0.001,2)
+y1~dnorm(0,0.01)
+y2~dnorm(0,0.01)
+
+TmuD<-1/log(cvmuD*cvmuD+1)
 TD<-1/log(cvD*cvD+1)
 SD<-1/sqrt(TD)
 
@@ -50,7 +57,12 @@ system.time(chains1<-coda.samples(jm,
                                   n.iter=1000, 
                                   thin=1)) 
 summary(chains1)
-chains1
+
+
+aD_orig<-as.data.frame(chains1[,"aD"][[1]])
+bD_orig<-as.data.frame(chains1[,"bD"][[1]])
+cvD_orig<-as.data.frame(chains1[,"cvD"][[1]])
+cvmuD_orig<-as.data.frame(chains1[,"cvmuD"][[1]])
 
 # Pick sample in which sums>0.9
 tmp<-c()
@@ -59,7 +71,7 @@ cvD_samp<-c();cvmuD_samp<-c()
 sums_samp<-c()
 n<-1
 for(i in 1:1000){
-  if(chains1[,"sums"][[1]][i]>0.95){
+  if(chains1[,"sums"][[1]][i]>0.995){
     tmp[n]<-i
     sums_samp[n]<-chains1[,"sums"][[1]][i]
     aD_samp[n]<-chains1[,"aD"][[1]][i]
@@ -69,7 +81,7 @@ for(i in 1:1000){
     n<-n+1
   }
 }
-n_samp<-length(tmp)
+n_samp<-length(tmp);n_samp
 dat_samp<-cbind(aD_samp,bD_samp, cvD_samp, cvmuD_samp)
 logdat_samp<-log(dat_samp)
 summary(as.mcmc(dat_samp))
@@ -78,12 +90,25 @@ summary(as.mcmc(cbind(aD_samp,bD_samp, cvD_samp, cvmuD_samp, sums_samp)))
 
 windows()
 par(mfrow=c(2,3))
-plot(dat_samp[,1],dat_samp[,2], xlab="aD", ylab="bD")
-plot(dat_samp[,1],dat_samp[,3], xlab="aD", ylab="cvD")
-plot(dat_samp[,1],dat_samp[,4], xlab="aD", ylab="cvmuD")
-plot(dat_samp[,2],dat_samp[,3], xlab="bD", ylab="cvD")
-plot(dat_samp[,2],dat_samp[,4], xlab="bD", ylab="cvmuD")
-plot(dat_samp[,3],dat_samp[,4], xlab="cvD", ylab="cvmuD")
+plot(aD_orig[,1],bD_orig[,1], xlab="aD", ylab="bD", col="red")
+points(aD_samp,bD_samp)
+
+plot(aD_orig[,1],cvD_orig[,1], xlab="aD", ylab="cvD", col="red")
+points(aD_samp,cvD_samp)
+
+plot(aD_orig[,1],cvmuD_orig[,1], xlab="aD", ylab="cvmuD", col="red")
+points(aD_samp,cvmuD_samp)
+
+plot(bD_orig[,1],cvD_orig[,1], xlab="bD", ylab="cvD", col="red")
+points(bD_samp,cvD_samp)
+
+plot(bD_orig[,1],cvmuD_orig[,1], xlab="bD", ylab="cvmuD", col="red")
+points(bD_samp,cvmuD_samp)
+
+plot(cvD_orig[,1],cvmuD_orig[,1], xlab="cvD", ylab="cvmuD", col="red")
+points(cvD_samp,cvmuD_samp)
+
+
 
 #samp<-dat_samp
 samp<-logdat_samp
@@ -117,11 +142,7 @@ M2<-
 }"
 cat(M2,file="travel-time2.txt")
 
-Covar<-array(c(
-0.056018694, -0.002957019, -0.058850033,  0.033005537,
--0.002957019,  0.036199137,  0.009183025, -0.005852199,
--0.058850033,  0.009183025,  1.195676155,  0.033760309,
-0.033005537, -0.005852199,  0.033760309,  0.871501186), dim=c(4,4))
+Covar<-array(Covar, dim=c(4,4))
 
 data<-list(
 mu=Mu,
@@ -154,14 +175,6 @@ plot(aD_mvn[,1],cvmuD_mvn[,1], xlab="aD", ylab="cvmuD")
 plot(bD_mvn[,1],cvD_mvn[,1], xlab="bD", ylab="cvD")
 plot(bD_mvn[,1],cvmuD_mvn[,1], xlab="bD", ylab="cvmuD")
 plot(cvD_mvn[,1],cvmuD_mvn[,1], xlab="cvD", ylab="cvmuD")
-
-
-
-plot(dat_samp[,1],dat_samp[,3], xlab="aD", ylab="cvD")
-plot(dat_samp[,1],dat_samp[,4], xlab="aD", ylab="cvmuD")
-plot(dat_samp[,2],dat_samp[,3], xlab="bD", ylab="cvD")
-plot(dat_samp[,2],dat_samp[,4], xlab="bD", ylab="cvmuD")
-plot(dat_samp[,3],dat_samp[,4], xlab="cvD", ylab="cvmuD")
 
 
 

@@ -1,6 +1,7 @@
 
 source("04-Output/load-simulations.r")
 
+#chains<-chains0
 years
 
 # Traces
@@ -18,29 +19,27 @@ traceplot(chains[,"Ntot[9]"],main="Ntot9", cex.main=1.5)
 traceplot(chains[,"aP"],main=expression("aP"), cex.main=1.5)
 traceplot(chains[,"bP"],main=expression("bP"), cex.main=1.5)
 traceplot(chains[,"sdP"],main=expression("sdP"), cex.main=1.5)
-traceplot(chains[,"d[1]"],main=expression("aD"), cex.main=1.5)
-traceplot(chains[,"d[2]"],main=expression("bD"), cex.main=1.5)
-traceplot(chains[,"d[3]"],main=expression("cvD"), cex.main=1.5)
+traceplot(chains[,"aD"],main=expression("aD"), cex.main=1.5)
+traceplot(chains[,"bD"],main=expression("bD"), cex.main=1.5)
+traceplot(chains[,"cvD"],main=expression("cvD"), cex.main=1.5)
 
-traceplot(chains[,"d[4]"],main=expression("cvmuD"), cex.main=1.5)
+traceplot(chains[,"cvmuD"],main=expression("cvmuD"), cex.main=1.5)
 traceplot(chains[,"aB"],main=expression("aB"), cex.main=1.5)
 traceplot(chains[,"bB"],main=expression("bB"), cex.main=1.5)
 traceplot(chains[,"sdBB"],main=expression("sdBB"), cex.main=1.5)
 traceplot(chains[,"etaB"],main=expression("etaB"), cex.main=1.5)
 traceplot(chains[,"eta_alphaN"],main=expression("eta_alphaN"), cex.main=1.5)
 
-traceplot(chains[,"sums06[48]"],main=expression("sums1"))
-traceplot(chains[,"sums06[61]"],main=expression("sums2"))
-traceplot(chains[,"sums14[48]"],main=expression("sums3"))
-traceplot(chains[,"sums14[61]"],main=expression("sums4"))
+traceplot(chains[,"sums1[48]"],main=expression("sums1"))
+traceplot(chains[,"sums2[61]"],main=expression("sums2"))
 
-summary(chains[,"sums06[48]"])
-summary(chains[,"sums14[48]"])
+summary(chains[,"sums1[48]"])
+summary(chains[,"sums2[48]"])
 
 #################################
 # Densities
 
-par(mfrow=c(3,3),mar=c(2.5,4,4,1))
+par(mfrow=c(4,3),mar=c(2.5,4,4,1))
 plot(density(chains[,"aP"][[1]]), main="aP", xlim=c(-25,-10))
 lines(density(chains[,"aP"][[2]]))
 lines(density(chainsP[,"aP"][[1]]), lty=2)
@@ -69,13 +68,13 @@ plot(density(chains[,"sdBB"][[1]]), main="sdBB")
 lines(density(chains[,"sdBB"][[2]]))
 lines(density(chainsP[,"sdBB"][[1]]), lty=2)
 
-plot(density(chains[,"etaB"][[1]]), main="etaB", xlim=c(0,100000))
+plot(density(chains[,"etaB"][[1]]), main="etaB")
 lines(density(chains[,"etaB"][[2]]))
 lines(density(chainsP[,"etaB"][[1]]), lty=2)
 plot(density(chains[,"cvD"][[1]]), main="cvD")
 lines(density(chains[,"cvD"][[2]]))
 lines(density(chainsP[,"cvD"][[1]]), lty=2)
-plot(density(chains[,"cvmuD"][[1]]), main="cvmuD", xlim=c(0,1))
+plot(density(chains[,"cvmuD"][[1]]), main="cvmuD")
 lines(density(chains[,"cvmuD"][[2]]))
 lines(density(chainsP[,"cvmuD"][[1]]), lty=2)
 
