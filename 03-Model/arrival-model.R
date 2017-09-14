@@ -1,6 +1,6 @@
 
 
-source("00-Functions/packages-and-paths.r")
+#source("00-Functions/packages-and-paths.r")
 
 
 M1<-"
@@ -54,7 +54,7 @@ model{
       zN[i,y]~dlnorm(MN[i,y], TauN[i,y])
     }
   
-    alphaN[1:nDays,y]<-muqN[1:nDays,y]*eta_alphaN
+    alphaN[1:nDays,y]<-muqN[1:nDays,y]*eta_alphaN+0.001
     MN[1:nDays,y]<-log(muqN[1:nDays,y])-0.5/TauN[1:nDays,y]
     TauN[1:nDays,y]<-1/log((1/alphaN[1:nDays,y])+1)  
   }
@@ -78,12 +78,18 @@ model{
       # i: day of departure
       # j: day of passing the video site
       #j==i
-      qD[i,i,y]<-phi((log(0.5)-MD[i,y])/SD)
+      qDx[i,i,y]<-phi((log(0.5)-MD[i,y])/SD)
   
       # j>i
-      for(j in (i+1):(i+14)){ 
-        qD[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
+      for(j in (i+1):(i+13)){ #13 
+        qDx[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
       }
+      sumqDx[i,y]<-sum(qDx[i,i:(i+13),y])
+      
+      for(j in i:(i+13)){
+        qD[i,j,y]<-qDx[i,j,y]/(sumqDx[i,y]+0.0001)
+      }
+#      qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
       muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
@@ -142,10 +148,10 @@ model{
   
   # check sums (should be close to 1, otherwise fish is lost)
   for(i in 48:61){ # last 2 weeks of July 2006
-    sums06[i]<-sum(qD[i,i:(i+13),4])
+    sums1[i]<-sum(qD[i,i:(i+13),1])
   }
   for(i in 48:61){ # last 2 weeks of July 2014
-    sums14[i]<-sum(qD[i,i:(i+13),6])
+    sums2[i]<-sum(qD[i,i:(i+13),2])
   }
 
 }"
@@ -161,8 +167,8 @@ load("02-Priors/priors-mvn.RData")
 
 data<-list(
   #s=df$Schools,
-  ld_covar=priors_mvn$Covar_d,
-  ld_mu=priors_mvn$Mu_d,
+#  ld_covar=priors_mvn$Covar_d,
+#  ld_mu=priors_mvn$Mu_d,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -179,6 +185,7 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
 system.time(jm<-jags.model('Smolts.txt',inits=initials,
                            n.adapt=100,
                            data=data,n.chains=2))
+
 
  var_names<-c(
   "d", # =  "aD","bD","cvD","cvmuD",
