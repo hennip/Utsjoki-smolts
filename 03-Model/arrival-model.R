@@ -146,13 +146,13 @@ model{
   #exp(0.6+0.5/10)
   #exp(0.5/1)
   
-  # check sums (should be close to 1, otherwise fish is lost)
-  for(i in 48:61){ # last 2 weeks of July 2006
-    sums1[i]<-sum(qD[i,i:(i+13),1])
-  }
-  for(i in 48:61){ # last 2 weeks of July 2014
-    sums2[i]<-sum(qD[i,i:(i+13),2])
-  }
+#  # check sums (should be close to 1, otherwise fish is lost)
+#  for(i in 48:61){ # last 2 weeks of July 2006
+#    sums1[i]<-sum(qD[i,i:(i+13),1])
+#  }
+#  for(i in 48:61){ # last 2 weeks of July 2014
+#    sums2[i]<-sum(qD[i,i:(i+13),2])
+#  }
 
 }"
 cat(M1,file="Smolts.txt")
@@ -190,7 +190,7 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
  var_names<-c(
   "aD","bD","cvD","cvmuD",
   
-#  "sums1","sums2",
+  "sums1","sums2",
   
   "aP","bP","sdP",
   "etaB","aB","bB","sdBB",
@@ -204,25 +204,25 @@ system.time(
  
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
-                        n.iter=60000, thin=200)) #8h
+                        n.iter=100000, thin=200)) #8h
 
 system.time(
   chains2<-coda.samples(jm,variable.names=var_names,
-                        n.iter=60000, thin=200))
+                        n.iter=100000, thin=200))
 
 chains<-combine.mcmc(list(chains1, chains2))
 save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
 
 system.time(
   chains3<-coda.samples(jm,variable.names=var_names,
-                        n.iter=300000, thin=200))
+                        n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3))
 save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
 
 system.time(
   chains4<-coda.samples(jm,variable.names=var_names,
-                        n.iter=300000, thin=200))
+                        n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3, chains4))
 save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
