@@ -188,9 +188,10 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
 
 
  var_names<-c(
-  "d", # =  "aD","bD","cvD","cvmuD",
+  #"d", # =  
+  "aD","bD","cvD","cvmuD",
   
-  "sums06","sums14",
+  "sums1","sums2",
   
   "aP","bP","sdP",
   "etaB","aB","bB","sdBB",
@@ -200,7 +201,7 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
 
 system.time(
   chains0<-coda.samples(jm,variable.names=var_names,
-                         n.iter=1000, thin=1)) #8h
+                         n.iter=50000, thin=100)) #3.5h
  
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
