@@ -6,9 +6,11 @@
 #load(file=paste(sep="",pathOut,"Smolts_cvDs_17_08_11.RData")) # cvmuD & cvD max 2
 #load(file=paste(sep="",pathOut,"Smolts_aDbD_17_08_14.RData")) # cvmuD & cvD max 2; aD & bD vastaa Panun näkemystä 
 #load(file=paste(sep="",pathOut,"Smolts_aDbD_17_08_30.RData")) # cvmuD max 1, aD priori korjattu
-load(file=paste(sep="",pathOut,"Smolts_17_09.RData")) # mvn matka-ajalle
+#load(file=paste(sep="",pathOut,"Smolts_17_09.RData")) # mvn matka-ajalle
+load(file=paste(sep="",pathOut,"Smolts_17_09.RData")) # standardoidut qD:t
+#load(file=paste(sep="",pathOut,"Smolts_17_09_tmp.RData")) # 
 
-chains<-window(chains,start=50000, thin=200)
+chains<-window(chains,start=10000, thin=200)
 
 # Unupdated priors
 #load(file=paste(sep="",pathOut,"Smolts_17_04_priors.RData"))
