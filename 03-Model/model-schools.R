@@ -73,21 +73,20 @@ eta_alphaN~dunif(0.001,100000)
 }"
 cat(M1,file="Schools.txt")
 
-# full data; temp data missing for 2012 and partly for 2010
+# full data; temp data missing for 2012 and partly for 2010, note that the
+# run was late in 2009
 #years<-c(2005:2009,2011,2013:2014) 
-years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+years<-c(2006,2008)
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
-
-load("02-Priors/priors-mvn.RData")
+ones<-rep(1,n_days)
 
 data<-list(
   #s=df$Schools,
-  #  ld_covar=priors_mvn$Covar_d,
-  #  ld_mu=priors_mvn$Mu_d,
   flow=df$Flow,
+  ones=ones,
   Nobs=df$Smolts,                     
-  Temp=df$Temp,
   nDays=n_days,
   nYears=length(years)
 )
@@ -98,8 +97,8 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
                #                    aB=2,bB=0.03)
 )
 
-system.time(jm<-jags.model('Smolts.txt',inits=initials,
-                           n.adapt=100,
+system.time(jm<-jags.model('Schools.txt',inits=initials,
+                           n.adapt=1000,
                            data=data,n.chains=2))
 
 
