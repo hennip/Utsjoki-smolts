@@ -103,41 +103,36 @@ system.time(jm<-jags.model('Schools.txt',inits=initials,
 
 
 var_names<-c(
-  "aD","bD","cvD","cvmuD",
-  
-  "sums1","sums2",
-  
-  "aP","bP","sdP",
   "etaB","aB","bB","sdBB",
   "eta_alphaN",
   "Ntot","N"
 )
-
-system.time(
-  chains0<-coda.samples(jm,variable.names=var_names,
-                        n.iter=50000, thin=100)) #3.5h
+#
+#system.time(
+#  chains0<-coda.samples(jm,variable.names=var_names,
+#                        n.iter=1000, thin=1)) #3.5h
 
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
-                        n.iter=100000, thin=200)) #8h
+                        n.iter=10000, thin=200)) #8h
 
 system.time(
   chains2<-coda.samples(jm,variable.names=var_names,
-                        n.iter=100000, thin=200))
+                        n.iter=10000, thin=200))
 
 chains<-combine.mcmc(list(chains1, chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
+save(chains, file=paste(sep="", pathOut,"Schools_17_09.RData"))
 
 system.time(
   chains3<-coda.samples(jm,variable.names=var_names,
                         n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3))
-save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
+save(chains, file=paste(sep="", pathOut,"Schools_17_09.RData"))
 
 system.time(
   chains4<-coda.samples(jm,variable.names=var_names,
                         n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3, chains4))
-save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
+save(chains, file=paste(sep="", pathOut,"Schools_17_09.RData"))
