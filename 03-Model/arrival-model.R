@@ -133,13 +133,13 @@ model{
   #exp(0.6+0.5/10)
   #exp(0.5/1)
   
-#  # check sums (should be close to 1, otherwise fish is lost)
-#  for(i in 48:61){ # last 2 weeks of July 2006
-#    sums1[i]<-sum(qD[i,i:(i+13),1])
-#  }
-#  for(i in 48:61){ # last 2 weeks of July 2014
-#    sums2[i]<-sum(qD[i,i:(i+13),2])
-#  }
+  # check sums (should be close to 1, otherwise fish is lost)
+  for(i in 48:61){ # last 2 weeks of July 2006
+    sums1[i]<-sum(qD[i,i:(i+13),1])
+  }
+  for(i in 48:61){ # last 2 weeks of July 2014
+    sums2[i]<-sum(qD[i,i:(i+13),2])
+  }
 
 }"
 cat(M1,file="Smolts.txt")
@@ -150,12 +150,9 @@ years<-c(2005:2006,2008,2014) # 4 years of data for testing
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
-load("02-Priors/priors-mvn.RData")
 
 data<-list(
   #s=df$Schools,
-#  ld_covar=priors_mvn$Covar_d,
-#  ld_mu=priors_mvn$Mu_d,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
