@@ -12,63 +12,72 @@
 M1<-"
 model{
 
-# Observation process
-# ====================
-for(y in 1:nYears){
-for(i in 1:nDays){ # 61 days in June-July
+  # Observation process
+  # ====================
+  for(y in 1:nYears){
+    for(i in 1:nDays){ # 61 days in June-July
+      
+      # Observed number of fish
+      # Nobs[i,y]~dbetabin(100,10,N[i,y])  
+      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB,(1-muB[i,y])*etaStarB,N[i,y])  
+      
+      muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
+      BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
+      
+      etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
+      s[i,y]~dlnorm(log(muS)-0.5/TS,TS)
+    }
+  }
+  aB~dnorm(2.9,60)
+  bB~dlnorm(-2.6,984)
+  sdBB~dlnorm(-0.23,210)
+  etaB~dunif(1,1000)
 
-# Fixed probability to be seen
-# Nobs[i,y]~dbetabin(100,10,N[i,y]) # observed number of fish  
+  # simple hierarhcical model for school size
+  muS~dlnorm(log(mumuS)-0.5/TmuS,TmuS)
+  mumuS<-aS+bS*N[i,y]
 
-Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y]) # observed number of fish  
-
-muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
-BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
-
-#    etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
-
-}
-}
-aB~dnorm(2.9,60)
-bB~dlnorm(-2.6,984)
-sdBB~dlnorm(-0.23,210)
-etaB~dunif(1,1000)
-
-# Abundance
-# ==============
-for(y in 1:nYears){
-Ntot[y]<-exp(LNtot[y])
-LNtot[y]~dunif(7,15) # total run size in year y
-
-#N[1:nDays,y]~dmulti(qN[1:nDays,y],Ntot[y]) # daily true number of fish
-for(i in 1:(nDays-1)){
-N[i,y]<-round(qN[i,y]*Ntot[y])
-}
-N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))    
-}
-
-# Timig of the smolt run
-# i.e. how total number of smolts passing the video site
-# is distributed between 61 days
-# =============================================
-for(y in 1:nYears){
-# qN: daily proportion of smolts
-# dirichlet-distribution approximated with lognormal
-qN[1:nDays,y]<-zN[1:nDays,y]/sum(zN[1:nDays,y])
-
-for(i in 1:nDays){
-zN[i,y]~dlnorm(MN[i,y], TauN[i,y])
-}
-
-alphaN[1:nDays,y]<-muqN[1:nDays,y]*eta_alphaN+0.001
-MN[1:nDays,y]<-log(muqN[1:nDays,y])-0.5/TauN[1:nDays,y]
-TauN[1:nDays,y]<-1/log((1/alphaN[1:nDays,y])+1)  
-
-muqN[1:nDays,y]~ddirich(ones) # flat prior
-}
-
-eta_alphaN~dunif(0.001,100000)
-
+  aS~
+  bS~
+  cvmuS~dunif(0.001,2)
+  cvS~dunif(0.001,2)
+  TmuS<-1/log(cvmuS*cvmuS+1)
+  TS<-1/log(cvS*cvS+1)
+  
+  # Abundance
+  # ==============
+  for(y in 1:nYears){
+    Ntot[y]<-exp(LNtot[y])
+    LNtot[y]~dunif(7,15) # total run size in year y
+    
+    #N[1:nDays,y]~dmulti(qN[1:nDays,y],Ntot[y]) # daily true number of fish
+    for(i in 1:(nDays-1)){
+      N[i,y]<-round(qN[i,y]*Ntot[y])
+    }
+    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))    
+  }
+  
+  # Timig of the smolt run
+  # i.e. how total number of smolts passing the video site
+  # is distributed between 61 days
+  # =============================================
+  for(y in 1:nYears){
+    # qN: daily proportion of smolts
+    # dirichlet-distribution approximated with lognormal
+    qN[1:nDays,y]<-zN[1:nDays,y]/sum(zN[1:nDays,y])
+    
+    for(i in 1:nDays){
+      zN[i,y]~dlnorm(MN[i,y], TauN[i,y])
+    }
+    
+    alphaN[1:nDays,y]<-muqN[1:nDays,y]*eta_alphaN+0.001
+    MN[1:nDays,y]<-log(muqN[1:nDays,y])-0.5/TauN[1:nDays,y]
+    TauN[1:nDays,y]<-1/log((1/alphaN[1:nDays,y])+1)  
+    
+    muqN[1:nDays,y]~ddirich(ones) # flat prior
+  }
+  
+  eta_alphaN~dunif(0.001,100000)
 
 }"
 cat(M1,file="Schools.txt")
@@ -83,7 +92,7 @@ df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 ones<-rep(1,n_days)
 
 data<-list(
-  #s=df$Schools,
+  s=df$Schools,
   flow=df$Flow,
   ones=ones,
   Nobs=df$Smolts,                     

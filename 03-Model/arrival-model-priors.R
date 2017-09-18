@@ -4,7 +4,7 @@
 
 
 
-source("00-Functions/packages-and-paths.r")
+#source("00-Functions/packages-and-paths.r")
 
 # full data; temp data missing for 2012 and partly for 2010
 #years<-c(2005:2009,2011,2013:2014) 
@@ -12,7 +12,7 @@ years<-c(2005:2006,2008,2014) # 4 years of data for testing
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
-load("02-Priors/priors-mvn.RData")
+#load("02-Priors/priors-mvn.RData")
 
 data<-list(
   #s=df$Schools,
@@ -38,7 +38,7 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
 var_names<-c(
   "aD","bD","cvD","cvmuD",
   
-#  "sums1","sums2",
+  "sums1","sums2",
   
   "aP","bP","sdP",
   "etaB","aB","bB","sdBB",
@@ -56,7 +56,8 @@ system.time(
 chainsP<-combine.mcmc(list(chains1, chains2))
 
 #summary(chainsP)
-save(chainsP, file=paste(sep="", pathOut,"Smolts_17_09_priors.RData"))
- 
+save(chainsP, file=paste(sep="", pathOut,"Priors_Smolts_17_09.RData"))
+#save(chainsP, file=paste(sep="", pathOut,"Priors_Smolts_17_09_fast.RData"))
+
      
      

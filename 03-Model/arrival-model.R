@@ -85,7 +85,7 @@ model{
         qD[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
       }
 
-#      qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
+#     qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
       muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
@@ -96,7 +96,7 @@ model{
   TD<-1/log(cvD*cvD+1)
 
   #aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
-  aD~dlnorm(0.3,14) # mu=1.4,cv=0.27
+  aD~dlnorm(0.3,14) # mu=1.4,cv=0.27 # fast
   bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
   cvmuD~dunif(0.001,1)
   cvD~dunif(0.001,2)
