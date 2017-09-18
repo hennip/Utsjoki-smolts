@@ -110,7 +110,7 @@ dat_smolts<-
   full_join(D14, by=NULL)%>% 
   mutate(schools=if_else(smolts==0, NA_real_, school_size))%>%
   select(Year,Month,Day,day,smolts, schools)
-View(dat_smolts)
+#View(dat_smolts)
 
 # Flow
 # ============

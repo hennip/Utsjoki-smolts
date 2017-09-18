@@ -78,18 +78,14 @@ model{
       # i: day of departure
       # j: day of passing the video site
       #j==i
-      qDx[i,i,y]<-phi((log(0.5)-MD[i,y])/SD)
+      qD[i,i,y]<-phi((log(0.5)-MD[i,y])/SD)
   
       # j>i
-      for(j in (i+1):(i+13)){ #13 
-        qDx[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
+      for(j in (i+1):(i+12)){ #13 
+        qD[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
       }
-      sumqDx[i,y]<-sum(qDx[i,i:(i+13),y])
-      
-      for(j in i:(i+13)){
-        qD[i,j,y]<-qDx[i,j,y]/(sumqDx[i,y]+0.0001)
-      }
-#      qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
+
+      qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
       muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
@@ -198,9 +194,9 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
   "Ntot","N"
 )
 
-system.time(
-  chains0<-coda.samples(jm,variable.names=var_names,
-                         n.iter=50000, thin=100)) #3.5h
+#system.time(
+#  chains0<-coda.samples(jm,variable.names=var_names,
+#                         n.iter=50000, thin=100)) #3.5h
  
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
