@@ -81,11 +81,11 @@ model{
       qD[i,i,y]<-phi((log(0.5)-MD[i,y])/SD)
   
       # j>i
-      for(j in (i+1):(i+12)){ #13 
+      for(j in (i+1):(i+13)){ #13 
         qD[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
       }
 
-      qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
+#      qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
       muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
@@ -95,21 +95,12 @@ model{
   TmuD<-1/log(cvmuD*cvmuD+1)
   TD<-1/log(cvD*cvD+1)
 
-  aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
+  #aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
+  aD~dlnorm(0.3,14) # mu=1.4,cv=0.27
   bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
   cvmuD~dunif(0.001,1)
   cvD~dunif(0.001,2)
  
-#  # MVN-Priors for logd are derived in travel-time-mvn.r 
-#  # ==============================
-#    aD<-exp(logd[1])
-#    bD<-exp(logd[2])
-#    cvD<-exp(logd[3])
-#    cvmuD<-exp(logd[4])
-
-#  logd[1:4]~dmnorm(ld_mu[1:4], ld_R[,]) 
-#  ld_R[1:4,1:4]<-inverse(ld_covar[,])
-
   # Proportion departing in each day  
   # ========================================
   for(y in 1:nYears){
