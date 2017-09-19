@@ -1,11 +1,19 @@
-df<-dat_all
 
+# What should s be when N==0
+N<-0
+s<-1
+etastar<-(N-s)/((s-1)+N-1)
+etastar
+# => if s=1 when N=0, etastar>1 always
 
-df<-filter(dat_all, Year>2008)
+df2<-filter(dat_all, Year>2008)
 
-ggplot(df)+
+ggplot(df2)+
 #  geom_point(aes(x=log(smolts), y=log(schools), color=factor(Year)))
-  geom_point(aes(x=smolts, y=schools, color=factor(Year)))
+  geom_point(aes(x=smolts, y=schools, color=factor(Year)))+
+  geom_smooth(aes(x=smolts, y=schools))
+
+point(aes(x=smolts, y=schools, color=factor(Year)))
 
 M2<-"
 model{
@@ -31,7 +39,7 @@ cat(M2,file="prior-schools.txt")
 
 #years<-c(2005:2009,2011,2013:2014) 
 #years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2009,2010,2011,2012,2013,2014)
+years<-c(2009:2014)
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
@@ -50,17 +58,29 @@ system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
                                     "aS","bS", "cvS", "cvmuS"
                                   ),
-                                  n.iter=5000,
-                                  thin=1))
+                                  n.iter=10000,
+                                  thin=10))
 system.time(chains2<-coda.samples(jm,
                                   variable.names=c(
                                     "aS","bS", "cvS", "cvmuS"
                                   ),
-                                  n.iter=5000,
-                                  thin=1))
+                                  n.iter=10000,
+                                  thin=10))
+system.time(chains3<-coda.samples(jm,
+                                  variable.names=c(
+                                    "aS","bS", "cvS", "cvmuS"
+                                  ),
+                                  n.iter=10000,
+                                  thin=10))
 
-chainsM<-chains2
+chainsM<-chainsP<-combine.mcmc(list(chains2, chains3))
 summary(chainsM)
+sumM<-summary(chainsM)$statistics
 
-windows()
+par(mfrow=c(2,2))
 traceplot(chainsM)
+
+cv<-sumM[,2]/sumM[,1]
+Tau<-1/log(cv*cv+1)
+M<-log(sumM[,1])-0.5/Tau
+cbind(M,Tau)

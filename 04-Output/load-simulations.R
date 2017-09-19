@@ -12,4 +12,6 @@ chains<-window(chains,start=400000, thin=200)
 
 # Unupdated priors
 #load(file=paste(sep="",pathOut,"Smolts_cvDs_17_08_14_priors.RData"))
-load(file=paste(sep="",pathOut,"Smolts_17_09_priors.RData"))
+#load(file=paste(sep="",pathOut,"Smolts_17_09_priors.RData"))
+load(file=paste(sep="",pathOut,"Priors_Smolts_17_09.RData"))
+load(file=paste(sep="",pathOut,"Priors_Smolts_17_09_fast.RData"))

@@ -19,28 +19,31 @@ model{
       
       # Observed number of fish
       # Nobs[i,y]~dbetabin(100,10,N[i,y])  
-      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB,(1-muB[i,y])*etaStarB,N[i,y])  
+      #Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])  
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
-      etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
-      s[i,y]~dlnorm(log(muS)-0.5/TS,TS)
+#      etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
+      etaStarB[i,y]<-(N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1)
+      s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
+      muS[i,y]~dlnorm(log(mumuS[i,y])-0.5/TmuS,TmuS)
+      mumuS[i,y]<-aS+bS*N[i,y]
     }
   }
-  aB~dnorm(2.9,60)
+  aB~dlnorm(2.9,60)
   bB~dlnorm(-2.6,984)
   sdBB~dlnorm(-0.23,210)
   etaB~dunif(1,1000)
 
-  # simple hierarhcical model for school size
-  muS~dlnorm(log(mumuS)-0.5/TmuS,TmuS)
-  mumuS<-aS+bS*N[i,y]
 
-  aS~
-  bS~
-  cvmuS~dunif(0.001,2)
-  cvS~dunif(0.001,2)
+  #Based on 2008:2014 data
+  aS~dlnorm(0.606,200)
+  bS~dlnorm(-3.63,400)
+  cvS~dlnorm(-1.482,3.6)
+  cvmuS~dlnorm(-1.062,9.1)
+
   TmuS<-1/log(cvmuS*cvmuS+1)
   TS<-1/log(cvS*cvS+1)
   
@@ -91,6 +94,7 @@ n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 ones<-rep(1,n_days)
 
+
 data<-list(
   s=df$Schools,
   flow=df$Flow,
@@ -107,19 +111,21 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
 )
 
 system.time(jm<-jags.model('Schools.txt',inits=initials,
-                           n.adapt=1000,
+                           n.adapt=5000,
                            data=data,n.chains=2))
 
 
 var_names<-c(
-  "etaB","aB","bB","sdBB",
+#  "etaB",
+  "etaStarB",
+  "aB","bB","sdBB",
   "eta_alphaN",
   "Ntot","N"
 )
 #
-#system.time(
-#  chains0<-coda.samples(jm,variable.names=var_names,
-#                        n.iter=1000, thin=1)) #3.5h
+system.time(
+  chains0<-coda.samples(jm,variable.names=var_names,
+                        n.iter=1000, thin=1)) #3.5h
 
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
@@ -130,18 +136,18 @@ system.time(
                         n.iter=10000, thin=200))
 
 chains<-combine.mcmc(list(chains1, chains2))
-save(chains, file=paste(sep="", pathOut,"Schools_17_09.RData"))
+save(chains, file=paste(sep="", pathOut,"Schools_17_09_etaStar.RData"))
 
 system.time(
   chains3<-coda.samples(jm,variable.names=var_names,
                         n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3))
-save(chains, file=paste(sep="", pathOut,"Schools_17_09.RData"))
+save(chains, file=paste(sep="", pathOut,"Schools_17_09_etaStar.RData"))
 
 system.time(
   chains4<-coda.samples(jm,variable.names=var_names,
                         n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3, chains4))
-save(chains, file=paste(sep="", pathOut,"Schools_17_09.RData"))
+save(chains, file=paste(sep="", pathOut,"Schools_17_09_etaStar.RData"))
