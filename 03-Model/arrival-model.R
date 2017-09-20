@@ -2,7 +2,6 @@
 
 #source("00-Functions/packages-and-paths.r")
 
-
 M1<-"
 model{
 
@@ -54,7 +53,7 @@ model{
       zN[i,y]~dlnorm(MN[i,y], TauN[i,y])
     }
   
-    alphaN[1:nDays,y]<-muqN[1:nDays,y]*eta_alphaN+0.001
+    alphaN[1:nDays,y]<-muqN[1:nDays,y]*eta_alphaN#+0.001
     MN[1:nDays,y]<-log(muqN[1:nDays,y])-0.5/TauN[1:nDays,y]
     TauN[1:nDays,y]<-1/log((1/alphaN[1:nDays,y])+1)  
   }
@@ -81,11 +80,11 @@ model{
       qD[i,i,y]<-phi((log(0.5)-MD[i,y])/SD)
   
       # j>i
-      for(j in (i+1):(i+13)){ #13 
+      for(j in (i+1):(i+12)){ #13 
         qD[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
       }
 
-#     qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
+     qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
   
       MD[i,y]<-log(muD[i,y])-0.5/TD
       muD[i,y]~dlnorm(log(exp(aD-bD*flow[i,y]))-0.5/TmuD, TmuD)
@@ -95,8 +94,8 @@ model{
   TmuD<-1/log(cvmuD*cvmuD+1)
   TD<-1/log(cvD*cvD+1)
 
-  #aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
-  aD~dlnorm(0.3,14) # mu=1.4,cv=0.27 # fast
+  aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
+  #aD~dlnorm(0.3,14) # mu=1.4,cv=0.27 # fast
   bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
   cvmuD~dunif(0.001,1)
   cvD~dunif(0.001,2)
@@ -142,7 +141,11 @@ model{
   }
 
 }"
-cat(M1,file="Smolts.txt")
+modelName<-"Smolts_simpleqD"
+
+Mname<-str_c("03-Model/",modelName, ".txt")
+cat(M1,file=Mname)
+
 
 # full data; temp data missing for 2012 and partly for 2010
 #years<-c(2005:2009,2011,2013:2014) 
@@ -166,7 +169,7 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
                #                    aB=2,bB=0.03)
 )
 
-system.time(jm<-jags.model('Smolts.txt',inits=initials,
+system.time(jm<-jags.model(Mname,inits=initials,
                            n.adapt=100,
                            data=data,n.chains=2))
 
@@ -184,7 +187,7 @@ system.time(jm<-jags.model('Smolts.txt',inits=initials,
 
 #system.time(
 #  chains0<-coda.samples(jm,variable.names=var_names,
-#                         n.iter=50000, thin=100)) #3.5h
+#                         n.iter=100, thin=1))
  
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
@@ -195,18 +198,18 @@ system.time(
                         n.iter=100000, thin=200))
 
 chains<-combine.mcmc(list(chains1, chains2))
-save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
+save(chains, file=str_c(pathOut,modelName,".RData"))
 
 system.time(
   chains3<-coda.samples(jm,variable.names=var_names,
                         n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3))
-save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
+save(chains, file=str_c(pathOut,modelName,".RData"))
 
 system.time(
   chains4<-coda.samples(jm,variable.names=var_names,
                         n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3, chains4))
-save(chains, file=paste(sep="", pathOut,"Smolts_17_09.RData"))
+save(chains, file=str_c(pathOut,modelName,".RData"))

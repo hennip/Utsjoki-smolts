@@ -111,7 +111,7 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
 )
 
 system.time(jm<-jags.model('Schools.txt',inits=initials,
-                           n.adapt=5000,
+                           n.adapt=10000,
                            data=data,n.chains=2))
 
 
