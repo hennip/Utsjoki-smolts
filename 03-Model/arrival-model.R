@@ -174,9 +174,7 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
                #                    aB=2,bB=0.03)
 )
 
-system.time(jm<-jags.model(Mname,inits=initials,
-                           n.adapt=100,
-                           data=data,n.chains=2))
+system.time(jm<-jags.model(Mname,inits=initials, n.adapt=100, data=data,n.chains=2))
 
 
  var_names<-c(

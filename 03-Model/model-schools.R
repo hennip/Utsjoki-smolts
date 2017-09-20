@@ -83,7 +83,11 @@ model{
   eta_alphaN~dunif(0.001,100000)
 
 }"
-cat(M1,file="Schools.txt")
+modelName<-"Schools_etaStar"
+
+Mname<-str_c("03-Model/",modelName, ".txt")
+cat(M1,file=Mname)
+
 
 # full data; temp data missing for 2012 and partly for 2010, note that the
 # run was late in 2009
@@ -110,9 +114,7 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
                #                    aB=2,bB=0.03)
 )
 
-system.time(jm<-jags.model('Schools.txt',inits=initials,
-                           n.adapt=10000,
-                           data=data,n.chains=2))
+system.time(jm<-jags.model(Mname,inits=initials, n.adapt=10000, data=data,n.chains=2))
 
 
 var_names<-c(
@@ -136,18 +138,18 @@ system.time(
                         n.iter=10000, thin=200))
 
 chains<-combine.mcmc(list(chains1, chains2))
-save(chains, file=paste(sep="", pathOut,"Schools_17_09_etaStar.RData"))
+save(chains, file=str_c(pathOut,modelName,".RData"))
 
 system.time(
   chains3<-coda.samples(jm,variable.names=var_names,
                         n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3))
-save(chains, file=paste(sep="", pathOut,"Schools_17_09_etaStar.RData"))
+save(chains, file=str_c(pathOut,modelName,".RData"))
 
 system.time(
   chains4<-coda.samples(jm,variable.names=var_names,
                         n.iter=400000, thin=200))
 
 chains<-combine.mcmc(list(chains2, chains3, chains4))
-save(chains, file=paste(sep="", pathOut,"Schools_17_09_etaStar.RData"))
+save(chains, file=str_c(pathOut,modelName,".RData"))
