@@ -86,7 +86,7 @@ model{
       sumqDx[i,y]<-sum(qDx[i,i:(i+13),y])
       
       for(j in i:(i+13)){
-        qD[i,j,y]<-qDx[i,j,y]/(sumqDx[i,y])#+0.0001)
+        qD[i,j,y]<-qDx[i,j,y]/(sumqDx[i,y]+0.0001)
       }
 
 #    qD[i,i+13,y]<-1-sum(qD[i,i:(i+12),y])
@@ -190,9 +190,7 @@ system.time(jm<-jags.model(Mname,inits=initials,
   "Ntot","N"
 )
 
-#system.time(
-#  chains0<-coda.samples(jm,variable.names=var_names,
-#                         n.iter=100, thin=1))
+#system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=100, thin=1))
  
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,
