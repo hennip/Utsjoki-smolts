@@ -8,8 +8,10 @@
 #load(file=paste(sep="",pathOut,"Smolts_17_09.RData")) # standardoidut qD:t, 3vrk ajo ei merkkejä konvergenssista
 load(file=paste(sep="",pathOut,"Smolts_17_09.RData")) # "simppelisti" standardoidut qD:t
 load(file=paste(sep="",pathOut,"Smolts_17_09_fast.RData")) # nopeutettu odotettu matka-aika
+load(file=paste(sep="",pathOut,"Smolts_simpleqD.RData")) # nopeutettu odotettu matka-aika
 
-chains<-window(chains,start=400000, thin=200)
+chains<-window(chains,start=50000, thin=200)
+chains<-window(chains,start=200000, thin=200)
 
 load(file=paste(sep="",pathOut,"Schools_17_09.RData")) #  pieni dirich-malli
 load(file=paste(sep="",pathOut,"Schools_17_09_etaStar.RData")) #  pieni dirich-malli

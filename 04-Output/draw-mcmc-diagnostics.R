@@ -5,7 +5,7 @@ source("04-Output/load-simulations.r")
 years
 
 # Traces
-par(mfrow=c(4,4),mar=c(2.5,4,4,1))
+par(mfrow=c(3,3),mar=c(2.5,4,4,1))
 traceplot(chains[,"Ntot[1]"],main="Ntot1", cex.main=1.5)
 traceplot(chains[,"Ntot[2]"],main="Ntot2", cex.main=1.5)
 traceplot(chains[,"Ntot[3]"],main="Ntot3", cex.main=1.5)
