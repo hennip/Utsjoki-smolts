@@ -96,38 +96,23 @@ system.time(jm<-jags.model(Mname,inits=initials,n.adapt=10000, data=data,n.chain
 
 
 var_names<-c(
-#  "etaB",
-  "etaStarB",
+  "etaB",
+#  "etaStarB",
   "aB","bB","sdBB",
-  "eta_alphaN",
+#  "eta_alphaN",
   "Ntot","N"
 )
 #
-system.time(
-  chains0<-coda.samples(jm,variable.names=var_names,
-                        n.iter=1000, thin=1)) #3.5h
+#system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=1000, thin=1))
 
-system.time(
-  chains1<-coda.samples(jm,variable.names=var_names,
-                        n.iter=10000, thin=200)) #8h
+a1<-Sys.time();a1
+chains1<-coda.samples(jm,variable.names=var_names,n.iter=100000, thin=1000) #15min
+b1<-Sys.time() ; t1<-b1-a1; t1
 
-system.time(
-  chains2<-coda.samples(jm,variable.names=var_names,
-                        n.iter=10000, thin=200))
+a2<-Sys.time();a2
+chains2<-coda.samples(jm,variable.names=var_names,n.iter=100000, thin=1000) #15min
+b2<-Sys.time() ; t2<-b2-a2; t2
 
 chains<-combine.mcmc(list(chains1, chains2))
 save(chains, file=str_c(pathOut,modelName,".RData"))
 
-system.time(
-  chains3<-coda.samples(jm,variable.names=var_names,
-                        n.iter=400000, thin=200))
-
-chains<-combine.mcmc(list(chains2, chains3))
-save(chains, file=str_c(pathOut,modelName,".RData"))
-
-system.time(
-  chains4<-coda.samples(jm,variable.names=var_names,
-                        n.iter=400000, thin=200))
-
-chains<-combine.mcmc(list(chains2, chains3, chains4))
-save(chains, file=str_c(pathOut,modelName,".RData"))
