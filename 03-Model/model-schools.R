@@ -26,7 +26,7 @@ model{
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
 #      etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
-      etaStarB[i,y]<-(N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1)
+      etaStarB[i,y]<-(N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1)+1
       s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
       muS[i,y]~dlnorm(log(mumuS[i,y])-0.5/TmuS,TmuS)
       mumuS[i,y]<-aS+bS*N[i,y]
@@ -92,8 +92,7 @@ initials<-list(list(LNtot=rep(14,data$nYears)),
                list(LNtot=rep(14,data$nYears))
 )
 
-system.time(jm<-jags.model(Mname,inits=initials,n.adapt=10000, data=data,n.chains=2))
-
+system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chains=2))
 
 var_names<-c(
 #  "etaB",
@@ -104,9 +103,6 @@ var_names<-c(
 )
 #
 #system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=1000, thin=1))
-
-
-system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chains=2))
 
 a1<-Sys.time();a1
 chains1<-coda.samples(jm,variable.names=var_names,n.iter=10000000, thin=10000) #16h
