@@ -19,17 +19,17 @@ model{
       
       # Observed number of fish
       # Nobs[i,y]~dbetabin(100,10,N[i,y])  
-      #Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])  
+      Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+      #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])  
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
 #      etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
-      etaStarB[i,y]<-(N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1)
-      s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
-      muS[i,y]~dlnorm(log(mumuS[i,y])-0.5/TmuS,TmuS)
-      mumuS[i,y]<-aS+bS*N[i,y]
+#      etaStarB[i,y]<-(N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1)
+#      s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
+#      muS[i,y]~dlnorm(log(mumuS[i,y])-0.5/TmuS,TmuS)
+#      mumuS[i,y]<-aS+bS*N[i,y]
     }
   }
   aB~dlnorm(2.9,60)
@@ -39,13 +39,13 @@ model{
 
 
   #Based on 2008:2014 data
-  aS~dlnorm(0.606,200)
-  bS~dlnorm(-3.63,400)
-  cvS~dlnorm(-1.482,3.6)
-  cvmuS~dlnorm(-1.062,9.1)
+#  aS~dlnorm(0.606,200)
+#  bS~dlnorm(-3.63,400)
+#  cvS~dlnorm(-1.482,3.6)
+#  cvmuS~dlnorm(-1.062,9.1)
 
-  TmuS<-1/log(cvmuS*cvmuS+1)
-  TS<-1/log(cvS*cvS+1)
+#  TmuS<-1/log(cvmuS*cvmuS+1)
+#  TS<-1/log(cvS*cvS+1)
   
   # Abundance
   # ==============
@@ -53,37 +53,17 @@ model{
     Ntot[y]<-exp(LNtot[y])
     LNtot[y]~dunif(7,15) # total run size in year y
     
-    #N[1:nDays,y]~dmulti(qN[1:nDays,y],Ntot[y]) # daily true number of fish
+   #N[1:nDays,y]~dmulti(qN[1:nDays,y],Ntot[y]) # daily true number of fish
     for(i in 1:(nDays-1)){
       N[i,y]<-round(qN[i,y]*Ntot[y])
     }
-    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))    
+    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))   
+    qN[1:nDays,y]~ddirich(ones) # flat prior
   }
-  
-  # Timig of the smolt run
-  # i.e. how total number of smolts passing the video site
-  # is distributed between 61 days
-  # =============================================
-  for(y in 1:nYears){
-    # qN: daily proportion of smolts
-    # dirichlet-distribution approximated with lognormal
-    qN[1:nDays,y]<-zN[1:nDays,y]/sum(zN[1:nDays,y])
-    
-    for(i in 1:nDays){
-      zN[i,y]~dlnorm(MN[i,y], TauN[i,y])
-    }
-    
-    alphaN[1:nDays,y]<-muqN[1:nDays,y]*eta_alphaN+0.001
-    MN[1:nDays,y]<-log(muqN[1:nDays,y])-0.5/TauN[1:nDays,y]
-    TauN[1:nDays,y]<-1/log((1/alphaN[1:nDays,y])+1)  
-    
-    muqN[1:nDays,y]~ddirich(ones) # flat prior
-  }
-  
-  eta_alphaN~dunif(0.001,100000)
-
-}"
-modelName<-"Schools_etaStar"
+}
+"
+#modelName<-"Schools_etaStar"
+modelName<-"Schools"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -100,7 +80,7 @@ ones<-rep(1,n_days)
 
 
 data<-list(
-  s=df$Schools,
+#  s=df$Schools,
   flow=df$Flow,
   ones=ones,
   Nobs=df$Smolts,                     
@@ -108,13 +88,11 @@ data<-list(
   nYears=length(years)
 )
 
-initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
-               #                    aB=2,bB=0.03),
-               list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears)))#,
-               #                    aB=2,bB=0.03)
+initials<-list(list(LNtot=rep(14,data$nYears)),
+               list(LNtot=rep(14,data$nYears))
 )
 
-system.time(jm<-jags.model(Mname,inits=initials, n.adapt=10000, data=data,n.chains=2))
+system.time(jm<-jags.model(Mname,inits=initials,n.adapt=10000, data=data,n.chains=2))
 
 
 var_names<-c(
