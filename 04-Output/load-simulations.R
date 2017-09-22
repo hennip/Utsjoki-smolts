@@ -16,6 +16,8 @@ chains<-window(chains,start=200000, thin=200)
 load(file=paste(sep="",pathOut,"Schools_17_09.RData")) #  pieni dirich-malli
 load(file=paste(sep="",pathOut,"Schools_17_09_etaStar.RData")) #  pieni dirich-malli
 
+load(file=paste(sep="",pathOut,"Schools.RData")) #  pieni dirich-malli (siistitty)
+
 
 # Unupdated priors
 #load(file=paste(sep="",pathOut,"Smolts_cvDs_17_08_14_priors.RData"))
