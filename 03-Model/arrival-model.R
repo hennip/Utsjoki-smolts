@@ -142,7 +142,7 @@ sums2[i]<-sum(qD[i,i:(i+13),2])
 
 }"
 #modelName<-"Smolts_standardqD"
-modelName<-"Smolts_simpleqD"
+modelName<-"Smolts_simpleqD2"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -210,3 +210,11 @@ system.time(
 
 chains<-combine.mcmc(list(chains2, chains3, chains4))
 save(chains, file=str_c(pathOut,modelName,".RData"))
+
+Sys.time()
+system.time(
+  chains5<-coda.samples(jm,variable.names=var_names,n.iter=400000, thin=200))/3600
+
+chains<-combine.mcmc(list(chains2, chains3, chains4,chains5))
+save(chains, file=str_c(pathOut,modelName,".RData"))
+
