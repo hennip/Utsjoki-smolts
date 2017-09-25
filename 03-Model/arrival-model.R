@@ -161,8 +161,19 @@ data<-list(
   nYears=length(years)
 )
 
-initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears)), etaB=100),
-               list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears)), etaB=900))
+inits_zN<-array(0.1,dim=dim(data$Nobs))
+for(j in 1:data$nYears){
+  for(i in 1:data$nDays){
+    if(is.na(data$Nobs[i,j])==F&data$Nobs[i,j]!=0){
+      inits_zN[i,j]<-data$Nobs[i,j]  
+    }
+  }
+}
+
+initials<-list(list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=100),
+               list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=900))
+#zN=array(1, dim=c(61,data$nYears)
+
 
 system.time(jm<-jags.model(Mname,inits=initials, n.adapt=100, data=data,n.chains=2))
 
@@ -179,16 +190,17 @@ system.time(jm<-jags.model(Mname,inits=initials, n.adapt=100, data=data,n.chains
 )
 
 system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=100, thin=1))/60#min per 1000 iter
+#chains<-chains0
 # [1] 5.62
  
 a1<-Sys.time();a1
 system.time(
-  chains1<-coda.samples(jm,variable.names=var_names,n.iter=10000, thin=200))/3600
+  chains1<-coda.samples(jm,variable.names=var_names,n.iter=1000, thin=200))/3600
 b1<-Sys.time() ; t1<-b1-a1; t1
 
 a2<-Sys.time()
 system.time(
-  chains2<-coda.samples(jm,variable.names=var_names,n.iter=10000, thin=200))/3600
+  chains2<-coda.samples(jm,variable.names=var_names,n.iter=1000, thin=200))/3600
 b2<-Sys.time() ; t2<-b2-a2; t2
 
 chains<-combine.mcmc(list(chains1, chains2))

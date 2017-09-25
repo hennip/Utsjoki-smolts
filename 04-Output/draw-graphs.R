@@ -4,28 +4,21 @@
 #source("00-Functions/packages-and-paths.r")
 #source("01-Data/tidy-smolts-data.r")
 
-source("load-simulations.r")
+#source("load-simulations.r")
 
 
 
-
-##########
-# MCMC output 
-
-# ggs imports mcmc samples into a ggs object that can be used by ggs_* graphical functions
-#(chains_ggs<-ggs(chains))
-#ggmcmc(chains)
-#ggs_traceplot(chains_ggs)
-
+#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+#n_days<-61
+#df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
 # Number of smolts
 ##################################################
-Year<-c("2003","2004","2005","2006","2008","2014")
 df<-boxplot.jags.df(chains, "Ntot",Year)
-#as.tibble(df)
+
 Ntot<-c()
-for(i in 1:6){
-  Ntot[i]<-sum(filter(ts, year==Year[i])$num_smolts, na.rm=T) 
+for(i in 1:length(years)){
+  Ntot[i]<-sum(filter(dat_all, Year==years[i])$smolts, na.rm=T) 
 }
 df<-mutate(df, Ntot)
 
@@ -38,32 +31,32 @@ ggplot(df, aes(x))+
   coord_cartesian(ylim=c(0,38000))
 
 
-# daily number
-y<-c("2003","2004","2005","2006","2008","2014")
-for(i in 1:6){
-  df<-boxplot.jags.df2(chains, "N[",paste(sep="", i,"]"),1:61)
-  df<-mutate(df, year=y[i])
+# Daily numbers
+for(i in 1:length(years)){
+  df<-boxplot.jags.df2(chains, "N[",paste(sep="", i,"]"),1:n_days)
+  df<-mutate(df, Year=years[i])
   ifelse(i>1, df2<-bind_rows(df2,df),df2<-df)
 }
 df2<-as.tibble(df2)
-df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","year"))
-df<-full_join(df2,ts, by=NULL)
-df<-select(df,day, year, num_smolts, q50, everything())
+df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","Year"))
+
+
+#df<-full_join(df2,dat_all, by=NULL)
+df<-df2%>%
+  left_join(dat_all)%>%
+  select(Day,Month, Year,day, smolts, q50, everything())
 
 #View(df)
 
-df1<-filter(df, year=="2003"| year=="2004")
-df1<-filter(df, year=="2005"| year=="2006")
-df1<-filter(df, year=="2008"| year=="2014")
-
-ggplot(df1, aes(day))+
+ggplot(df, aes(day))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+
   geom_line(aes(day,q50))+
-  facet_grid(.~year)+
-  geom_point(mapping=aes(day,num_smolts), color="blue", shape=17, size=2)+
-  geom_line(aes(day,num_smolts), col="blue")+
+#  facet_grid(.~Year)+
+  facet_wrap(~Year)+
+  geom_point(mapping=aes(day,smolts), color="blue", shape=17, size=2)+
+  geom_line(aes(day,smolts), col="blue")+
   labs(x="Day (in June-July)", y="Number of smolts")
 #  coord_cartesian(ylim=c(0,3800))
 
@@ -72,7 +65,7 @@ ggplot(df1, aes(day))+
 
 # Prob to start migration vs. temperature
 #########################################
-source("sample-prob-to-migrate.r")
+source("04-Output/sample-prob-to-migrate.r")
 
 df<-boxplot.df(p_samp, Temp)
 df.prior<-boxplot.df(p_sampP, Temp)
@@ -112,7 +105,7 @@ ggplot(df, aes(x))+
 
 #################################
 # Travel time to video vs flow
-source("sample-travel-time-flow.r")
+source("04-Output/sample-travel-time-flow.r")
 
 df<-boxplot.df(muD_samp, Flow)
 df.prior<-boxplot.df(muD_sampP, Flow)
@@ -133,7 +126,7 @@ ggplot(df, aes(x))+
 
 #################################
 # Observation probability vs flow
-source("sample-obs-prob-flow.r")
+source("04-Output/sample-obs-prob-flow.r")
 
 df<-boxplot.df(muB_samp, Flow)
 df.prior<-boxplot.df(muB_sampP, Flow)
