@@ -17,7 +17,6 @@ data<-list(
   nDays=n_days,
   nYears=length(years)
 )
-
 M1<-"
 data{
   int<lower=0> nYears; // number of years
@@ -38,11 +37,12 @@ parameters{
 
   real<lower=7,upper=15>  LNtot[nYears];
   real  BB[nDays,nYears];
+  simplex[nDays] qN[nYears];
 }
 
 transformed parameters{
   real<lower=0> Ntot[nYears];
-  real<lower=0.3, upper=0.6> muB[nDays,nYears];
+  real muB[nDays,nYears];
 
   for(y in 1:nYears){
     Ntot[y]=exp(LNtot[y]);
@@ -55,8 +55,8 @@ transformed parameters{
 
 
 model{
-  int N[nDays,nYears];
-  vector[nDays] qN[nYears];
+  real CVB2[nDays,nYears];
+  vector[nDays] N[nYears];
 
   aB~lognormal(2.9,0.129);
   bB~lognormal(-2.6,0.139);
@@ -70,9 +70,12 @@ model{
 
   for(y in 1:nYears){
     for(i in 1:nDays){
-      N[i,y]=round(qN[i,y]*Ntot[y]);
+      N[i,y]=qN[i,y]*Ntot[y];
+      CVB2[i,y]=(1-muB[i,y])*(etaB+N[i,y])/(N[i,y]*muB[i,y]*(etaB+1));
       BB[i,y]~normal(aB-bB*flow[i,y],sdBB);
-      Nobs[i,y]~beta_binomial(N[i,y],muB[i,y]*etaB,(1-muB[i,y])*etaB);  
+      Nobs[i,y]~lognormal(log(N[i,y]*muB[i,y]/sqrt(log(CVB2[i,y]+1))),
+                sqrt(log(CVB2[i,y]+1)));
+      //Nobs[i,y]~beta_binomial(N[i,y],muB[i,y]*etaB,(1-muB[i,y])*etaB);  
       }
     }
 
