@@ -35,24 +35,19 @@ parameters{
   real<lower=0> bB;
   real<lower=0> sdBB;
   real<lower=1> etaB;
-  real<lower=0> eta_alphaN;
 
   real<lower=7,upper=15>  LNtot[nYears];
   real  BB[nDays,nYears];
-  vector<lower=0>[nDays]  zN[nYears];
-  vector[nDays]  muqN[nYears];
 }
 
 transformed parameters{
   real<lower=0> Ntot[nYears];
-  real<lower=0, upper=1> qN[nDays,nYears];
   real<lower=0.3, upper=0.6> muB[nDays,nYears];
 
   for(y in 1:nYears){
     Ntot[y]=exp(LNtot[y]);
 
     for(i in 1:nDays){
-      qN[i,y]=zN[i,y]/sum(zN[y]);
       muB[i,y]=0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3;
     }  
   }
@@ -61,28 +56,16 @@ transformed parameters{
 
 model{
   int N[nDays,nYears];
-  vector[nDays]  alphaN[nYears];
-  vector[nDays]  VN[nYears];
-  vector[nDays]  MN[nYears];
+  vector[nDays] qN[nYears];
 
   aB~lognormal(2.9,0.129);
   bB~lognormal(-2.6,0.139);
   sdBB~lognormal(-0.23,0.069);
   etaB~uniform(1,1000);
-  eta_alphaN~uniform(0.001,100000);
-
 
   for(y in 1:nYears){
     LNtot[y]~uniform(7,15);
-    muqN[y]~dirichlet(ones);
-
-    for(i in 1:nDays){
-      alphaN[i,y]=muqN[i,y]*eta_alphaN;
-      MN[i,y]=log(muqN[i,y])-0.5*VN[i,y];
-      VN[i,y]=log((1/alphaN[i,y])+1);
-    
-      zN[i,y]~lognormal(MN[i,y], sqrt(VN[i,y]));
-    }
+    qN[y]~dirichlet(ones); 
   }
 
   for(y in 1:nYears){
