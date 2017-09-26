@@ -62,8 +62,8 @@ model{
   }
 }
 "
-modelName<-"Schools_etaStar"
-#modelName<-"Schools"
+#modelName<-"Schools_etaStar"
+modelName<-"Schools"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
