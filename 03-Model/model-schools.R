@@ -95,10 +95,9 @@ initials<-list(list(LNtot=rep(14,data$nYears)),
 system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chains=2))
 
 var_names<-c(
-#  "etaB",
-  "etaStarB",
+#  "etaStarB",
   "aB","bB","sdBB",
-#  "eta_alphaN",
+  "aS","bS","cvS", "cvmuS",
   "Ntot","N"
 )
 #
@@ -120,6 +119,13 @@ chains3<-coda.samples(jm,variable.names=var_names,n.iter=20000000, thin=10000) #
 b3<-Sys.time() ; t3<-b3-a3; t3
 
 chains<-combine.mcmc(list(chains1, chains2, chains3))
+save(chains, file=str_c(pathOut,modelName,".RData"))
+
+a4<-Sys.time();a4
+chains4<-coda.samples(jm,variable.names=var_names,n.iter=20000000, thin=10000) #16h
+b4<-Sys.time() ; t4<-b4-a4; t4
+
+chains<-combine.mcmc(list(chains1, chains2, chains3, chains4))
 save(chains, file=str_c(pathOut,modelName,".RData"))
 
 
