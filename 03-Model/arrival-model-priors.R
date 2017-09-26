@@ -6,7 +6,8 @@
 
 #source("00-Functions/packages-and-paths.r")
 
-modelName<-"Smolts_simpleqD"
+modelName<-"Smolts_17_09"
+#modelName<-"Smolts_simpleqD"
 Mname<-str_c("03-Model/",modelName, ".txt")
 
 # full data; temp data missing for 2012 and partly for 2010

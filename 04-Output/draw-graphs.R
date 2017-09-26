@@ -8,12 +8,13 @@
 
 
 
-#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-#n_days<-61
-#df<-smolts_data_to_jags(years, n_days) # 61: only june & july
+years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+n_days<-61
+df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
 # Number of smolts
 ##################################################
+Year<-years
 df<-boxplot.jags.df(chains, "Ntot",Year)
 
 Ntot<-c()
