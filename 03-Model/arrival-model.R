@@ -10,12 +10,12 @@ model{
   for(y in 1:nYears){
     for(i in 1:nDays){ # 61 days in June-July
   
-      Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y]) # observed number of fish  
+      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y]) # observed number of fish  
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
-      #    etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
+      etaStarB[i,y]<-(N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1)+1
     }
   }
   aB~dnorm(2.9,60)
@@ -138,7 +138,7 @@ model{
   
 }
 "
-modelName<-"Smolts_standardqD"
+modelName<-"Smolts_standardqD_etaStarB"
 #modelName<-"Smolts_simpleqD2"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -153,7 +153,7 @@ df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
 
 data<-list(
-  #s=df$Schools,
+  s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -192,15 +192,14 @@ system.time(jm<-jags.model(Mname,inits=initials, n.adapt=100, data=data,n.chains
 system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=100, thin=1))/60#min per 1000 iter
 #chains<-chains0
 # [1] 5.62
- 
 a1<-Sys.time();a1
 system.time(
-  chains1<-coda.samples(jm,variable.names=var_names,n.iter=1000, thin=200))/3600
+  chains1<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
 b1<-Sys.time() ; t1<-b1-a1; t1
 
 a2<-Sys.time()
 system.time(
-  chains2<-coda.samples(jm,variable.names=var_names,n.iter=1000, thin=200))/3600
+  chains2<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
 b2<-Sys.time() ; t2<-b2-a2; t2
 
 chains<-combine.mcmc(list(chains1, chains2))
@@ -208,7 +207,7 @@ save(chains, file=str_c(pathOut,modelName,".RData"))
 
 a3<-Sys.time()
 system.time(
-  chains3<-coda.samples(jm,variable.names=var_names,n.iter=100000, thin=200))/3600
+  chains3<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
 b3<-Sys.time() ; t3<-b3-a3; t3
 
 chains<-combine.mcmc(list(chains2, chains3))
@@ -217,7 +216,7 @@ save(chains, file=str_c(pathOut,modelName,".RData"))
 a4<-Sys.time()
 Sys.time()
 system.time(
-  chains4<-coda.samples(jm,variable.names=var_names,n.iter=100000, thin=200))/3600
+  chains4<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
 b4<-Sys.time() ; t4<-b4-a4; t4
 
 chains<-combine.mcmc(list(chains2, chains3, chains4))
@@ -226,10 +225,18 @@ save(chains, file=str_c(pathOut,modelName,".RData"))
 a5<-Sys.time()
 Sys.time()
 system.time(
-  chains5<-coda.samples(jm,variable.names=var_names,n.iter=400000, thin=200))/3600
+  chains5<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
 b5<-Sys.time() ; t5<-b5-a5; t5
 
 chains<-combine.mcmc(list(chains2, chains3, chains4,chains5))
 save(chains, file=str_c(pathOut,modelName,".RData"))
 
+a6<-Sys.time()
+Sys.time()
+system.time(
+  chains6<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
+b6<-Sys.time() ; t6<-b6-a6; t6
+
+chains<-combine.mcmc(list(chains2,chains3,chains4,chains5,chains6))
+save(chains, file=str_c(pathOut,modelName,".RData"))
 
