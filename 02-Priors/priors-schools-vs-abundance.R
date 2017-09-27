@@ -1,19 +1,42 @@
 
-# What should s be when N==0
-N<-0
-s<-1
-etastar<-(N-s)/((s-1)+N-1)
-etastar
-# => if s=1 when N=0, etastar>1 always
+# special cases: N=s, N=0, N=s=1
+  
+#  N<-c(0,1,2,3,2)
+#  s<-c(1,1,2,3,1)
+#  N-s
+#  ((N-s)/((s-1)+N-1+0.1))
+  
+#  (N-s)/((s-1)+N-1+0.1)+1
+  
+  
+#  N-s-1
+  #-2 -1 -1 -1 0
+  
+  #step(N-s-1)
+  #0 0 0 0 1 
+  
+  #1-step(N-s-1)
+  #1 1 1 1 0
+  
+#  step_Ns<-c(0,0,0,0,1)
+  
+#  (1-step_Ns)*1+
+#    step_Ns*((N-s)/((s-1)+N-1))
+  
+#  (1-step_Ns)*1+
+#    step_Ns*((N-s)/((s-1)+N-1+0.001))
 
-df2<-filter(dat_all, Year>2008)
+################################################
+
+
+
+df2<-filter(dat_all, Year>2008 & Year<2014)
 
 ggplot(df2)+
 #  geom_point(aes(x=log(smolts), y=log(schools), color=factor(Year)))
   geom_point(aes(x=smolts, y=schools, color=factor(Year)))+
   geom_smooth(aes(x=smolts, y=schools))
 
-point(aes(x=smolts, y=schools, color=factor(Year)))
 
 Nnew<-seq(1,2000, by=30)
 length(Nnew)
@@ -47,7 +70,7 @@ cat(M2,file="prior-schools.txt")
 
 #years<-c(2005:2009,2011,2013:2014) 
 #years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2009:2014)
+years<-c(2009:2013)
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
@@ -91,11 +114,11 @@ df<-filter(df, x>0)
 ggplot(df, aes(x))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity")+
-  geom_point(df2,aes(x=smolts, y=schools, color=factor(Year)))
+    stat = "identity")+  
+  geom_point(data=df2,aes(x=smolts, y=schools, color=factor(Year)))
   
   
-  
+  View(df2)
   
 
 

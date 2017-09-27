@@ -85,6 +85,12 @@ plot(density(chains[,"cvmuD"][[1]]), main="cvmuD", ylim=c(0,8))
 lines(density(chains[,"cvmuD"][[2]]))
 lines(density(chainsP[,"cvmuD"][[1]]), lty=2)
 
+plot(density(chains[,"aS"][[1]]), main="aS", xlim=c(1,2.5), ylim=c(0,10))
+lines(density(chains[,"aS"][[2]]))
+lines(density(chainsP[,"aS"][[1]]), lty=2)
+plot(density(chains[,"bS"][[1]]), main="bS", ylim=c(0,500))
+lines(density(chains[,"bS"][[2]]))
+lines(density(chainsP[,"bS"][[1]]), lty=2)
 
 
 
