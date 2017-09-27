@@ -25,8 +25,8 @@ model{
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
-#      etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
-      etaStarB[i,y]<-(N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1)+1
+      etaStarB[i,y]<-(1-step(N[i,y]-s[i,y]-1))*1+
+                      step(N[i,y]-s[i,y]-1)*((N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1-0.001))
       s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
       muS[i,y]~dlnorm(log(mumuS[i,y])-0.5/TmuS,TmuS)
       mumuS[i,y]<-aS+bS*N[i,y]
@@ -37,12 +37,17 @@ model{
   sdBB~dlnorm(-0.23,210)
   etaB~dunif(1,1000)
 
+  #Based on 2009:2013 data
+  aS~dlnorm(0.265,609)
+  bS~dlnorm(-3.54,668)
+  cvS~dlnorm(-1.65,3.1)
+  cvmuS~dlnorm(-1.11,9.6)
 
   #Based on 2008:2014 data
-  aS~dlnorm(0.606,200)
-  bS~dlnorm(-3.63,400)
-  cvS~dlnorm(-1.482,3.6)
-  cvmuS~dlnorm(-1.062,9.1)
+#  aS~dlnorm(0.606,200)
+#  bS~dlnorm(-3.63,400)
+#  cvS~dlnorm(-1.482,3.6)
+#  cvmuS~dlnorm(-1.062,9.1)
 
   TmuS<-1/log(cvmuS*cvmuS+1)
   TS<-1/log(cvS*cvS+1)
@@ -62,7 +67,7 @@ model{
   }
 }
 "
-modelName<-"Schools_etaStar"
+modelName<-"Schools_etaStarB_2"
 #modelName<-"Schools"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
