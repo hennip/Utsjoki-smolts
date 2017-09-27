@@ -202,11 +202,13 @@ system.time(jm<-jags.model(Mname,inits=initials, n.adapt=100, data=data,n.chains
 
  var_names<-c(
   "aD","bD","cvD","cvmuD",
+  "aS","bS","cvS", "cvmuS",
   
   "sums1","sums2",
   
   "aP","bP","sdP",
-  "etaB","aB","bB","sdBB",
+  #"etaB",
+  "aB","bB","sdBB",
   "eta_alphaN",
   "Ntot","N"
 )
