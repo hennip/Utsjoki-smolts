@@ -1,6 +1,7 @@
 library(RColorBrewer)
 library(wesanderson)
 library(ghibli)
+#dev.off()
 
 # see palette names and colours
 #par(mfrow=c(7,3))

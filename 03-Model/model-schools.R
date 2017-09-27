@@ -85,7 +85,7 @@ ones<-rep(1,n_days)
 
 
 data<-list(
-#  s=df$Schools,
+  s=df$Schools,
   flow=df$Flow,
   ones=ones,
   Nobs=df$Smolts,                     
