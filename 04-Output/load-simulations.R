@@ -23,6 +23,7 @@ load(file=paste(sep="",pathOut,"Schools.RData")) #  pieni dirich-malli (siistitt
 chains<-window(chains,start=2000000)
 
 load(file=paste(sep="",pathOut,"Schools_etaStar.RData")) #  
+load(file=paste(sep="",pathOut,"Priors_Schools_etaStar.RData")) #  
 chains<-window(chains,start=15000000, thin=200)
 
 

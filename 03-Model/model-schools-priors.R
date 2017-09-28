@@ -1,5 +1,6 @@
 
-modelName<-"Schools_etaStarB_2"
+#modelName<-"Schools_etaStarB_2"
+modelName<-"Schools_etaStar"
 #modelName<-"Schools"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -31,6 +32,7 @@ system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chai
 
 var_names<-c(
   #  "etaStarB",
+  "etaB",
   "aB","bB","sdBB",
   "aS","bS","cvS", "cvmuS"#,
 #  "Ntot","N"
