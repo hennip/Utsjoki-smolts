@@ -15,10 +15,8 @@ model{
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
-      # ifelse(N==s| N==0, etaStarB=1, etaStarB=f(N,s)) 
-      etaStarB[i,y]<-(1-step(N[i,y]-s[i,y]-1))*1+
-                      step(N[i,y]-s[i,y]-1)*((N[i,y]-s[i,y])/((s[i,y]-1)+N[i,y]-1-0.001))
-     
+      etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1)
+
       s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
       muS[i,y]~dlnorm(log(mumuS[i,y])-0.5/TmuS,TmuS)
       mumuS[i,y]<-aS+bS*N[i,y]
