@@ -108,9 +108,15 @@ dat_smolts<-
   full_join(D12, by=NULL)%>%
   full_join(D13, by=NULL)%>%
   full_join(D14, by=NULL)%>% 
-#  mutate(schools=if_else(smolts==0, NA_real_, school_size))%>%
-  mutate(schools=if_else(smolts==0, 1, school_size))%>%
-  mutate(schools=if_else(is.na(smolts)==T, 1, schools))%>%
+  
+  # What should schools be when smolts==0
+   mutate(schools=if_else(smolts==0, NA_real_, school_size))%>%
+  #mutate(schools=if_else(smolts==0, 1, school_size))%>%
+  
+  # What should schools be when smolts==NA
+  # mutate(schools=if_else(is.na(smolts)==T, 1, schools))%>%
+  mutate(schools=if_else(is.na(smolts)==T, NA_real_, schools))%>%
+  
   select(Year,Month,Day,day,smolts, schools)
 #View(dat_smolts)
 

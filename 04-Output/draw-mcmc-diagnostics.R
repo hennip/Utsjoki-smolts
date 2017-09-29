@@ -1,8 +1,8 @@
 
-source("04-Output/load-simulations.r")
+#source("04-Output/load-simulations.r")
 
 #chains<-chains0
-years
+#years
 
 # Traces
 par(mfrow=c(3,3),mar=c(2.5,4,4,1))
@@ -92,6 +92,12 @@ plot(density(chains[,"bS"][[1]]), main="bS", ylim=c(0,500))
 lines(density(chains[,"bS"][[2]]))
 lines(density(chainsP[,"bS"][[1]]), lty=2)
 
+plot(density(chains[,"cvS"][[1]]), main="cvS", ylim=c(0,4))
+lines(density(chains[,"cvS"][[2]]))
+lines(density(chainsP[,"cvS"][[1]]), lty=2)
+plot(density(chains[,"cvmuS"][[1]]), main="cvmuS", ylim=c(0,8))
+lines(density(chains[,"cvmuS"][[2]]))
+lines(density(chainsP[,"cvmuS"][[1]]), lty=2)
 
 
 #windows(record=T)
