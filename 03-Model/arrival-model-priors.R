@@ -6,8 +6,10 @@
 
 #source("00-Functions/packages-and-paths.r")
 
-modelName<-"Smolts_17_09"
+#modelName<-"Smolts_17_09"
 #modelName<-"Smolts_simpleqD"
+
+modelName<-"Smolts_standardqD_etaStarB"
 Mname<-str_c("03-Model/",modelName, ".txt")
 
 # full data; temp data missing for 2012 and partly for 2010
@@ -41,6 +43,7 @@ system.time(jm<-jags.model(Mname,inits=initials,
 
 var_names<-c(
   "aD","bD","cvD","cvmuD",
+  "K","slope","cvS", "cvmuS",
   
   "sums1","sums2",
   

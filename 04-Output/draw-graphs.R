@@ -21,14 +21,17 @@ Ntot<-c()
 for(i in 1:length(years)){
   Ntot[i]<-sum(filter(dat_all, Year==years[i])$smolts, na.rm=T) 
 }
-df<-mutate(df, Ntot)
+df<-df%>%
+  mutate(Ntot)%>%
+#  mutate(x2=c("2005","2006","2008","2014"))
+  mutate(x2=parse_factor(x, levels=NULL))
 
-ggplot(df, aes(x))+
+ggplot(df, aes(x2))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+
   labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
-  geom_point(aes(x=Year, y=Ntot))+
+  geom_point(aes(x=x2, y=Ntot))+
   coord_cartesian(ylim=c(0,38000))
 
 
@@ -38,7 +41,7 @@ for(i in 1:length(years)){
   df<-mutate(df, Year=years[i])
   ifelse(i>1, df2<-bind_rows(df2,df),df2<-df)
 }
-df2<-as.tibble(df2)
+#df2<-as.tibble(df2)
 df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","Year"))
 
 
@@ -74,34 +77,19 @@ df.prior<-boxplot.df(p_sampP, Temp)
 
 # In black and white
 ggplot(df, aes(x))+
-  #  theme_bw()+
+    theme_bw()+
   geom_boxplot(
     data=df.prior,
     mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",
-    colour="grey", fill="grey99")+
+    colour="grey", fill="grey95")+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity")+
+    stat = "identity",fill=rgb(1,1,1,0.6))+
+    #stat = "identity",fill=rgb(1,0,0,0.1))+
   labs(x="Temperature (degrees celsius)", y="Probability", title="Probability to begin migration")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50),col="grey")
-
-# In color
-ggplot(df, aes(x))+
-  geom_boxplot(
-    data=df.prior,
-    mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity",
-    col=1, fill="grey95")+
-  geom_line(data=df.prior, aes(x,q50), col=1)+
-  geom_boxplot(
-    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity",
-    col=2)+
-  labs(x="Temperature (degrees celsius)", y="Probability", title="Probability to begin migration")+
-  geom_line(aes(x,q50), col=2)
-
 
 
 #################################
@@ -118,7 +106,7 @@ ggplot(df, aes(x))+
                col="grey", fill="grey95")+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity")+
+    stat = "identity",fill=rgb(1,1,1,0.6))+
   labs(x="Flow (m3/s)", y="E(travel time) (in days)", title="Travel time to video site")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
@@ -139,12 +127,33 @@ ggplot(df, aes(x))+
                col="grey", fill="grey95")+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity")+
+    stat = "identity",fill=rgb(1,1,1,0.6))+
   labs(x="Flow (m3/s)", y="Probability", title="Probability to observe a smolt at given flow")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
   coord_cartesian(ylim=c(0,1))
+
+#################################
+# Daily passage vs school size
+
+df<-boxplot.df(muS_samp, Ntrue)
+df.prior<-boxplot.df(muS_sampP, Ntrue)
+
+
+ggplot(df, aes(x))+
+  geom_boxplot(data=df.prior,
+               mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+               stat = "identity",
+               col="grey", fill="grey95")+
+  geom_boxplot(
+    mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.6))+
+  labs(x="Flow (m3/s)", y="Probability", title="Expected school size at given daily passage")+
+  geom_line(aes(x,q50))+
+  geom_line(data=df.prior, aes(x,q50), color="grey")+
+  theme_bw()+
+  coord_cartesian(ylim=c(0,50))
 
 
 
