@@ -138,6 +138,7 @@ model{
   
 }
 "
+modelName<-"Smolts_standardqD_oldinits"
 modelName<-"Smolts_standardqD"
 #modelName<-"Smolts_simpleqD2"
 
