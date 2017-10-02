@@ -170,9 +170,12 @@ for(j in 1:data$nYears){
   }
 }
 
-initials<-list(list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=100),
-               list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=900))
-#zN=array(1, dim=c(61,data$nYears)
+#initials<-list(list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=100),
+#               list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=900))
+
+initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
+               list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
+
 
 
 system.time(jm<-jags.model(Mname,inits=initials, n.adapt=100, data=data,n.chains=2))
