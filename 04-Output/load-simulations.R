@@ -19,6 +19,8 @@ chains<-window(chains,start=100000, thin=200)
 #######################
 # Load jags simulations for small school model
 
+#load(file=paste(sep="",pathOut,"Schools_17_09.RData")) #  pieni dirich-malli (siistitty)
+load(file=paste(sep="",pathOut,"Schools_etaStar.RData")) #  pieni dirich-malli (siistitty)
 load(file=paste(sep="",pathOut,"Schools.RData")) #  pieni dirich-malli (siistitty)
 chains<-window(chains,start=2000000)
 

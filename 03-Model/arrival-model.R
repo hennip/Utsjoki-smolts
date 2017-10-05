@@ -113,8 +113,8 @@ model{
   
   aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
   bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
-  cvmuD~dunif(0.001,1)
-  cvD~dunif(0.001,2)
+  cvmuD~dunif(0.001,2)
+  cvD~dunif(0.001,3)
   
   # Proportion departing in each day  
   # ========================================
@@ -156,7 +156,7 @@ model{
   
 }"
 
-modelName<-"Smolts_standardqD_etaStarB"
+modelName<-"Smolts_standardqD_etaStarB_test"
 #modelName<-"Smolts_simpleqD2"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -188,9 +188,13 @@ for(j in 1:data$nYears){
   }
 }
 
-initials<-list(list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=100),
-               list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=900))
+#initials<-list(list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=100),
+#               list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=900))
 #zN=array(1, dim=c(61,data$nYears)
+
+initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
+               list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
+
 
 
 system.time(jm<-jags.model(Mname,inits=initials, n.adapt=100, data=data,n.chains=2))

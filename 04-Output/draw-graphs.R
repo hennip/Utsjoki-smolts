@@ -1,14 +1,8 @@
 
-#source("00-Functions/tidy-functions.r")
-#source("00-Functions/my-palette.r")
-#source("00-Functions/packages-and-paths.r")
-#source("01-Data/tidy-smolts-data.r")
-
-#source("load-simulations.r")
-
-
 
 years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+
+#years<-c(2006,2008) # 2 years of data for testing- schools model  
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
@@ -149,7 +143,7 @@ ggplot(df, aes(x))+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  labs(x="Flow (m3/s)", y="Probability", title="Expected school size at given daily passage")+
+  labs(x="Daily passage (number of smolts)", y="Probability", title="Expected school size at given daily passage")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
