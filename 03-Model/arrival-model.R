@@ -97,10 +97,9 @@ model{
       for(j in (i+1):(i+13)){ #13 
         qDx[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
       }
-      sumqDx[i,y]<-sum(qDx[i,i:(i+13),y])
-      
+
       for(j in i:(i+13)){
-        qD[i,j,y]<-qDx[i,j,y]/(sumqDx[i,y]+0.0001)
+        qD[i,j,y]<-qDx[i,j,y]/(sum(qDx[i,i:(i+13),y])+0.0001)
       }
       
       MD[i,y]<-log(muD[i,y])-0.5/TD
@@ -113,8 +112,8 @@ model{
   
   aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
   bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
-  cvmuD~dunif(0.001,2)
-  cvD~dunif(0.001,3)
+  cvmuD~dunif(0.001,1)
+  cvD~dunif(0.001,2)
   
   # Proportion departing in each day  
   # ========================================

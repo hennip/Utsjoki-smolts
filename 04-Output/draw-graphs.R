@@ -6,6 +6,7 @@ years<-c(2005:2006,2008,2014) # 4 years of data for testing
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
+
 # Number of smolts
 ##################################################
 Year<-years
@@ -28,18 +29,14 @@ ggplot(df, aes(x2))+
   geom_point(aes(x=x2, y=Ntot))+
   coord_cartesian(ylim=c(0,38000))
 
-
 # Daily numbers
 for(i in 1:length(years)){
-  df<-boxplot.jags.df2(chains, "N[",paste(sep="", i,"]"),1:n_days)
+  df<-boxplot.jags.df2(chains, "N[",str_c(i,"]"),1:n_days)
   df<-mutate(df, Year=years[i])
   ifelse(i>1, df2<-bind_rows(df2,df),df2<-df)
 }
-#df2<-as.tibble(df2)
 df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","Year"))
 
-
-#df<-full_join(df2,dat_all, by=NULL)
 df<-df2%>%
   left_join(dat_all)%>%
   select(Day,Month, Year,day, smolts, q50, everything())

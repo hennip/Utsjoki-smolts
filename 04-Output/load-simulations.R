@@ -8,8 +8,12 @@ chains<-window(chains,start=1500000, thin=200)
 #load(file=paste(sep="",pathOut,"Smolts_simpleqD.RData")) # "simppelisti" standardoidut qD:t
 
 load(file=paste(sep="",pathOut,"Smolts_standardqD.RData")) # standardoidut qD:t
+load(file=paste(sep="",pathOut,"Smolts_standardqD_oldinits.RData")) # standardoidut qD:t
 load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB.RData")) # standardoidut qD:t
 chains<-window(chains,start=100000, thin=200)
+load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB_test.RData")) # standardoidut qD:t
+chains<-window(chains,start=100000, thin=200)
+
 
 #load(file=paste(sep="",pathOut,"Smolts_standardqD_cvmuD2.RData")) # standardoidut qD:t, piti olla cvmuD U(0,2), mutta on (0,1)
 #chains<-window(chains,start=500000, thin=200)
@@ -21,6 +25,7 @@ chains<-window(chains,start=100000, thin=200)
 
 #load(file=paste(sep="",pathOut,"Schools_17_09.RData")) #  pieni dirich-malli (siistitty)
 load(file=paste(sep="",pathOut,"Schools_etaStar.RData")) #  pieni dirich-malli (siistitty)
+chains<-window(chains,start=5000000)
 load(file=paste(sep="",pathOut,"Schools.RData")) #  pieni dirich-malli (siistitty)
 chains<-window(chains,start=2000000)
 

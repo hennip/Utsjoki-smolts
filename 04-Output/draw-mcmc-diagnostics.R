@@ -100,6 +100,36 @@ lines(density(chains[,"cvmuS"][[2]]))
 lines(density(chainsP[,"cvmuS"][[1]]), lty=2)
 
 
+# correlations
+##################################################
+aD_orig<-as.data.frame(chains[,"aD"][[1]])
+bD_orig<-as.data.frame(chains[,"bD"][[1]])
+cvD_orig<-as.data.frame(chains[,"cvD"][[1]])
+cvmuD_orig<-as.data.frame(chains[,"cvmuD"][[1]])
+
+
+par(mfrow=c(2,3))
+plot(aD_orig[,1],bD_orig[,1], xlab="aD", ylab="bD", col="red")
+#points(aD_samp,bD_samp)
+
+plot(aD_orig[,1],cvD_orig[,1], xlab="aD", ylab="cvD", col="red")
+#points(aD_samp,cvD_samp)
+
+plot(aD_orig[,1],cvmuD_orig[,1], xlab="aD", ylab="cvmuD", col="red")
+#points(aD_samp,cvmuD_samp)
+
+plot(bD_orig[,1],cvD_orig[,1], xlab="bD", ylab="cvD", col="red")
+#points(bD_samp,cvD_samp)
+
+plot(bD_orig[,1],cvmuD_orig[,1], xlab="bD", ylab="cvmuD", col="red")
+#points(bD_samp,cvmuD_samp)
+
+plot(cvD_orig[,1],cvmuD_orig[,1], xlab="cvD", ylab="cvmuD", col="red")
+#points(cvD_samp,cvmuD_samp)
+
+##################################################
+
+
 #windows(record=T)
 par(mfrow=c(3,6))
 for(i in 1:61){
