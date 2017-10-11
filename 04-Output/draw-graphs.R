@@ -95,13 +95,61 @@ ggplot(df, aes(x))+
                mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
                stat = "identity",
                col="grey", fill="grey95")+
+  geom_line(data=df.prior, aes(x,q50), color="grey")+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
   labs(x="Flow (m3/s)", y="E(travel time) (in days)", title="Travel time to video site")+
   geom_line(aes(x,q50))+
-  geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()
+
+# Travel time at minimum flow
+FLOW<-10
+fn<-c(1:14)
+source("04-Output/sample-travel-time-flow10.r")
+
+df<-boxplot.df(qD_samp, fn)
+df.prior<-boxplot.df(qD_sampP, fn)
+
+ggplot(df, aes(x))+
+  geom_boxplot(
+    data=df.prior,
+    mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",
+    colour="grey", fill="grey98")+
+  geom_line(data=df.prior, aes(x,q50), color="grey")+
+  geom_boxplot(
+    mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.9))+
+  labs(x="Days", y="Probability", title="Travel time to video site with flow=10m3/s on the day of departure")+
+  geom_line(aes(x,q50))+
+  coord_cartesian(xlim=c(1:14), ylim=c(0,0.8))+
+  theme_bw()
+
+# Travel time at maximum flow
+FLOW<-100
+fn<-c(1:14)
+source("04-Output/sample-travel-time-flow10.r")
+
+df<-boxplot.df(qD_samp, fn)
+df.prior<-boxplot.df(qD_sampP, fn)
+
+ggplot(df, aes(x))+
+  geom_boxplot(
+    data=df.prior,
+    mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",
+    colour="grey", fill="grey98")+
+  geom_line(data=df.prior, aes(x,q50), color="grey")+
+  geom_boxplot(
+    mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.9))+
+  labs(x="Days", y="Probability", title="Travel time to video site with flow=100m3/s on the day of departure")+
+  geom_line(aes(x,q50))+
+  coord_cartesian(xlim=c(1:14), ylim=c(0,0.8))+
+  theme_bw()
+
+
 
 
 #################################
@@ -124,6 +172,7 @@ ggplot(df, aes(x))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
   coord_cartesian(ylim=c(0,1))
+
 
 #################################
 # Daily passage vs school size

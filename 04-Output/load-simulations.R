@@ -5,12 +5,14 @@ load(file=paste(sep="",pathOut,"Smolts_17_09.RData")) # "simppelisti" standardoi
 load(file=paste(sep="",pathOut,"Priors_Smolts_17_09.RData"))
 chains<-window(chains,start=1500000, thin=200)
 
-#load(file=paste(sep="",pathOut,"Smolts_simpleqD.RData")) # "simppelisti" standardoidut qD:t
-
-load(file=paste(sep="",pathOut,"Smolts_standardqD.RData")) # standardoidut qD:t
+#load(file=paste(sep="",pathOut,"Smolts_standardqD.RData")) # standardoidut qD:t
 load(file=paste(sep="",pathOut,"Smolts_standardqD_oldinits.RData")) # standardoidut qD:t
+
+
 load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB.RData")) # standardoidut qD:t
+load(file=paste(sep="",pathOut,"Priors_Smolts_standardqD_etaStarB.RData")) #  PRIORS
 chains<-window(chains,start=100000, thin=200)
+
 load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB_test.RData")) # standardoidut qD:t
 chains<-window(chains,start=100000, thin=200)
 
