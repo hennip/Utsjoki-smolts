@@ -72,7 +72,7 @@ cat(M1,file=Mname)
 # run was late in 2009
 #years<-c(2005:2009,2011,2013:2014) 
 #years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2006,2008)
+years<-c(2005,2006,2008)
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 ones<-rep(1,n_days)
@@ -94,6 +94,7 @@ initials<-list(list(LNtot=rep(14,data$nYears)),
 system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chains=2))
 
 var_names<-c(
+  "muB", "qN",
   "aB","bB","sdBB",
   "K","slope","cvS", "cvmuS",
   "Ntot","N"
