@@ -3,46 +3,7 @@
 
 #chains<-chains0
 #years
-
-# Traces
-par(mfrow=c(3,3),mar=c(2.5,4,4,1))
-traceplot(chains[,"Ntot[1]"],main="Ntot1", cex.main=1.5)
-traceplot(chains[,"Ntot[2]"],main="Ntot2", cex.main=1.5)
-traceplot(chains[,"Ntot[3]"],main="Ntot3", cex.main=1.5)
-traceplot(chains[,"Ntot[4]"],main="Ntot4", cex.main=1.5)
-#traceplot(chains[,"Ntot[5]"],main="Ntot5", cex.main=1.5)
-#traceplot(chains[,"Ntot[6]"],main="Ntot6", cex.main=1.5)
-#traceplot(chains[,"Ntot[7]"],main="Ntot7", cex.main=1.5)
-#traceplot(chains[,"Ntot[8]"],main="Ntot8", cex.main=1.5)
-#traceplot(chains[,"Ntot[9]"],main="Ntot9", cex.main=1.5)
-
-traceplot(chains[,"aP"],main=expression("aP"), cex.main=1.5)
-traceplot(chains[,"bP"],main=expression("bP"), cex.main=1.5)
-traceplot(chains[,"sdP"],main=expression("sdP"), cex.main=1.5)
-traceplot(chains[,"aD"],main=expression("aD"), cex.main=1.5)
-traceplot(chains[,"bD"],main=expression("bD"), cex.main=1.5)
-traceplot(chains[,"cvD"],main=expression("cvD"), cex.main=1.5)
-traceplot(chains[,"cvmuD"],main=expression("cvmuD"), cex.main=1.5)
-
-traceplot(chains[,"aB"],main=expression("aB"), cex.main=1.5)
-traceplot(chains[,"bB"],main=expression("bB"), cex.main=1.5)
-traceplot(chains[,"sdBB"],main=expression("sdBB"), cex.main=1.5)
-traceplot(chains[,"etaB"],main=expression("etaB"), cex.main=1.5)
-traceplot(chains[,"eta_alphaN"],main=expression("eta_alphaN"), cex.main=1.5)
-
-traceplot(chains[,"sums1[48]"],main=expression("sums1"))
-traceplot(chains[,"sums2[61]"],main=expression("sums2"))
-
-summary(chains[,"sums1[48]"])
-summary(chains[,"sums2[48]"])
-
-
-traceplot(chains[,"K"],main=expression("K"), cex.main=1.5)
-traceplot(chains[,"slope"],main=expression("slope"), cex.main=1.5)
-traceplot(chains[,"cvS"],main=expression("cvS"), cex.main=1.5)
-traceplot(chains[,"cvmuS"],main=expression("cvmuS"), cex.main=1.5)
-
-
+ 
 #################################
 # Densities
 

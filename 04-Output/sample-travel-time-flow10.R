@@ -1,5 +1,5 @@
 #################################
-# Travel time to video at flow = 10m3/s
+# Travel time to video at chosen flow (draw-graphs.r)
 
 # pick chains for comparison
 c1<-chains[[1]]
@@ -41,7 +41,6 @@ for(j in 1:n_samp){
   }
 }
 
-
 # Prior
 n_samp<-length(c2[,"aD"])
 aD_samp<-c2[,"aD"]
@@ -76,3 +75,9 @@ for(j in 1:n_samp){
     qD_sampP[j,k]<-qDx_samp[j,k]/(sum(qDx_samp[j, 1:14])+0.0001)
   }
 }
+
+#par(mfrow=c(4,4))
+#for(i in 1:14){
+#x<-mcmc.list(as.mcmc(qD_samp[,i]),as.mcmc(qD_sampP[,i]))
+#traceplot(x, main=str_c("qD_samp ",i))
+#}
