@@ -110,11 +110,20 @@ model{
   TmuD<-1/log(cvmuD*cvmuD+1)
   TD<-1/log(cvD*cvD+1)
   
-  aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
-  bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
-  cvmuD~dunif(0.001,1)
-  cvD~dunif(0.001,2)
+  #aD~dlnorm(0.52,14) # mu=1.75,cv=0.27
+  #bD~dlnorm(-4.6,25) # mu=0.01,cv=0.2
+  #cvmuD~dunif(0.001,1)
+  #cvD~dunif(0.001,2)
   
+  # Priors for logd are derived in travel-time-mvn.r 
+  aD<-exp(logd[1])
+  bD<-exp(logd[2])
+  cvD<-exp(logd[3])
+  cvmuD<-exp(logd[4])
+  
+  logd[1:4]~dmnorm(ld_mu[1:4], ld_R[,]) 
+  ld_R[1:4,1:4]<-inverse(ld_covar[,])
+
   # Proportion departing in each day  
   # ========================================
   for(y in 1:nYears){
@@ -155,7 +164,8 @@ model{
   
 }"
 
-modelName<-"Smolts_standardqD_etaStarB_test"
+modelName<-"Smolts_etaStarB_Dmvn"
+#modelName<-"Smolts_standardqD_etaStarB_test"
 #modelName<-"Smolts_simpleqD2"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -168,9 +178,12 @@ years<-c(2005:2006,2008,2014) # 4 years of data for testing
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
+load("02-Priors/priors-mvn.RData")
 
 data<-list(
   s=df$Schools,
+  ld_covar=priors_mvn$Covar_d,
+  ld_mu=priors_mvn$Mu_d,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -178,18 +191,6 @@ data<-list(
   nYears=length(years)
 )
 
-inits_zN<-array(0.1,dim=dim(data$Nobs))
-for(j in 1:data$nYears){
-  for(i in 1:data$nDays){
-    if(is.na(data$Nobs[i,j])==F&data$Nobs[i,j]!=0){
-      inits_zN[i,j]<-data$Nobs[i,j]  
-    }
-  }
-}
-
-#initials<-list(list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=100),
-#               list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=900))
-#zN=array(1, dim=c(61,data$nYears)
 
 initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
                list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
