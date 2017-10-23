@@ -15,7 +15,7 @@ model{
   # Observation process
   # ====================
   for(y in 1:nYears){
-    for(i in 1:nDays){ # 61 days in June-July
+    for(i in 1:nDays){
       
       # Observed number of fish
       # Nobs[i,y]~dbetabin(100,10,N[i,y])  
@@ -49,9 +49,10 @@ model{
   # Abundance
   # ==============
   for(y in 1:nYears){
-    N[y]<-exp(logN[y])
-    logN[y]~dunif(-1000,9.2) # total run size in year y
-
+    for(i in 1:nDays){
+      N[i,y]<-round(exp(logN[i,y]))
+      logN[i,y]~dunif(-1000,9.2) # total run size in year y
+    }
 #    Ntot[y]<-exp(LNtot[y])
 #    LNtot[y]~dunif(7,15) # total run size in year y
     
@@ -84,15 +85,14 @@ ones<-rep(1,n_days)
 data<-list(
   s=df$Schools,
   flow=df$Flow,
-  ones=ones,
+#  ones=ones,
   Nobs=df$Smolts,                     
   nDays=n_days,
   nYears=length(years)
 )
 
-initials<-list(list(LNtot=rep(14,data$nYears)),
-               list(LNtot=rep(14,data$nYears))
-)
+initials<-list(list(logN=array(8.2,dim=c(data$nDays,data$nYears))),
+               list(logN=array(8.2,dim=c(data$nDays,data$nYears))))
 
 system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chains=2))
 
