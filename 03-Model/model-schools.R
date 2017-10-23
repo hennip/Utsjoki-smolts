@@ -49,20 +49,22 @@ model{
   # Abundance
   # ==============
   for(y in 1:nYears){
-    Ntot[y]<-exp(LNtot[y])
-    LNtot[y]~dunif(7,15) # total run size in year y
+    N[y]<-exp(logN[y])
+    logN[y]~dunif(-1000,9.2) # total run size in year y
+
+#    Ntot[y]<-exp(LNtot[y])
+#    LNtot[y]~dunif(7,15) # total run size in year y
     
-   #N[1:nDays,y]~dmulti(qN[1:nDays,y],Ntot[y]) # daily true number of fish
-    for(i in 1:(nDays-1)){
-      N[i,y]<-round(qN[i,y]*Ntot[y])
-    }
-    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))   
-    qN[1:nDays,y]~ddirich(ones) # flat prior
+#    for(i in 1:(nDays-1)){
+#      N[i,y]<-round(qN[i,y]*Ntot[y])
+#    }
+#    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))   
+#    qN[1:nDays,y]~ddirich(ones) # flat prior
   }
 }
 "
 
-modelName<-"Schools_etaStarB"
+modelName<-"Schools_etaStarB_indepN"
 #modelName<-"Schools"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
