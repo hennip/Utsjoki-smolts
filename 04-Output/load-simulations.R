@@ -20,10 +20,9 @@ chains<-window(chains,start=2000000, thin=200)
 
 load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB.RData")) 
 load(file=paste(sep="",pathOut,"Priors_Smolts_standardqD_etaStarB.RData")) #  PRIORS
-chains<-window(chains,start=1000000, thin=200)
-# tsekkaa konvergointidiagnostiikka
-# Ajoaika 16d
-# seuraavan ajon pitäisi valmistua 24.10.
+chains<-window(chains,start=2000000, thin=200)
+# Ajoaika 22d, aD:n konvergenssi edelleen kyseenalainen
+# tätä voisi testata "vanhoilla initseillä" jos jaksaisi- > auttaisiko?
 
 #load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB_test.RData"))
 #chains<-window(chains,start=100000, thin=200)
@@ -41,24 +40,15 @@ chains<-window(chains,start=800000, thin=200)
 #######################
 # Load jags simulations for small school model
 
-#load(file=paste(sep="",pathOut,"Schools_17_09.RData")) #  pieni dirich-malli (siistitty)
-load(file=paste(sep="",pathOut,"Schools_etaStar.RData")) #  pieni dirich-malli (siistitty)
-chains<-window(chains,start=5000000)
-load(file=paste(sep="",pathOut,"Schools.RData")) #  pieni dirich-malli (siistitty)
-chains<-window(chains,start=2000000)
+# Tarvitaan vielä: malli jossa pelkkä etaB, joko dirich tai lognormal prioreilla (kummilla?)
 
-load(file=paste(sep="",pathOut,"Schools_etaStarB_2.RData")) #  
-load(file=paste(sep="",pathOut,"Priors_Schools_etaStar.RData")) #  
-chains<-window(chains,start=15000000, thin=200)
-# konvergointi näyttää hyvältä, cvS ja cvmuS hakkaa ylärajaan
-# Tässä mallissa oli vuoto-ongelmia, onko edelleen?
-# Ajoaika 37h
 
-# 2005 mukana (viimein), odotettavissa ajon loppu 23/24 10.
+# dirich prior for Ntot
 load(file=paste(sep="",pathOut,"Schools_etaStarB.RData")) #  
 load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB.RData")) #  
 
-
-
+# dlnorm priors for N
+load(file=paste(sep="",pathOut,"Schools_etaStarB_indepN.RData")) #  
 load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB_indepN.RData")) #  
+
 
