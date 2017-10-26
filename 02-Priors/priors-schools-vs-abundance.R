@@ -28,14 +28,17 @@ n<-length(Ntrue)
 
 K<-500
 slope<-0.15
-mu<-c();s<-c();
-sd<-0.15
+muS<-c();s<-c();
+etaStarB<-c()
+sdS<-0.15
 for(i in 1:n){
-  mu[i]<-(K*Ntrue[i])/((K/slope)+Ntrue[i])
-  s[i]<-rlnorm(1,log(mu[i])-0.5*sd*sd,sd)
+  muS[i]<-(K*Ntrue[i])/((K/slope)+Ntrue[i])
+  s[i]<-rlnorm(1,log(muS[i])-0.5*sdS*sdS,sdS)
+  etaStarB[i]<-(Ntrue[i]-s[i])/(s[i]-1+0.01)+1
+  
 }
 cbind(Ntrue,s)[1:10,]
-tS<-as.tibble(cbind(Ntrue,mu,s))
+tS<-as.tibble(cbind(Ntrue,muS,s, etaStarB))
 
 ggplot(tS) + 
 #  coord_cartesian(xlim=c(0,1000))+

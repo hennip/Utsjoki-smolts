@@ -8,16 +8,14 @@
 load(file=paste(sep="",pathOut,"Smolts_standardqD.RData")) # standardoidut qD:t
 load(file=paste(sep="",pathOut,"Priors_Smolts_standardqD.RData")) 
 chains<-window(chains,start=2500000, thin=200)
-# konvergoi, mutta miksaantyminen huonoa 
-# Ajoaika 18d
-# seuraava ajo valmistuu 24.10.
+# Ajoaika 24d eikä siltikään kaikki konvergoi (aD, cvD, cvmuD ongelmalliset) -> kaadetaan
 
 load(file=paste(sep="",pathOut,"Smolts_standardqD_oldinits.RData"))
 load(file=paste(sep="",pathOut,"Priors_Smolts_standardqD_oldinits.RData")) 
 chains<-window(chains,start=2000000, thin=200)
 # ON KONVERGOINUT!!!
-# ajoaika 14d
-# seuraava ajo valmistuu 24.10.
+# ajoaika n. 19d
+# seuraava ajo valmistuu 1.11.
 # tässä etaB~U(5,1000), tsekkaa haittaako
 
 load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB.RData")) 
@@ -58,4 +56,9 @@ chains<-window(chains,start=15000000, thin=200)
 
 # 2005 mukana (viimein), odotettavissa ajon loppu 23/24 10.
 load(file=paste(sep="",pathOut,"Schools_etaStarB.RData")) #  
+load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB.RData")) #  
+
+
+
+load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB_indepN.RData")) #  
 

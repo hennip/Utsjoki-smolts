@@ -42,11 +42,12 @@ traceplot(chains[,"slope"],main=expression("slope"), cex.main=1.5)
 traceplot(chains[,"cvS"],main=expression("cvS"), cex.main=1.5)
 traceplot(chains[,"cvmuS"],main=expression("cvmuS"), cex.main=1.5)
 
+gelman.diag(chains)
 
-gd<-gelman.diag(chains)
-max(gd$psrf[,2])
+#gd<-gelman.diag(chains)
+#max(gd$psrf[,2])
 
-gd$psrf[,2]==1.408109
+#gd$psrf[,2]==1.408109
 
 
 
@@ -119,6 +120,15 @@ lines(density(chainsP[,"cvS"][[1]]), lty=2)
 plot(density(chains[,"cvmuS"][[1]]), main="cvmuS", ylim=c(0,8))
 lines(density(chains[,"cvmuS"][[2]]))
 lines(density(chainsP[,"cvmuS"][[1]]), lty=2)
+
+
+plot(density(chains[,"aB"][[1]]), main="aB", ylim=c(0,4))
+lines(density(chains[,"aB"][[2]]))
+lines(density(chainsP[,"aB"][[1]]), lty=2)
+
+plot(density(chains[,"aB"][[1]]), main="aB", ylim=c(0,0.4))
+lines(density(chains[,"aB"][[2]]))
+lines(density(chainsP[,"aB"][[1]]), lty=2)
 
 
 # correlations

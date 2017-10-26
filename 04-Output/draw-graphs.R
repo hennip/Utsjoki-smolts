@@ -177,6 +177,7 @@ ggplot(df, aes(x))+
 
 #################################
 # Daily passage vs school size
+source("04-Output/sample-passage-vs-school-size.r")
 
 df<-boxplot.df(muS_samp, Ntrue)
 df.prior<-boxplot.df(muS_sampP, Ntrue)

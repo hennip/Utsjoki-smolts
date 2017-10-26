@@ -32,7 +32,7 @@ model{
     }
   }
   # priors for observation process
-  aB~dlnorm(2.9,60)
+  aB~dnorm(2.9,60)
   bB~dlnorm(-2.6,984)
   sdBB~dlnorm(-0.23,210)
   etaB~dunif(1,1000)
@@ -49,24 +49,25 @@ model{
   # Abundance
   # ==============
   for(y in 1:nYears){
-    for(i in 1:nDays){
-      N[i,y]<-round(exp(logN[i,y]))
-      logN[i,y]~dunif(-1000,9.2) # total run size in year y
-    }
-#    Ntot[y]<-exp(LNtot[y])
-#    LNtot[y]~dunif(7,15) # total run size in year y
-    
-#    for(i in 1:(nDays-1)){
-#      N[i,y]<-round(qN[i,y]*Ntot[y])
+#    for(i in 1:nDays){
+#      N[i,y]<-round(exp(logN[i,y]))
+#      logN[i,y]~dunif(-1000,9.2) # total run size in year y
 #    }
-#    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))   
-#    qN[1:nDays,y]~ddirich(ones) # flat prior
+    Ntot[y]<-exp(LNtot[y])
+    LNtot[y]~dunif(7,9.5) # total run size in year y
+    
+    for(i in 1:(nDays-1)){
+      N[i,y]<-round(qN[i,y]*Ntot[y])
+    }
+    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))   
+    qN[1:nDays,y]~ddirich(ones) # flat prior
   }
 }
 "
 
-modelName<-"Schools_etaStarB_indepN"
+#modelName<-"Schools_etaStarB_indepN"
 #modelName<-"Schools"
+modelName<-"Schools_etaStarB"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -85,7 +86,7 @@ ones<-rep(1,n_days)
 data<-list(
   s=df$Schools,
   flow=df$Flow,
-#  ones=ones,
+  ones=ones,
   Nobs=df$Smolts,                     
   nDays=n_days,
   nYears=length(years)
