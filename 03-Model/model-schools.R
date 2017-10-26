@@ -54,7 +54,7 @@ model{
 #      logN[i,y]~dunif(-1000,9.2) # total run size in year y
 #    }
     Ntot[y]<-exp(LNtot[y])
-    LNtot[y]~dunif(7,9.5) # total run size in year y
+    LNtot[y]~dunif(7,15) # total run size in year y
     
     for(i in 1:(nDays-1)){
       N[i,y]<-round(qN[i,y]*Ntot[y])
