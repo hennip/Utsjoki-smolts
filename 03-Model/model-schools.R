@@ -92,8 +92,10 @@ data<-list(
   nYears=length(years)
 )
 
-initials<-list(list(logN=array(8.2,dim=c(data$nDays,data$nYears))),
-               list(logN=array(8.2,dim=c(data$nDays,data$nYears))))
+initials<-list(list(LNtot=rep(14,data$nYears)),
+               list(LNtot=rep(14,data$nYears)))
+#initials<-list(list(logN=array(8.2,dim=c(data$nDays,data$nYears))),
+#               list(logN=array(8.2,dim=c(data$nDays,data$nYears))))
 
 system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chains=2))
 
