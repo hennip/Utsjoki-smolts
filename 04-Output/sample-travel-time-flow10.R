@@ -41,6 +41,7 @@ for(j in 1:n_samp){
   }
 }
 
+
 # Prior
 n_samp<-length(c2[,"aD"])
 aD_samp<-c2[,"aD"]

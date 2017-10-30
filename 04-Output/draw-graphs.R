@@ -195,7 +195,7 @@ ggplot(df, aes(x))+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
-  coord_cartesian(ylim=c(0,1))
+  coord_cartesian(ylim=c(0,30))
 
 
 

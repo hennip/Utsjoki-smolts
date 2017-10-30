@@ -24,6 +24,11 @@ chains<-window(chains,start=2000000, thin=200)
 # Ajoaika 22d, aD:n konvergenssi edelleen kyseenalainen
 # tätä voisi testata "vanhoilla initseillä" jos jaksaisi- > auttaisiko?
 
+load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB_oldinits.RData")) 
+load(file=paste(sep="",pathOut,"Priors_Smolts_standardqD_etaStarB.RData")) #  PRIORS
+chains<-window(chains,start=400000, thin=200)
+# 3d ajo ja konvergenssi (so it seems)! Hämmästyttävää nopeutta. Ehdottomasti käytössä jatkossa "vanhat initsit"
+
 #load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB_test.RData"))
 #chains<-window(chains,start=100000, thin=200)
 # ei likelläkään konvergointia
@@ -40,8 +45,7 @@ chains<-window(chains,start=800000, thin=200)
 #######################
 # Load jags simulations for small school model
 
-# Tarvitaan vielä: malli jossa pelkkä etaB, joko dirich tai lognormal prioreilla (kummilla?)
-
+# Tarvitaan vielä: malli jossa pelkkä etaB lognormal prioreilla 
 
 # dirich prior for Ntot
 load(file=paste(sep="",pathOut,"Schools_etaStarB.RData")) #  

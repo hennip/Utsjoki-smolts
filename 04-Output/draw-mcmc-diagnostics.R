@@ -33,8 +33,8 @@ traceplot(chains[,"eta_alphaN"],main=expression("eta_alphaN"), cex.main=1.5)
 traceplot(chains[,"sums1[48]"],main=expression("sums1"))
 traceplot(chains[,"sums2[61]"],main=expression("sums2"))
 
-summary(chains[,"sums1[48]"])
-summary(chains[,"sums2[48]"])
+#summary(chains[,"sums1[48]"])
+#summary(chains[,"sums2[48]"])
 
 
 traceplot(chains[,"K"],main=expression("K"), cex.main=1.5)
@@ -63,7 +63,7 @@ gelman.diag(chains[,"Ntot[4]"])
 
 
 gelman.plot(chains[,"Ntot[1]"])
-gelman.plot(chains[,"bP"])
+gelman.plot(chains[,"cvD"])
 
 #################################
 # Densities
