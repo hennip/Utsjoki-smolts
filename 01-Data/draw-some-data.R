@@ -23,7 +23,7 @@ ggplot(dat)+
   geom_line(aes(x = day, y = meanTemp, color=as.factor(Year)), size=1.1)+
 #  scale_color_manual(values=c(grey.colors(4, start = 0.3, end = 0.7, gamma = 2.2, alpha = NULL)))
   scale_colour_grey()+
-  labs(x="Day (June-July)", y="Temperature")
+  labs(x="Day (June-July)", y=expression(Temperature~(degree*C)), color="Year")
   
 # Flow
 ## ---- draw-some-data-flow ----

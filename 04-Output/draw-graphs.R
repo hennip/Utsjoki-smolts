@@ -28,7 +28,7 @@ ggplot(df, aes(x2))+
     stat = "identity")+
   labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
   geom_point(aes(x=x2, y=Ntot))+
-  coord_cartesian(ylim=c(0,38000))
+  coord_cartesian(ylim=c(0,40000))
 
 # Daily numbers
 for(i in 1:length(years)){
