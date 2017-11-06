@@ -143,8 +143,10 @@ model{
   
   aP~dnorm(-20,1) #mu=-20
   bP~dlnorm(0.6,10) #mu=1.91
-  sdP~dlnorm(0,1) #mu=1.6
-  
+  #sdP~dlnorm(0,1) #mu=1.6
+  sdP2x~dbeta(mu*eta,(1-mu)*eta)
+  sdP2<-sdP2x*3
+
   # check sums (should be close to 1, otherwise fish is lost)
   for(i in 48:61){ # last 2 weeks of July 2006
     sums1[i]<-sum(qD[i,i:(i+13),1])
