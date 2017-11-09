@@ -9,6 +9,7 @@
 #source("00-Functions/packages-and-paths.r")
 
 
+
 M1<-"
 model{
 
@@ -35,7 +36,7 @@ model{
   aB~dnorm(2.9,60)
   bB~dlnorm(-2.6,984)
   sdBB~dlnorm(-0.23,210)
-  etaB~dunif(1,1000)
+  etaB~dunif(5,1000)
 
   # priors for schooling
   K~dlnorm(6.07,0.7)
@@ -70,6 +71,7 @@ model{
 modelName<-"Schools_etaStarB_indepN"
 #modelName<-"Schools"
 #modelName<-"Schools_etaStarB"
+modelName<-"Schools_etaB_indepN"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -88,7 +90,6 @@ ones<-rep(1,n_days)
 data<-list(
   s=df$Schools,
   flow=df$Flow,
-  ones=ones,
   Nobs=df$Smolts,                     
   nDays=n_days,
   nYears=length(years)

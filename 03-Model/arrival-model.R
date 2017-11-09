@@ -158,6 +158,9 @@ model{
 }"
 
 modelName<-"Smolts_etaStarB_sdP"
+modelName<-"Smolts_standardqD_oldinits"
+modelName<-"Smolts_standardqD"
+#modelName<-"Smolts_simpleqD2"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -183,9 +186,12 @@ data<-list(
 )
 
 
+
+#initials<-list(list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=100),
+#               list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=900))
+
 initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
                list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
-
 
 
 system.time(jm<-jags.model(Mname,inits=initials, n.adapt=1000, data=data,n.chains=2))
@@ -256,5 +262,4 @@ b6<-Sys.time() ; t6<-b6-a6; t6
 
 chains<-combine.mcmc(list(chains2,chains3,chains4,chains5,chains6))
 save(chains, file=str_c(pathOut,modelName,".RData"))
-
 
