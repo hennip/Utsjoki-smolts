@@ -51,10 +51,11 @@ ggplot(df, aes(day))+
   geom_line(aes(day,q50))+
 #  facet_grid(.~Year)+
   facet_wrap(~Year)+
-  geom_point(mapping=aes(day,smolts), color="blue", shape=17, size=2)+
-  geom_line(aes(day,smolts), col="blue")+
-  labs(x="Day (in June-July)", y="Number of smolts")
-#  coord_cartesian(ylim=c(0,3800))
+  geom_point(mapping=aes(day,smolts), col="grey50")+
+#  geom_point(mapping=aes(day,smolts), color="blue", shape=17, size=2)+
+  geom_line(aes(day,smolts), col="grey50")+
+  labs(x="Day (in June-July)", y="Number of smolts")+
+  coord_cartesian(ylim=c(0,3500))
 
 
 
@@ -112,7 +113,7 @@ source("04-Output/sample-travel-time-flow10.r")
 df<-boxplot.df(qD_samp, fn)
 df.prior<-boxplot.df(qD_sampP, fn)
 
-ggplot(df, aes(x))+
+plot1<-ggplot(df, aes(x))+
   geom_boxplot(
     data=df.prior,
     mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
@@ -135,7 +136,7 @@ source("04-Output/sample-travel-time-flow10.r")
 df<-boxplot.df(qD_samp, fn)
 df.prior<-boxplot.df(qD_sampP, fn)
 
-ggplot(df, aes(x))+
+plot2<-ggplot(df, aes(x))+
   geom_boxplot(
     data=df.prior,
     mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
@@ -150,6 +151,7 @@ ggplot(df, aes(x))+
   coord_cartesian(xlim=c(1:14), ylim=c(0,0.8))+
   theme_bw()
 
+grid.arrange(plot1, plot2, nrow=2)
 
 
 

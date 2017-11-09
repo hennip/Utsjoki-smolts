@@ -35,7 +35,7 @@ traceplot(chains[,"sums2[61]"],main=expression("sums2"))
 
 #summary(chains[,"sums1[48]"])
 #summary(chains[,"sums2[48]"])
-
+summary(chains[,"sdP"])
 
 traceplot(chains[,"K"],main=expression("K"), cex.main=1.5)
 traceplot(chains[,"slope"],main=expression("slope"), cex.main=1.5)

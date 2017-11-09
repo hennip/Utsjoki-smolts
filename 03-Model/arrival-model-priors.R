@@ -9,7 +9,9 @@
 
 #modelName<-"Smolts_standardqD_etaStarB"
 #modelName<-"Smolts_standardqD_oldinits"
-modelName<-"Smolts_standardqD"
+#modelName<-"Smolts_standardqD"
+modelName<-"Smolts_etaStarB_sdP"
+
 Mname<-str_c("03-Model/",modelName, ".txt")
 
 # full data; temp data missing for 2012 and partly for 2010
