@@ -4,6 +4,7 @@ example*
 *.Rproj
 *.txt
 *.pdf
+*.RDS
 
 
 # History files

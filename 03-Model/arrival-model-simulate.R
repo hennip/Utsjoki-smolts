@@ -157,7 +157,7 @@ cat(MX,file=Mname)
 
 # full data; temp data missing for 2012 and partly for 2010
 years<-c(2007)
-n_days<-61
+n_days<-92#61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
 
@@ -177,11 +177,10 @@ data<-list(
 
 
 system.time(jm<-jags.model(Mname,#inits=initials, 
-                           n.adapt=100, data=data,n.chains=2))
+                           n.adapt=100, data=data,n.chains=1))
 
 
 var_names<-c(
-  "sums",
   "N"
 )
 
@@ -192,4 +191,9 @@ a1<-Sys.time();a1
 system.time(
   chains1<-coda.samples(jm,variable.names=var_names,n.iter=100000, thin=100))/3600
 b1<-Sys.time() ; t1<-b1-a1; t1
+
+chainsX<-coda.samples(jm,variable.names=var_names,n.iter=1)
+N_simul<-as.matrix(summary(chainsX)$statistics[,1])
+
+saveRDS(N_simul, file="N_simul.rds")
 
