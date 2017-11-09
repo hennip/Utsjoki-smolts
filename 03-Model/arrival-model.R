@@ -2,6 +2,10 @@
 
 #source("00-Functions/packages-and-paths.r")
 
+
+
+
+
 M1<-"
 model{
 
@@ -10,19 +14,33 @@ model{
   for(y in 1:nYears){
     for(i in 1:nDays){ # 61 days in June-July
   
-      Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y]) # observed number of fish  
+      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y]) # observed number of fish  
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
-      #    etaStarB[i,y]<-((N[i,y]-s[i,y])*etaB)/((s[i,y]-1)*etaB+N[i,y]-1)
+      etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
+
+      s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
+      muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
     }
   }
+  # priors for observation process
   aB~dnorm(2.9,60)
   bB~dlnorm(-2.6,984)
   sdBB~dlnorm(-0.23,210)
   etaB~dunif(1,1000)
   
+  # priors for schooling
+  K~dlnorm(6.07,0.7)
+  slope~dlnorm(-1.94,66)
+  cvS~dunif(0.001,2)
+  cvmuS~dunif(0.001,2)
+  
+  TmuS<-1/log(cvmuS*cvmuS+1)
+  TS<-1/log(cvS*cvS+1)
+
+
   # Abundance
   # ==============
   for(y in 1:nYears){
@@ -79,10 +97,9 @@ model{
       for(j in (i+1):(i+13)){ #13 
         qDx[i,j,y]<-phi((log(j-i+0.5)-MD[i,y])/SD)-phi((log(j-i-0.5)-MD[i,y])/SD)
       }
-      sumqDx[i,y]<-sum(qDx[i,i:(i+13),y])
-      
+
       for(j in i:(i+13)){
-        qD[i,j,y]<-qDx[i,j,y]/(sumqDx[i,y]+0.0001)
+        qD[i,j,y]<-qDx[i,j,y]/(sum(qDx[i,i:(i+13),y])+0.0001)
       }
       
       MD[i,y]<-log(muD[i,y])-0.5/TD
@@ -126,8 +143,10 @@ model{
   
   aP~dnorm(-20,1) #mu=-20
   bP~dlnorm(0.6,10) #mu=1.91
-  sdP~dlnorm(0,1) #mu=1.6
-  
+  #sdP~dlnorm(0,1) #mu=1.6
+  sdPx~dbeta(3,7)
+  sdP<-sdPx*3
+
   # check sums (should be close to 1, otherwise fish is lost)
   for(i in 48:61){ # last 2 weeks of July 2006
     sums1[i]<-sum(qD[i,i:(i+13),1])
@@ -136,8 +155,9 @@ model{
     sums2[i]<-sum(qD[i,i:(i+13),2])
   }
   
-}
-"
+}"
+
+modelName<-"Smolts_etaStarB_sdP"
 modelName<-"Smolts_standardqD_oldinits"
 modelName<-"Smolts_standardqD"
 #modelName<-"Smolts_simpleqD2"
@@ -152,9 +172,12 @@ years<-c(2005:2006,2008,2014) # 4 years of data for testing
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 
+load("02-Priors/priors-mvn.RData")
 
 data<-list(
-  #s=df$Schools,
+  s=df$Schools,
+  ld_covar=priors_mvn$Covar_d,
+  ld_mu=priors_mvn$Mu_d,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -162,14 +185,7 @@ data<-list(
   nYears=length(years)
 )
 
-inits_zN<-array(0.1,dim=dim(data$Nobs))
-for(j in 1:data$nYears){
-  for(i in 1:data$nDays){
-    if(is.na(data$Nobs[i,j])==F&data$Nobs[i,j]!=0){
-      inits_zN[i,j]<-data$Nobs[i,j]  
-    }
-  }
-}
+
 
 #initials<-list(list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=100),
 #               list(LNtot=rep(10.2,data$nYears),zN=inits_zN,etaB=900))
@@ -178,33 +194,35 @@ initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))
                list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
 
 
-
-system.time(jm<-jags.model(Mname,inits=initials, n.adapt=100, data=data,n.chains=2))
+system.time(jm<-jags.model(Mname,inits=initials, n.adapt=1000, data=data,n.chains=2))
 
 
  var_names<-c(
   "aD","bD","cvD","cvmuD",
+  "K","slope","cvS", "cvmuS",
   
   "sums1","sums2",
   
   "aP","bP","sdP",
-  "etaB","aB","bB","sdBB",
+  #"etaB",
+  "aB","bB","sdBB",
   "eta_alphaN",
   "Ntot","N"
 )
 
 system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=100, thin=1))/60#min per 1000 iter
-#chains<-chains0
 # [1] 5.62
- 
+
+n_thin<-300
+
 a1<-Sys.time();a1
 system.time(
-  chains1<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
+  chains1<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=n_thin))/3600
 b1<-Sys.time() ; t1<-b1-a1; t1
 
 a2<-Sys.time()
 system.time(
-  chains2<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
+  chains2<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=n_thin))/3600
 b2<-Sys.time() ; t2<-b2-a2; t2
 
 chains<-combine.mcmc(list(chains1, chains2))
@@ -212,7 +230,7 @@ save(chains, file=str_c(pathOut,modelName,".RData"))
 
 a3<-Sys.time()
 system.time(
-  chains3<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
+  chains3<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=n_thin))/3600
 b3<-Sys.time() ; t3<-b3-a3; t3
 
 chains<-combine.mcmc(list(chains2, chains3))
@@ -221,7 +239,7 @@ save(chains, file=str_c(pathOut,modelName,".RData"))
 a4<-Sys.time()
 Sys.time()
 system.time(
-  chains4<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
+  chains4<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=n_thin))/3600
 b4<-Sys.time() ; t4<-b4-a4; t4
 
 chains<-combine.mcmc(list(chains2, chains3, chains4))
@@ -230,7 +248,7 @@ save(chains, file=str_c(pathOut,modelName,".RData"))
 a5<-Sys.time()
 Sys.time()
 system.time(
-  chains5<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
+  chains5<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=n_thin))/3600
 b5<-Sys.time() ; t5<-b5-a5; t5
 
 chains<-combine.mcmc(list(chains2, chains3, chains4,chains5))
@@ -239,8 +257,9 @@ save(chains, file=str_c(pathOut,modelName,".RData"))
 a6<-Sys.time()
 Sys.time()
 system.time(
-  chains6<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=200))/3600
+  chains6<-coda.samples(jm,variable.names=var_names,n.iter=300000, thin=n_thin))/3600
 b6<-Sys.time() ; t6<-b6-a6; t6
 
 chains<-combine.mcmc(list(chains2,chains3,chains4,chains5,chains6))
 save(chains, file=str_c(pathOut,modelName,".RData"))
+

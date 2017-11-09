@@ -40,3 +40,6 @@ for(j in 1:n_samp){
     muB_sampP[j,i]<-0.6*(exp(BB_samp[j,i])/(1+exp(BB_samp[j,i])))+0.3
   }
 }
+
+#aB_samp-bB_samp*10
+#aB_samp-bB_samp*50

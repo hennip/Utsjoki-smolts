@@ -17,20 +17,36 @@ model{
   # ====================
   for(y in 1:nYears){
     for(i in 1:nDays){
-        # Observed number of fish
-        # Nobs[i,y]~dbetabin(100,10,N[i,y])  
-        Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-    
-        muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
-        BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
+      
+      # Observed number of fish
+      # Nobs[i,y]~dbetabin(100,10,N[i,y])  
+      #Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])  
+      
+      muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
+      BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
+      
+      etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
+
+      s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
+      muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
     }
   }
   # priors for observation process
   aB~dnorm(2.9,60)
   bB~dlnorm(-2.6,984)
   sdBB~dlnorm(-0.23,210)
-  etaB~dunif(1,1000)
+  etaB~dunif(5,1000)
 
+  # priors for schooling
+  K~dlnorm(6.07,0.7)
+  slope~dlnorm(-1.94,66)
+  cvS~dunif(0.001,2)
+  cvmuS~dunif(0.001,2)
+
+  TmuS<-1/log(cvmuS*cvmuS+1)
+  TS<-1/log(cvS*cvS+1)
+  
   # Abundance
   # ==============
   for(y in 1:nYears){
@@ -38,11 +54,23 @@ model{
       N[i,y]<-round(exp(logN[i,y]))
       logN[i,y]~dunif(-1000,9.2) # total run size in year y
     }
-    Ntot[y]<-sum(N[1:nDays,y])
-  
-  }
-}"
+     Ntot[y]<-sum(N[1:nDays,y])
 
+#    Ntot[y]<-exp(LNtot[y])
+#    LNtot[y]~dunif(7,15) # total run size in year y
+    
+#    for(i in 1:(nDays-1)){
+#      N[i,y]<-round(qN[i,y]*Ntot[y])
+#    }
+#    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))   
+#    qN[1:nDays,y]~ddirich(ones) # flat prior
+  }
+}
+"
+
+modelName<-"Schools_etaStarB_indepN"
+#modelName<-"Schools"
+#modelName<-"Schools_etaStarB"
 modelName<-"Schools_etaB_indepN"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -60,22 +88,24 @@ ones<-rep(1,n_days)
 
 
 data<-list(
+  s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   nDays=n_days,
   nYears=length(years)
 )
 
-#initials<-list(list(LNtot=rep(14,data$nYears)),
-#               list(LNtot=rep(14,data$nYears)))
-initials<-list(list(logN=array(8.2,dim=c(data$nDays,data$nYears))),
-               list(logN=array(8.2,dim=c(data$nDays,data$nYears))))
+initials<-list(list(LNtot=rep(14,data$nYears)),
+               list(LNtot=rep(14,data$nYears)))
+#initials<-list(list(logN=array(8.2,dim=c(data$nDays,data$nYears))),
+#               list(logN=array(8.2,dim=c(data$nDays,data$nYears))))
 
 system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chains=2))
 
 var_names<-c(
   "muB", "qN",
-  "aB","bB","sdBB","etaB",
+  "aB","bB","sdBB",
+  "K","slope","cvS", "cvmuS",
   "Ntot","N"
 )
 #
