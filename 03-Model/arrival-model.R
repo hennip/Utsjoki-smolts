@@ -82,7 +82,8 @@ model{
       # p: probability to start migration at day t, if haven't done so earlier
       # departure probability depends on temperature
       logit(p[i,y])<-P[i,y]
-      P[i,y]~dnorm(aP+bP*Temp[i,y],1/pow(sdP,2))
+      #P[i,y]~dnorm(aP+bP*Temp[i,y],1/pow(sdP,2))
+      P[i,y]~dnorm(aP+bP*Temp[i,y],1000)
     }
   }
   
