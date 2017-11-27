@@ -173,10 +173,11 @@ cat(M1,file=Mname)
 
 # full data; temp data missing for 2012 and partly for 2010
 #years<-c(2005:2009,2011,2013:2014) 
-years<-c(2005:2006,2007,2008,2014) # 4 years of data for testing  
+#years<-c(2005:2006,2007,2008,2014) # 4 years of data plus simulated 2007  
+years<-c(2005:2006,2008,2014) # 4 years of data for testing  
 n_days<-61
 dat<-dat_all # all real data
-dat<-dat_all2 # 2007 simulated
+#dat<-dat_all2 # 2007 simulated
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
 #load("02-Priors/priors-mvn.RData")
@@ -221,6 +222,9 @@ system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=100, thin=1
 # [1] 5.62
 
 n_thin<-300
+
+Sys.time()
+Mname
 
 a1<-Sys.time();a1
 system.time(
