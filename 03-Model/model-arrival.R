@@ -17,7 +17,7 @@ model{
       # Observed number of fish
       # Nobs[i,y]~dbetabin(100,10,N[i,y])  
        Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-      #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y]
+      #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))

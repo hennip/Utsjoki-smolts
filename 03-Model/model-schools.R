@@ -49,29 +49,29 @@ model{
   
   # Abundance
   # ==============
-  for(y in 1:nYears){
-    for(i in 1:nDays){
-      N[i,y]<-round(exp(logN[i,y]))
-      logN[i,y]~dunif(-1000,9.2) # total run size in year y
-    }
-     Ntot[y]<-sum(N[1:nDays,y])
-
-#    Ntot[y]<-exp(LNtot[y])
-#    LNtot[y]~dunif(7,15) # total run size in year y
-    
-#    for(i in 1:(nDays-1)){
-#      N[i,y]<-round(qN[i,y]*Ntot[y])
+#  for(y in 1:nYears){
+#    for(i in 1:nDays){
+#      qN[i,y]<-N[i,y]/Ntot[y]
+#      N[i,y]<-round(exp(logN[i,y]))
+#      logN[i,y]~dunif(-1000,9.2) # total run size in year y
 #    }
-#    N[nDays,y]<-round(Ntot[y]*(1-sum(qN[1:(nDays-1),y])))   
-#    qN[1:nDays,y]~ddirich(ones) # flat prior
+#     Ntot[y]<-sum(N[1:nDays,y])
+
+    Ntot[y]<-exp(LNtot[y])
+    LNtot[y]~dunif(7,15) # total run size in year y
+    
+    for(i in 1:nDays){
+      N[i,y]<-round(qN[i,y]*Ntot[y])
+    }
+    qN[1:nDays,y]~ddirich(ones) # flat prior
   }
 }
 "
 
-modelName<-"Schools_etaStarB_indepN"
+#modelName<-"Schools_etaStarB_indepN"
 #modelName<-"Schools"
-#modelName<-"Schools_etaStarB"
-modelName<-"Schools_etaB_indepN"
+modelName<-"Schools_etaStarB"
+#modelName<-"Schools_etaB_indepN"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -83,9 +83,12 @@ cat(M1,file=Mname)
 #years<-c(2005:2006,2008,2014) # 4 years of data for testing  
 years<-c(2005,2006,2008)
 n_days<-61
-df<-smolts_data_to_jags(years, n_days) # 61: only june & july
+dat<-dat_all # all real data
+#dat<-dat_all2 # 2007 simulated
+df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
+
 ones<-rep(1,n_days)
-ones<-rep(1/n_days,n_days)
+#ones<-rep(1/n_days,n_days)
 
 
 data<-list(
