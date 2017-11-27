@@ -5,7 +5,7 @@ years<-c(2005:2006,2008,2014) # 4 years of data for testing
 #years<-c(2006,2008) # 2 years of data for testing- schools model  
 #years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
 n_days<-61
-df<-smolts_data_to_jags(years, n_days) # 61: only june & july
+df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
 
 
 # Number of smolts
@@ -32,8 +32,8 @@ ggplot(df, aes(x2))+
 
 # Daily numbers
 for(i in 1:length(years)){
-  df<-boxplot.jags.df2(chains, "N[",str_c(i,"]"),1:n_days)
-  df<-mutate(df, Year=years[i])
+  df<-boxplot.jags.df2(chains, "N[",str_c(i,"]"),1:n_days)%>%
+    mutate(Year=years[i])
   ifelse(i>1, df2<-bind_rows(df2,df),df2<-df)
 }
 df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","Year"))

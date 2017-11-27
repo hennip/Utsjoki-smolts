@@ -11,22 +11,23 @@ model{
   for(y in 1:nYears){
   for(i in 1:nDays){ # 61 days in June-July
   
-  Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y]) # observed number of fish  
+#  Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y]) # observed number of fish  
+  Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y]) # observed number of fish  
   
   muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
   BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
   
-  etaStarB[i,y]<-step((N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1)*((N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1)+
-(1-step((N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1))*1
+#  etaStarB[i,y]<-step((N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1)*((N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1)+
+#(1-step((N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1))*1
 
-  s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
-  muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
+#  s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
+#  muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
   }
   }
 
-  TmuS<-1/log(cvmuS*cvmuS+1)
-  TS<-1/log(cvS*cvS+1)
-  
+#  TmuS<-1/log(cvmuS*cvmuS+1)
+#  TS<-1/log(cvS*cvS+1)
+  etaB<-500
   
   # Abundance
   # ==============
@@ -158,7 +159,7 @@ cat(MX,file=Mname)
 # full data; temp data missing for 2012 and partly for 2010
 years<-c(2007)
 n_days<-92#61
-df<-smolts_data_to_jags(years, n_days) # 61: only june & july
+df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
 
 
 data<-list(
@@ -181,7 +182,7 @@ system.time(jm<-jags.model(Mname,#inits=initials,
 
 
 var_names<-c(
-  "N"
+  "N","Nobs"
 )
 
 system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=100, thin=1))/60#min per 1000 iter
@@ -194,6 +195,8 @@ b1<-Sys.time() ; t1<-b1-a1; t1
 
 chainsX<-coda.samples(jm,variable.names=var_names,n.iter=1)
 N_simul<-as.matrix(summary(chainsX)$statistics[,1])
+N_simul
+cbind(N_simul[1:92], N_simul[93:(92+92)])
 
 saveRDS(N_simul, file="N_simul.rds")
 

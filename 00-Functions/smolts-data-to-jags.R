@@ -1,4 +1,4 @@
-# Modify dat_all into input form for JAGS
+# Modify dat into input form for JAGS
 
 #dat_all%>%group_by(Year)%>%
 #  summarize(N_smolts=sum(smolts, na.rm=T),
@@ -17,7 +17,7 @@
 
 # x: vector of years of data to include
 # n: maximum number of days to include 
-smolts_data_to_jags<-function(x,n){ 
+smolts_data_to_jags<-function(dat,x,n){ 
   nyears<-length(x)
   
   df_tmp<-array(NA, dim=c(n,nyears))
@@ -27,10 +27,10 @@ smolts_data_to_jags<-function(x,n){
   df_flow<-df_tmp
   df_temp<-df_tmp
   for(i in 1:nyears){
-    df_smolts[,i]<-filter(dat_all, Year==x[i], day<=n)$smolts
-    df_schools[,i]<-filter(dat_all, Year==x[i], day<=n)$schools
-    df_flow[,i]<-filter(dat_all, Year==x[i], day<=n)$flow
-    df_temp[,i]<-filter(dat_all, Year==x[i], day<=n)$meanTemp
+    df_smolts[,i]<-filter(dat, Year==x[i], day<=n)$smolts
+    df_schools[,i]<-filter(dat, Year==x[i], day<=n)$schools
+    df_flow[,i]<-filter(dat, Year==x[i], day<=n)$flow
+    df_temp[,i]<-filter(dat, Year==x[i], day<=n)$meanTemp
   }
   colnames(df_smolts)<-x
   colnames(df_schools)<-x

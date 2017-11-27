@@ -2,6 +2,9 @@
 
 Nsimul<-readRDS(file="N_simul.rds")
 
+Nsimul[1:14]<-rep(NA,14)
+Nsimul[36:40]<-rep(NA,5)
+
 df07<-select(filter(dat_all, Year==2007), -smolts, -schools)
 df_tmp<-cbind(Nsimul,1:92, rep(NA, 92)) 
 colnames(df_tmp)<-c("smolts","day", "schools")

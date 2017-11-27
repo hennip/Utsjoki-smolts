@@ -85,6 +85,7 @@ years<-c(2005,2006,2008)
 n_days<-61
 df<-smolts_data_to_jags(years, n_days) # 61: only june & july
 ones<-rep(1,n_days)
+ones<-rep(1/n_days,n_days)
 
 
 data<-list(

@@ -13,32 +13,35 @@ model{
   # ====================
   for(y in 1:nYears){
     for(i in 1:nDays){ # 61 days in June-July
-  
-      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y]) # observed number of fish  
+      
+      # Observed number of fish
+      # Nobs[i,y]~dbetabin(100,10,N[i,y])  
+       Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+      #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y]
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
-      etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
+      #etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
 
-      s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
-      muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
+      #s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
+      #muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
     }
   }
   # priors for observation process
   aB~dnorm(2.9,60)
   bB~dlnorm(-2.6,984)
   sdBB~dlnorm(-0.23,210)
-  etaB~dunif(1,1000)
+  etaB~dunif(5,1000)
   
   # priors for schooling
-  K~dlnorm(6.07,0.7)
-  slope~dlnorm(-1.94,66)
-  cvS~dunif(0.001,2)
-  cvmuS~dunif(0.001,2)
+#  K~dlnorm(6.07,0.7)
+#  slope~dlnorm(-1.94,66)
+#  cvS~dunif(0.001,2)
+#  cvmuS~dunif(0.001,2)
   
-  TmuS<-1/log(cvmuS*cvmuS+1)
-  TS<-1/log(cvS*cvS+1)
+#  TmuS<-1/log(cvmuS*cvmuS+1)
+#  TS<-1/log(cvS*cvS+1)
 
 
   # Abundance
@@ -143,9 +146,9 @@ model{
   
   aP~dnorm(-20,1) #mu=-20
   bP~dlnorm(0.6,10) #mu=1.91
-  #sdP~dlnorm(0,1) #mu=1.6
-  sdPx~dbeta(3,7)
-  sdP<-sdPx*3
+  sdP~dlnorm(0,1) #mu=1.6
+  #sdPx~dbeta(3,7)
+  #sdP<-sdPx*3
 
   # check sums (should be close to 1, otherwise fish is lost)
   for(i in 48:61){ # last 2 weeks of July 2006
@@ -157,9 +160,10 @@ model{
   
 }"
 
-modelName<-"Smolts_etaStarB_sdP"
-modelName<-"Smolts_standardqD_oldinits"
-modelName<-"Smolts_standardqD"
+modelName<-"Smolts_etaB_sim07"
+#modelName<-"Smolts_etaStarB_sdP"
+#modelName<-"Smolts_standardqD_oldinits"
+#modelName<-"Smolts_standardqD"
 #modelName<-"Smolts_simpleqD2"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -168,16 +172,18 @@ cat(M1,file=Mname)
 
 # full data; temp data missing for 2012 and partly for 2010
 #years<-c(2005:2009,2011,2013:2014) 
-years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+years<-c(2005:2006,2007,2008,2014) # 4 years of data for testing  
 n_days<-61
-df<-smolts_data_to_jags(years, n_days) # 61: only june & july
+dat<-dat_all # all real data
+dat<-dat_all2 # 2007 simulated
+df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
-load("02-Priors/priors-mvn.RData")
+#load("02-Priors/priors-mvn.RData")
 
 data<-list(
   s=df$Schools,
-  ld_covar=priors_mvn$Covar_d,
-  ld_mu=priors_mvn$Mu_d,
+ # ld_covar=priors_mvn$Covar_d,
+ # ld_mu=priors_mvn$Mu_d,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,

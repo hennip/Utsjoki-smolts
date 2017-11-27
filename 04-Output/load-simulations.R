@@ -37,6 +37,8 @@ chains<-window(chains,start=2000000, thin=200)
 #######################
 # Load jags simulations for small school model
 
+# Tarvitaan etaB malli dirichlet priorilla
+
 # pelkkä etaB lognormal prioreilla 
 load(file=paste(sep="",pathOut,"Schools_etaB_indepN.RData")) #  
 #3.5d
