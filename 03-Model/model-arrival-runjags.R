@@ -218,7 +218,7 @@ info <- run.jags(M1,
                  sample =5000, adapt = 5000, progress.bar=TRUE, jags.refresh=120)
 
 Sys.time()
-info2 <- extend.jags(info, combine=F, sample=200000, thin=300) 
+info2 <- extend.jags(info, combine=F, sample=10000, thin=300, jags.refresh=120) 
 Sys.time()
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
