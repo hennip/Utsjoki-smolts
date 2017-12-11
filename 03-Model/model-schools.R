@@ -49,7 +49,7 @@ model{
   
   # Abundance
   # ==============
-#  for(y in 1:nYears){
+  for(y in 1:nYears){
 #    for(i in 1:nDays){
 #      qN[i,y]<-N[i,y]/Ntot[y]
 #      N[i,y]<-round(exp(logN[i,y]))
@@ -92,6 +92,7 @@ ones<-rep(1,n_days)
 
 
 data<-list(
+  ones=ones,
   s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,                     

@@ -1,8 +1,4 @@
 
-#source("04-Output/load-simulations.r")
-
-#chains<-chains0
-#years
 
 # Traces
 par(mfrow=c(3,3),mar=c(2.5,4,4,1))
@@ -62,8 +58,10 @@ gelman.diag(chains[,"Ntot[3]"])
 gelman.diag(chains[,"Ntot[4]"])
 
 
-gelman.plot(chains[,"Ntot[1]"])
-gelman.plot(chains[,"cvD"])
+gelman.diag(chains[,"sdBB"])
+gelman.diag(chains[,"eta_alphaN"])
+gelman.diag(chains[,"etaB"])
+
 
 #################################
 # Densities

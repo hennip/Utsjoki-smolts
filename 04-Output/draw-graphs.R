@@ -10,8 +10,11 @@ df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
 
 # Number of smolts
 ##################################################
+
+# Annual totals
 Year<-years
 df<-boxplot.jags.df(chains, "Ntot",Year)
+df2<-boxplot.jags.df(chains2, "Ntot",Year)
 
 Ntot<-c()
 for(i in 1:length(years)){
@@ -19,7 +22,10 @@ for(i in 1:length(years)){
 }
 df<-df%>%
   mutate(Ntot)%>%
-#  mutate(x2=c("2005","2006","2008","2014"))
+  mutate(x2=parse_factor(x, levels=NULL))
+
+df2<-df2%>%
+  mutate(Ntot)%>%
   mutate(x2=parse_factor(x, levels=NULL))
 
 ggplot(df, aes(x2))+
@@ -28,7 +34,31 @@ ggplot(df, aes(x2))+
     stat = "identity")+
   labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
   geom_point(aes(x=x2, y=Ntot))+
-  coord_cartesian(ylim=c(0,40000))
+  coord_cartesian(ylim=c(0,40000))+
+  theme_bw()
+  geom_boxplot(data=df2,
+    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity", col="grey")
+  
+summary(as.mcmc(chains[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
+summary(as.mcmc(chains[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
+summary(as.mcmc(chains[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
+summary(as.mcmc(chains[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
+
+summary(as.mcmc(chains[,"Ntot[1]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[1]
+summary(as.mcmc(chains[,"Ntot[2]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[2]
+summary(as.mcmc(chains[,"Ntot[3]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[3]
+summary(as.mcmc(chains[,"Ntot[4]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[4]
+
+
+summary(as.mcmc(chainsP[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
+summary(as.mcmc(chainsP[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
+summary(as.mcmc(chainsP[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
+summary(as.mcmc(chainsP[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
+
+
+
+
 
 # Daily numbers
 for(i in 1:length(years)){
@@ -42,22 +72,33 @@ df<-df2%>%
   left_join(dat_all)%>%
   select(Day,Month, Year,day, smolts, q50, everything())
 
-#View(df)
 
 ggplot(df, aes(day))+
+  geom_line(aes(day,q50))+#  facet_grid(.~Year)+
+ geom_line(aes(day,smolts), col="grey50")+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+
-  geom_line(aes(day,q50))+
-#  facet_grid(.~Year)+
   facet_wrap(~Year)+
   geom_point(mapping=aes(day,smolts), col="grey50")+
-#  geom_point(mapping=aes(day,smolts), color="blue", shape=17, size=2)+
-  geom_line(aes(day,smolts), col="grey50")+
   labs(x="Day (in June-July)", y="Number of smolts")+
-  coord_cartesian(ylim=c(0,3500))
+  coord_cartesian(ylim=c(0,3400))+
+  theme_bw()
 
 
+#########################################
+# 2005 proportion missed (first 23 days)
+
+tmp<-0
+tmp2<-0
+for(i in 1:23){
+  tmp<-chains[,str_c("N[",i,",1]")][[1]]+tmp
+  tmp2<-chains2[,str_c("N[",i,",1]")][[1]]+tmp2
+}
+summary(tmp)
+summary(tmp2)
+
+summary(tmp/chains[,"Ntot[1]"][[1]])
 
 
 # Prob to start migration vs. temperature

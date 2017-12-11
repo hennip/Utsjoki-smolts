@@ -27,7 +27,8 @@ plot1 <-
 #  scale_color_manual(values=c(grey.colors(4, start = 0.3, end = 0.7, gamma = 2.2, alpha = NULL)))
   scale_colour_grey()+
   labs(x="Day (June-July)", y=expression(Temperature~(degree*C)), color="Year")+ 
-  theme(legend.position="none") # removes legend
+theme_bw()+
+    theme(legend.position="none") # removes legend
 
 # Flow
 ## ---- draw-some-data-flow ----
@@ -38,7 +39,8 @@ plot2 <-
   geom_line(aes(x = day, y = flow, color=as.factor(Year)), size=1.2)+
   scale_colour_grey()+
   coord_cartesian(ylim=c(0,160))+
-  labs(x="Day (June-July)", y=expression("Flow  (m"^{3}*"/s)"), color="Year")
+  labs(x="Day (June-July)", y=expression("Flow  (m"^{3}*"/s)"), color="Year")+
+  theme_bw()
 
 grid.arrange(plot1, plot2, ncol=2)
 

@@ -4,12 +4,30 @@ source("00-Functions/packages-and-paths.r")
 #######################
 # Load jags simulations for arrival model
 
+#load(file=paste(sep="",pathOut,"Smolts_etaB_sDPfixed.RData")) 
+#chains<-window(chains,start=500000, thin=200)
+# 4.12. tää idea ei toiminut
+
+load(file=paste(sep="",pathOut,"Smolts_etaB.RData")) 
+chains<-window(chains,start=500000, thin=200)
+load(file=paste(sep="",pathOut,"Smolts_etaB_monitored.RData")) 
+
+
+load(file=paste(sep="",pathOut,"Smolts_fixedObsProp.RData")) 
+chains2<-chains
+# 4.12. tää ois niinku valmis.
+
+
 load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB_oldinits.RData")) 
 load(file=paste(sep="",pathOut,"Priors_Smolts_standardqD_etaStarB.RData")) #  PRIORS
 chains<-window(chains,start=500000, thin=200)
 #chains<-window(chains,start=1, end=1500000, thin=200)
 # 3d ajo ja konv ergenssi (so it seems)! Hämmästyttävää nopeutta. 
 #Ehdottomasti käytössä jatkossa "vanhat initsit"
+
+load(file=paste(sep="",pathOut,"Smolts_etaStarB_sdPfixed.RData")) 
+chains<-window(chains,start=300000, thin=200)
+
 
 
 load(file=paste(sep="",pathOut,"Smolts_standardqD_oldinits.RData"))
@@ -33,6 +51,10 @@ chains<-window(chains,start=2000000, thin=200)
 # Ajoaika 22d, aD:n konvergenssi edelleen kyseenalainen
 # tätä voisi testata "vanhoilla initseillä" jos jaksaisi- > auttaisiko?
 
+load(file=paste(sep="",pathOut,"Smolts_etaStarB_sdPfixed.RData")) 
+# ei toimi.
+
+
 
 #######################
 # Load jags simulations for small school model
@@ -54,3 +76,14 @@ load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB.RData")) #
 # Tämä vuotaa nollahavaintopäivinä
 # 6.7d
 
+
+# Prioritarkastelu
+load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB_indepN.RData"))   
+#load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB_indepN_ones2.RData"))   # tässä ei ole järkeä koska ei ole dirichlet
+
+load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB.RData"))   
+load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB_ones2.RData"))   
+
+load(file=paste(sep="",pathOut,"Priors_Schools_etaStarB_s.RData"))   
+summary(chainsP)
+summary(chainsP[,"Ntot[1]"])
