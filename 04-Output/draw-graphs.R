@@ -99,6 +99,7 @@ summary(tmp)
 summary(tmp2)
 
 summary(tmp/chains[,"Ntot[1]"][[1]])
+summary(tmp2/chains2[,"Ntot[1]"][[1]])
 
 
 # Prob to start migration vs. temperature
