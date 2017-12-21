@@ -24,5 +24,6 @@ pathOut<-"H:/Projects/ISAMA/prg/output/Utsjoki-smolts/"
 
 
 source("01-Data/data-smolts-covariates.r")
+source("01-Data/data-simul.r")
 source("00-Functions/smolts-data-to-jags.r")
 

@@ -175,12 +175,14 @@ cat(M1,file=Mname)
 # full data; temp data missing for 2012 and partly for 2010
 #years<-c(2005:2009,2011,2013:2014) 
 #years<-c(2005:2006,2007,2008,2014) # 4 years of data plus simulated 2007  
-years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+years<-c(2005:2009,2014) 
 n_days<-61
-dat<-dat_all # all real data
+#dat<-dat_all # all real data
 #dat<-dat_all2 # 2007 simulated
-df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
+dat<-dat_all3 # 2007 first 17% missing, 2009 peak +- 2 days missing
 
+df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
 data<-list(
   s=df$Schools,
@@ -192,8 +194,6 @@ data<-list(
 )
 
 
-
-
 inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
                list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
 
@@ -201,20 +201,18 @@ inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
 var_names<-c(
   "aD","bD","cvD","cvmuD",
 #  "K","slope","cvS", "cvmuS",
-  
-#  "sums1","sums2",
-  
+  "sums1","sums2",
   "aP","bP","sdP",
-  #"etaB",
+  "etaB",
   "aB","bB","sdBB",
   "eta_alphaN",
-  "Ntot"#,"N"
+  "Ntot","N"
 )
 
-info <- run.jags(M1, 
+run1 <- run.jags(M1, 
                  monitor= c(var_names),data=data,initlist = inits,
                  n.chains = 2, method = 'rjparallel', thin=300, burnin =100000, modules = "mix",
-                 keep.jags.files="test", #rjparallel (rujags)
+                 keep.jags.files="etaB_0709", #rjparallel (rujags)
                  sample =5000, adapt = 5000, progress.bar=TRUE, jags.refresh=120)
 
 Sys.time()

@@ -22,8 +22,6 @@ load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB_oldinits.RData"))
 load(file=paste(sep="",pathOut,"Priors_Smolts_standardqD_etaStarB.RData")) #  PRIORS
 chains<-window(chains,start=500000, thin=200)
 #chains<-window(chains,start=1, end=1500000, thin=200)
-# 3d ajo ja konv ergenssi (so it seems)! Hämmästyttävää nopeutta. 
-#Ehdottomasti käytössä jatkossa "vanhat initsit"
 
 load(file=paste(sep="",pathOut,"Smolts_etaStarB_sdPfixed.RData")) 
 chains<-window(chains,start=300000, thin=200)
