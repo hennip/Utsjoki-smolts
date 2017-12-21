@@ -176,11 +176,12 @@ cat(M1,file=Mname)
 #years<-c(2005:2009,2011,2013:2014) 
 #years<-c(2005:2006,2007,2008,2014) # 4 years of data plus simulated 2007  
 #years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2005:2009,2014) 
+#years<-c(2005:2009,2014) 
+years<-c(2005:2011,2013,2014) # 2012 temp data missing
 n_days<-61
-#dat<-dat_all # all real data
+dat<-dat_all # all real data
 #dat<-dat_all2 # 2007 simulated
-dat<-dat_all3 # 2007 first 17% missing, 2009 peak +- 2 days missing
+#dat<-dat_all3 # 2007 first 17% missing, 2009 peak +- 2 days missing
 
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
@@ -212,11 +213,11 @@ var_names<-c(
 Sys.time()
 system.time(run1 <- run.jags(M1, 
                  monitor= c(var_names),data=data,initlist = inits,
-                 n.chains = 2, method = 'rjparallel', thin=400, burnin =500000, modules = "mix",
-                 keep.jags.files="etaB_0709", #rjparallel (rujags)
-                 sample =2000, adapt = 5000, progress.bar=TRUE, jags.refresh=120))
+                 n.chains = 2, method = 'rjparallel', thin=400, burnin =100000, modules = "mix",
+                 keep.jags.files="etaB_allYears", #rjparallel (rujags)
+                 sample =1000, adapt = 5000, progress.bar=TRUE, jags.refresh=120))
 Sys.time()
-system.time(run2 <- extend.jags(run1, combine=T, sample=2000, thin=400, jags.refresh=120)) 
+system.time(run2 <- extend.jags(run1, combine=T, sample=1000, thin=400, jags.refresh=120)) 
 Sys.time()
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
