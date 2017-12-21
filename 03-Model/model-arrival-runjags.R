@@ -211,12 +211,12 @@ var_names<-c(
 
 run1 <- run.jags(M1, 
                  monitor= c(var_names),data=data,initlist = inits,
-                 n.chains = 2, method = 'rjparallel', thin=300, burnin =100000, modules = "mix",
+                 n.chains = 2, method = 'rjparallel', thin=400, burnin =500000, modules = "mix",
                  keep.jags.files="etaB_0709", #rjparallel (rujags)
-                 sample =5000, adapt = 5000, progress.bar=TRUE, jags.refresh=120)
+                 sample =2000, adapt = 5000, progress.bar=TRUE, jags.refresh=120)
 
 Sys.time()
-info2 <- extend.jags(info, combine=F, sample=10000, thin=300, jags.refresh=120) 
+run2 <- extend.jags(run1, combine=T, sample=2000, thin=400, jags.refresh=120) 
 Sys.time()
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
