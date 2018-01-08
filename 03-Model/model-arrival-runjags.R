@@ -175,9 +175,9 @@ cat(M1,file=Mname)
 # full data; temp data missing for 2012 and partly for 2010
 #years<-c(2005:2009,2011,2013:2014) 
 #years<-c(2005:2006,2007,2008,2014) # 4 years of data plus simulated 2007  
-#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+years<-c(2005:2006,2008,2014) # 4 years of data for testing  
 #years<-c(2005:2009,2014) 
-years<-c(2005:2011,2013,2014) # 2012 temp data missing
+#years<-c(2005:2011,2013,2014) # 2012 temp data missing
 n_days<-61
 dat<-dat_all # all real data
 #dat<-dat_all2 # 2007 simulated
@@ -210,15 +210,26 @@ var_names<-c(
   "Ntot","N"
 )
 
-Sys.time()
-system.time(run1 <- run.jags(M1, 
+t1<-Sys.time()
+run1 <- run.jags(M1, 
                  monitor= c(var_names),data=data,initlist = inits,
                  n.chains = 2, method = 'rjparallel', thin=400, burnin =100000, modules = "mix",
-                 keep.jags.files="etaB_allYears", #rjparallel (rujags)
-                 sample =1000, adapt = 5000, progress.bar=TRUE, jags.refresh=120))
-Sys.time()
-system.time(run2 <- extend.jags(run1, combine=T, sample=1000, thin=400, jags.refresh=120)) 
-Sys.time()
+                 keep.jags.files=str_c(pathOut,"Smolts_etaB"),
+                 sample =1000, adapt = 5000, progress.bar=TRUE, jags.refresh=500)
+t2<-Sys.time()
+difftime(t2,t1)
+
+t1<-Sys.time()
+run2 <- extend.jags(run1, combine=F, sample=1000, thin=400, jags.refresh=500, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+
+t1<-Sys.time()
+run3 <- extend.jags(run2, combine=T, sample=1000, thin=400, jags.refresh=500, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+
+
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
@@ -226,5 +237,24 @@ Sys.time()
 
 summary(info, var=var_names)#runjags summary, can be very heavy, can select variables (partial match)
 plot(info, var = var_names)
+
+summary(run2, var="D")
+summary(run2, var="P")
+summary(run2, var="B")
+summary(run2, var="Ntot")
+summary(run2, var="eta_alphaN")
+summary(run2, var="sum")
+
+
+summary(run2, var="D")
+summary(run2, var="P")
+summary(run2, var="B")
+summary(run2, var="Ntot")
+summary(run2, var="eta_alphaN")
+summary(run2, var="sum")
+
+chains<-as.mcmc.list(run3)
+chains<-window(chains,start=400000)
+save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_allYears.RData")
 
 

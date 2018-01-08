@@ -2,14 +2,13 @@
 source("00-Functions/packages-and-paths.r")
 
 #######################
-# runjags
-run1<-results.jags("etaB_allYears_1")
-chains<-as.mcmc.list(run1)
-read.coda("etaB_allYears_1/Smolts_etaB_allYears_1600k")
-
-
-
 # Load jags simulations for arrival model
+load(file=paste(sep="",pathOut,"Smolts_etaB_allYears.RData")) 
+chains<-window(chains,start=600000)
+# Ajetaan vielä pitempään, Ntot:it konvergoi mutta cvD, aD on toivomisen varaa
+# summien häntä (<25%) vuotaa, ei välttis ongelma, mutta hyvä seurata tilannetta
+
+
 
 #load(file=paste(sep="",pathOut,"Smolts_etaB_sDPfixed.RData")) 
 #chains<-window(chains,start=500000, thin=200)
