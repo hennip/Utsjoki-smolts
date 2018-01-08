@@ -5,6 +5,7 @@ example*
 *.txt
 *.pdf
 *.RDS
+*$*
 
 
 # History files
