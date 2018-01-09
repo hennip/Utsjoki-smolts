@@ -1,6 +1,7 @@
 
 
 years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+years<-c(2005:2009,2014) # 4 years of data for testing  
 
 #years<-c(2006,2008) # 2 years of data for testing- schools model  
 #years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
@@ -44,6 +45,7 @@ summary(as.mcmc(chains[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
 summary(as.mcmc(chains[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
 summary(as.mcmc(chains[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
 summary(as.mcmc(chains[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
+summary(as.mcmc(chains[,"Ntot[5]"][[1]]))
 
 summary(as.mcmc(chains[,"Ntot[1]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[1]
 summary(as.mcmc(chains[,"Ntot[2]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[2]
@@ -56,6 +58,16 @@ summary(as.mcmc(chainsP[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
 summary(as.mcmc(chainsP[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
 summary(as.mcmc(chainsP[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
 
+gelman.diag(chains[,"N[25,5]"])
+gelman.diag(chains[,"N[26,5]"])
+gelman.diag(chains[,"N[27,5]"])
+gelman.diag(chains[,"N[28,5]"])
+gelman.diag(chains[,"N[29,5]"])
+gelman.diag(chains[,"N[30,5]"])
+gelman.diag(chains[,"N[31,5]"])
+gelman.diag(chains[,"N[32,5]"])
+gelman.diag(chains[,"N[33,5]"])
+gelman.diag(chains[,"N[34,5]"])
 
 
 

@@ -214,7 +214,7 @@ t1<-Sys.time()
 run1 <- run.jags(M1, 
                  monitor= c(var_names),data=data,initlist = inits,
                  n.chains = 2, method = 'rjparallel', thin=400, burnin =100000, modules = "mix",
-                 keep.jags.files=str_c(pathOut,"Smolts_etaB"),
+                 keep.jags.files="Smolts_etaB",
                  sample =1000, adapt = 5000, progress.bar=TRUE, jags.refresh=500)
 t2<-Sys.time()
 difftime(t2,t1)

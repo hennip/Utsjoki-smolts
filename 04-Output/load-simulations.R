@@ -3,6 +3,17 @@ source("00-Functions/packages-and-paths.r")
 
 #######################
 # Load jags simulations for arrival model
+
+
+# 2005:2009, 2014, 07 & 09 predictions
+load(file=paste(sep="",pathOut,"Smolts_etaB_0709pred.RData")) 
+chains<-window(chains,start=500000, thin=200)
+
+load(file=paste(sep="",pathOut,"Smolts_fixedObsProp_0709pred.RData")) 
+
+
+
+# 2005-2014 (2012 puuttuu)
 load(file=paste(sep="",pathOut,"Smolts_etaB_allYears.RData")) 
 chains<-window(chains,start=600000)
 # Ajetaan vielä pitempään, Ntot:it konvergoi mutta cvD, aD on toivomisen varaa
