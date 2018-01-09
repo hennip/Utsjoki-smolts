@@ -1,7 +1,7 @@
 
 
 years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2005:2009,2014) # 4 years of data for testing  
+years<-c(2005:2009,2014) # 6 years of data for testing  
 
 #years<-c(2006,2008) # 2 years of data for testing- schools model  
 #years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
@@ -86,8 +86,10 @@ df<-df2%>%
 
 
 ggplot(df, aes(day))+
-  geom_line(aes(day,q50))+#  facet_grid(.~Year)+
+  geom_line(aes(day,q50))+
  geom_line(aes(day,smolts), col="grey50")+
+  geom_line(aes(day,meanTemp*100), col="red")+
+  geom_line(aes(day,flow*10), col="blue")+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+

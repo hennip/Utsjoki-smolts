@@ -49,6 +49,7 @@ etaB~dunif(5,1000)
 for(y in 1:nYears){
 Ntot[y]<-exp(LNtot[y])
 LNtot[y]~dunif(7,15) # total run size in year y
+#Ntot[y]<-20000
 
 #N[1:nDays,y]~dmulti(qN[1:nDays,y],Ntot[y]) # daily true number of fish
 for(i in 1:(nDays-1)){
@@ -162,6 +163,8 @@ sums2[i]<-sum(qD[i,i:(i+13),2])
 }"
 
 modelName<-"Smolts_etaB"
+
+#modelName<-"Smolts_etaB_fixedNtot"
 #modelName<-"Smolts_etaB_sim07"
 #modelName<-"Smolts_etaStarB_sdP"
 #modelName<-"Smolts_standardqD_oldinits"
@@ -171,22 +174,21 @@ modelName<-"Smolts_etaB"
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
-
-# full data; temp data missing for 2012 and partly for 2010
-#years<-c(2005:2009,2011,2013:2014) 
+# Select years
 #years<-c(2005:2006,2007,2008,2014) # 4 years of data plus simulated 2007  
-years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-#years<-c(2005:2009,2014) 
+#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+years<-c(2005:2009,2014) 
 #years<-c(2005:2011,2013,2014) # 2012 temp data missing
+
 n_days<-61
-dat<-dat_all # all real data
+#dat<-dat_all # all real data
 #dat<-dat_all2 # 2007 simulated
-#dat<-dat_all3 # 2007 first 17% missing, 2009 peak +- 2 days missing
+dat<-dat_all3 # 2007 first 17% missing, 2009 peak +- 2 days missing
 
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
 data<-list(
-  s=df$Schools,
+ # s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -207,14 +209,17 @@ var_names<-c(
   "etaB",
   "aB","bB","sdBB",
   "eta_alphaN",
-  "Ntot","N"
+#"Nobs",  
+"Ntot","N"
 )
+
+
 
 t1<-Sys.time()
 run1 <- run.jags(M1, 
                  monitor= c(var_names),data=data,initlist = inits,
                  n.chains = 2, method = 'rjparallel', thin=400, burnin =100000, modules = "mix",
-                 keep.jags.files="Smolts_etaB",
+                 keep.jags.files="Smolts_etaB_0709",
                  sample =1000, adapt = 5000, progress.bar=TRUE, jags.refresh=500)
 t2<-Sys.time()
 difftime(t2,t1)
@@ -235,25 +240,24 @@ difftime(t2,t1)
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
 
 
-summary(info, var=var_names)#runjags summary, can be very heavy, can select variables (partial match)
-plot(info, var = var_names)
+run<-run1
 
-summary(run2, var="D")
-summary(run2, var="P")
-summary(run2, var="B")
-summary(run2, var="Ntot")
-summary(run2, var="eta_alphaN")
-summary(run2, var="sum")
+summary(run, var="D")
+summary(run, var="P")
+summary(run, var="B")
+summary(run, var="Ntot")
+summary(run, var="eta_alphaN")
+summary(run, var="sum")
 
 
-summary(run2, var="D")
-summary(run2, var="P")
-summary(run2, var="B")
-summary(run2, var="Ntot")
-summary(run2, var="eta_alphaN")
-summary(run2, var="sum")
+summary(run, var="D")
+summary(run, var="P")
+summary(run, var="B")
+summary(run, var="Ntot")
+summary(run, var="eta_alphaN")
+summary(run, var="sum")
 
-chains<-as.mcmc.list(run3)
+chains<-as.mcmc.list(run)
 chains<-window(chains,start=400000)
 save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_allYears.RData")
 
