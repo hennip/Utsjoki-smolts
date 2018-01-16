@@ -20,11 +20,6 @@ chains<-window(chains,start=600000)
 # summien häntä (<25%) vuotaa, ei välttis ongelma, mutta hyvä seurata tilannetta
 
 
-
-#load(file=paste(sep="",pathOut,"Smolts_etaB_sDPfixed.RData")) 
-#chains<-window(chains,start=500000, thin=200)
-# 4.12. tää idea ei toiminut
-
 load(file=paste(sep="",pathOut,"Smolts_etaB.RData")) 
 chains<-window(chains,start=500000, thin=200)
 load(file=paste(sep="",pathOut,"Smolts_etaB_monitored.RData")) 
@@ -39,9 +34,6 @@ load(file=paste(sep="",pathOut,"Smolts_standardqD_etaStarB_oldinits.RData"))
 load(file=paste(sep="",pathOut,"Priors_Smolts_standardqD_etaStarB.RData")) #  PRIORS
 chains<-window(chains,start=500000, thin=200)
 #chains<-window(chains,start=1, end=1500000, thin=200)
-
-load(file=paste(sep="",pathOut,"Smolts_etaStarB_sdPfixed.RData")) 
-chains<-window(chains,start=300000, thin=200)
 
 
 

@@ -183,7 +183,8 @@ years<-c(2005:2009,2014)
 n_days<-61
 #dat<-dat_all # all real data
 #dat<-dat_all2 # 2007 simulated
-dat<-dat_all3 # 2007 first 17% missing, 2009 peak +- 2 days missing
+#dat<-dat_all3 # 2007 first 17% missing, 2009 peak +- 2 days missing
+dat<-dat_all3 # 2007 first 17% missing, 2009 totally missing
 
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
