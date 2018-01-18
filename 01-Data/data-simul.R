@@ -29,22 +29,21 @@ df07.2<-as.tibble(df07.2)
 df07<-full_join(df07.1, df07.2)
 #dat_all3<-full_join(filter(dat_all, Year!=2007), df07)
 
+df14.1<-select(filter(dat_all, Year==2014), -smolts, -schools)
+df14.2<-select(filter(dat_all, Year==2014), smolts, schools)
+#View(df14.2)
+
+# scenario +-2 days from the peak missing
+#704+ 698+ 1106+ 940+ 637 =4085
+df14.2[36:40,1]<-rep(NA,5)
+df14.2[36:40,2]<-rep(NA,5)
+df14.2<-cbind(df14.2,1:92) 
+colnames(df14.2)<-c("smolts", "schools", "day")
+df14.2<-as.tibble(df14.2)
+
+df14<-full_join(df14.1, df14.2)
+df0714<-full_join(df07,df14)
 
 
-df09.1<-select(filter(dat_all, Year==2009), -smolts, -schools)
-df09.2<-select(filter(dat_all, Year==2009), smolts, schools)
-#View(df09.2)
-
-df09.2[1:61,1]<-rep(NA,61)
-df09.2[1:61,2]<-rep(NA,61)
-
-#df09.2[26:32,1]<-rep(NA,7)
-#df09.2[26:32,2]<-rep(NA,7)
-df09.2<-cbind(df09.2,1:92) 
-colnames(df09.2)<-c("smolts", "schools", "day")
-df09.2<-as.tibble(df09.2)
-
-df09<-full_join(df09.1, df09.2)
-df0709<-full_join(df07,df09)
-dat_all3<-full_join(filter(dat_all, Year!=2007 & Year!=2009), df0709)
+dat_all3<-full_join(filter(dat_all, Year!=2007 & Year!=2014), df0714)
 #View(dat_all3)

@@ -177,14 +177,15 @@ cat(M1,file=Mname)
 # Select years
 #years<-c(2005:2006,2007,2008,2014) # 4 years of data plus simulated 2007  
 #years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2005:2009,2014) 
+years<-c(2005:2009,2014) # 6 years to study
 #years<-c(2005:2011,2013,2014) # 2012 temp data missing
 
 n_days<-61
 #dat<-dat_all # all real data
 #dat<-dat_all2 # 2007 simulated
-#dat<-dat_all3 # 2007 first 17% missing, 2009 peak +- 2 days missing
-dat<-dat_all3 # 2007 first 17% missing, 2009 totally missing
+#dat<-dat_all3 # 2007 first 17% missing, 2009 +- 2 days from the peak missing
+#dat<-dat_all3 # 2007 first 17% missing, 2009 totally missing
+dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
 
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
@@ -215,30 +216,30 @@ var_names<-c(
 )
 
 
+#nb of samples = samples * thin, burnin doesn't take into account thin
+# sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
 
 t1<-Sys.time()
 run1 <- run.jags(M1, 
                  monitor= c(var_names),data=data,initlist = inits,
-                 n.chains = 2, method = 'rjparallel', thin=400, burnin =100000, modules = "mix",
-                 keep.jags.files="Smolts_etaB_0709",
-                 sample =1000, adapt = 5000, progress.bar=TRUE, jags.refresh=500)
+                 n.chains = 2, method = 'rjparallel', thin=400, burnin =100000, 
+                 modules = "mix",keep.jags.files=F,sample =1000, adapt = 5000, 
+                 progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
 
 t1<-Sys.time()
-run2 <- extend.jags(run1, combine=F, sample=1000, thin=400, jags.refresh=500, keep.jags.files=T)
+run2 <- extend.jags(run1, combine=F, sample=1000, thin=400, keep.jags.files=F)
 t2<-Sys.time()
 difftime(t2,t1)
 
 t1<-Sys.time()
-run3 <- extend.jags(run2, combine=T, sample=1000, thin=400, jags.refresh=500, keep.jags.files=T)
+run3 <- extend.jags(run2, combine=T, sample=1000, thin=400, keep.jags.files=F)
 t2<-Sys.time()
 difftime(t2,t1)
 
 
 
-#nb of samples = samples * thin, burnin doesn't take into account thin
-# sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
 
 
 run<-run1
@@ -251,15 +252,16 @@ summary(run, var="eta_alphaN")
 summary(run, var="sum")
 
 
-summary(run, var="D")
-summary(run, var="P")
-summary(run, var="B")
-summary(run, var="Ntot")
-summary(run, var="eta_alphaN")
-summary(run, var="sum")
+plot(run, var="D")
+plot(run, var="P")
+plot(run, var="B")
+plot(run, var="Ntot")
+plot(run, var="eta_alphaN")
+#plot(run, var="sum")
 
 chains<-as.mcmc.list(run)
 chains<-window(chains,start=400000)
-save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_allYears.RData")
+save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_chains.RData")
 
 
