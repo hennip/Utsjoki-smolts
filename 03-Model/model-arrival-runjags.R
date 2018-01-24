@@ -190,7 +190,7 @@ dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
 data<-list(
- # s=df$Schools,
+  # s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -200,19 +200,19 @@ data<-list(
 
 
 inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
-               list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
+            list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
 
 
 var_names<-c(
   "aD","bD","cvD","cvmuD",
-#  "K","slope","cvS", "cvmuS",
+  #  "K","slope","cvS", "cvmuS",
   "sums1","sums2",
   "aP","bP","sdP",
   "etaB",
   "aB","bB","sdBB",
   "eta_alphaN",
-#"Nobs",  
-"Ntot","N"
+  #"Nobs",  
+  "Ntot","N"
 )
 
 
@@ -221,28 +221,54 @@ var_names<-c(
 
 t1<-Sys.time()
 run1 <- run.jags(M1, 
-                 monitor= c(var_names),data=data,initlist = inits,
-                 n.chains = 2, method = 'rjparallel', thin=400, burnin =100000, 
-                 modules = "mix",keep.jags.files=F,sample =1000, adapt = 5000, 
+                 monitor= var_names,data=data,inits = inits,
+                 n.chains = 2, method = 'rjparallel', thin=300, burnin =0, 
+                 modules = "mix",keep.jags.files=F,sample =1000, adapt = 100, 
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
-
-t1<-Sys.time()
-run2 <- extend.jags(run1, combine=F, sample=1000, thin=400, keep.jags.files=F)
-t2<-Sys.time()
-difftime(t2,t1)
-
-t1<-Sys.time()
-run3 <- extend.jags(run2, combine=T, sample=1000, thin=400, keep.jags.files=F)
-t2<-Sys.time()
-difftime(t2,t1)
-
-
-
-
+# 17h
 
 run<-run1
+save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+
+t1<-Sys.time()
+run2 <- extend.jags(run1, combine=F, sample=2000, thin=300, keep.jags.files=F)
+t2<-Sys.time()
+difftime(t2,t1)
+#1.1d
+
+run<-run2
+save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+
+t1<-Sys.time()
+run3 <- extend.jags(run2, combine=T, sample=2000, thin=300, keep.jags.files=F)
+t2<-Sys.time()
+difftime(t2,t1)
+#1.1d
+
+run<-run3
+save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+
+t1<-Sys.time()
+run4 <- extend.jags(run3, combine=T, sample=3000, thin=300, keep.jags.files=F)
+t2<-Sys.time()
+difftime(t2,t1)
+
+run<-run4
+save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+
+t1<-Sys.time()
+run5 <- extend.jags(run4, combine=T, sample=3000, thin=300, keep.jags.files=F)
+t2<-Sys.time()
+difftime(t2,t1)
+
+run<-run5
+save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+
+
+
+run<-run3
 
 summary(run, var="D")
 summary(run, var="P")
@@ -260,8 +286,19 @@ plot(run, var="eta_alphaN")
 #plot(run, var="sum")
 
 chains<-as.mcmc.list(run)
-chains<-window(chains,start=400000)
-save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+chains<-window(chains,start=1000000)
+#save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
 save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_chains.RData")
 
 
+gelman.diag(chains[,"Ntot[1]"])
+gelman.diag(chains[,"Ntot[2]"])
+gelman.diag(chains[,"Ntot[3]"])
+gelman.diag(chains[,"Ntot[4]"])
+gelman.diag(chains[,"Ntot[5]"])
+
+gelman.diag(chains[,"aP"])
+gelman.diag(chains[,"bP"])
+gelman.diag(chains[,"aD"])
+gelman.diag(chains[,"cvD"])
+gelman.diag(chains[,"cvmuD"])
