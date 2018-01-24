@@ -1,4 +1,42 @@
 
+# runjags diagnostics (object "run")
+
+summary(run, var="D")
+summary(run, var="P")
+summary(run, var="B")
+summary(run, var="Ntot")
+summary(run, var="eta_alphaN")
+summary(run, var="sum")
+
+
+plot(run, var="D")
+plot(run, var="P")
+plot(run, var="B")
+plot(run, var="Ntot")
+plot(run, var="eta_alphaN")
+#plot(run, var="sum")
+
+chains<-as.mcmc.list(run)
+chains<-window(chains,start=1000000)
+#save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_chains.RData")
+
+
+gelman.diag(chains[,"Ntot[1]"])
+gelman.diag(chains[,"Ntot[2]"])
+gelman.diag(chains[,"Ntot[3]"])
+gelman.diag(chains[,"Ntot[4]"])
+gelman.diag(chains[,"Ntot[5]"])
+
+gelman.diag(chains[,"aP"])
+gelman.diag(chains[,"bP"])
+gelman.diag(chains[,"aD"])
+gelman.diag(chains[,"cvD"])
+gelman.diag(chains[,"cvmuD"])
+
+
+
+
 
 # Traces
 par(mfrow=c(3,3),mar=c(2.5,4,4,1))

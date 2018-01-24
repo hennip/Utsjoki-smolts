@@ -4,6 +4,12 @@ source("00-Functions/packages-and-paths.r")
 #######################
 # Load jags simulations for arrival model
 
+# 2005:2009, 2014, 07 & 14 predictions
+load(file=paste(sep="",pathOut,"Smolts_etaB_0714_run.RData")) 
+chains<-as.mcmc.list(run)
+chains<-window(chains,start=6000)
+
+
 # 2005:2009, 2014, 07 predictions and 09 totally missing
 load(file=paste(sep="",pathOut,"Smolts_etaB_09_run1.RData")) 
 chains<-as.mcmc.list(run1)
