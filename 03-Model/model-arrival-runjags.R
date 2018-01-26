@@ -254,7 +254,7 @@ t1<-Sys.time()
 run4 <- extend.jags(run3, combine=T, sample=3000, thin=300, keep.jags.files=F)
 t2<-Sys.time()
 difftime(t2,t1)
-
+#1.6d
 run<-run4
 save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
 
@@ -262,7 +262,7 @@ t1<-Sys.time()
 run5 <- extend.jags(run4, combine=T, sample=3000, thin=300, keep.jags.files=F)
 t2<-Sys.time()
 difftime(t2,t1)
-
+#1.6d
 run<-run5
 save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
 
