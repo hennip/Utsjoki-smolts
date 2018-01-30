@@ -6,6 +6,7 @@ source("00-Functions/packages-and-paths.r")
 
 # 2005:2009, 2014, 07 & 14 predictions
 load(file=paste(sep="",pathOut,"Smolts_etaB_0714_chains.RData")) 
+load(file=paste(sep="",pathOut,"Priors_Smolts_etaB_0714_chains.RData")) 
 #load(file=paste(sep="",pathOut,"Smolts_etaB_0714_run.RData")) 
 #chains<-as.mcmc.list(run)
 # run time 6.2d, burnin 1000k

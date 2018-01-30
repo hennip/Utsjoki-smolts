@@ -15,12 +15,12 @@ for(y in 1:nYears){
 for(i in 1:nDays){ # 61 days in June-July
 
 # Observed number of fish
-# Nobs[i,y]~dbetabin(100,10,N[i,y])  
-Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+ Nobs[i,y]~dbetabin(100,10,N[i,y])  
+#Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
 #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
 
-muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
-BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
+#muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
+#BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
 
 #etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
 
@@ -162,14 +162,9 @@ sums2[i]<-sum(qD[i,i:(i+13),2])
 
 }"
 
+modelName<-"Smolts_fixedObsProp"
 modelName<-"Smolts_etaB"
 
-#modelName<-"Smolts_etaB_fixedNtot"
-#modelName<-"Smolts_etaB_sim07"
-#modelName<-"Smolts_etaStarB_sdP"
-#modelName<-"Smolts_standardqD_oldinits"
-#modelName<-"Smolts_standardqD"
-#modelName<-"Smolts_simpleqD2"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
@@ -186,6 +181,7 @@ n_days<-61
 #dat<-dat_all3 # 2007 first 17% missing, 2009 +- 2 days from the peak missing
 #dat<-dat_all3 # 2007 first 17% missing, 2009 totally missing
 dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
+dataName<-"0714"
 
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
@@ -208,7 +204,7 @@ var_names<-c(
   #  "K","slope","cvS", "cvmuS",
   "sums1","sums2",
   "aP","bP","sdP",
-  "etaB",
+#  "etaB",
   "aB","bB","sdBB",
   "eta_alphaN",
   #"Nobs",  
@@ -230,7 +226,7 @@ difftime(t2,t1)
 # 17h
 
 run<-run1
-save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time()
 run2 <- extend.jags(run1, combine=F, sample=2000, thin=300, keep.jags.files=F)
@@ -239,7 +235,7 @@ difftime(t2,t1)
 #1.1d
 
 run<-run2
-save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time()
 run3 <- extend.jags(run2, combine=T, sample=2000, thin=300, keep.jags.files=F)
@@ -248,7 +244,7 @@ difftime(t2,t1)
 #1.1d
 
 run<-run3
-save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time()
 run4 <- extend.jags(run3, combine=T, sample=3000, thin=300, keep.jags.files=F)
@@ -256,7 +252,7 @@ t2<-Sys.time()
 difftime(t2,t1)
 #1.6d
 run<-run4
-save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time()
 run5 <- extend.jags(run4, combine=T, sample=3000, thin=300, keep.jags.files=F)
@@ -264,7 +260,7 @@ t2<-Sys.time()
 difftime(t2,t1)
 #1.6d
 run<-run5
-save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time()
 run6 <- extend.jags(run5, combine=T, sample=4000, thin=300, keep.jags.files=F)
@@ -273,7 +269,7 @@ difftime(t2,t1)
 #2.1d
 
 run<-run6
-save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 
 run<-run3

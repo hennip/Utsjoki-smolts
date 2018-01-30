@@ -16,6 +16,7 @@ df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
 # Annual totals
 Year<-years
 df<-boxplot.jags.df(chains, "Ntot",Year)
+#chains2<-chainsP
 df2<-boxplot.jags.df(chains2, "Ntot",Year)
 
 Ntot<-c()
@@ -163,7 +164,7 @@ ggplot(df, aes(x))+
   theme_bw()
 
 # Travel time at minimum flow
-FLOW<-10
+FLOW<-20
 fn<-c(1:14)
 source("04-Output/sample-travel-time-flow10.r")
 
