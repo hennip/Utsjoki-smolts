@@ -89,15 +89,15 @@ df<-df2%>%
 ggplot(df, aes(day))+
   geom_line(aes(day,q50))+
  geom_line(aes(day,smolts), col="grey50")+
-  geom_line(aes(day,meanTemp*100), col="red")+
-  geom_line(aes(day,flow*10), col="blue")+
+ # geom_line(aes(day,meanTemp*100), col="red")+
+ # geom_line(aes(day,flow*10), col="blue")+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+
   facet_wrap(~Year)+
   geom_point(mapping=aes(day,smolts), col="grey50")+
   labs(x="Day (in June-July)", y="Number of smolts")+
-  coord_cartesian(ylim=c(0,3400))+
+  coord_cartesian(ylim=c(0,3700))+
   theme_bw()
 
 

@@ -16,10 +16,9 @@ plot(run, var="Ntot")
 plot(run, var="eta_alphaN")
 #plot(run, var="sum")
 
-chains<-as.mcmc.list(run)
-chains<-window(chains,start=1000000)
-#save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
-save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_chains.RData")
+#chains<-as.mcmc.list(run)
+#chains<-window(chains,start=1000000)
+#save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_chains.RData")
 
 
 gelman.diag(chains[,"Ntot[1]"])
@@ -27,15 +26,13 @@ gelman.diag(chains[,"Ntot[2]"])
 gelman.diag(chains[,"Ntot[3]"])
 gelman.diag(chains[,"Ntot[4]"])
 gelman.diag(chains[,"Ntot[5]"])
+gelman.diag(chains[,"Ntot[6]"])
 
 gelman.diag(chains[,"aP"])
 gelman.diag(chains[,"bP"])
 gelman.diag(chains[,"aD"])
 gelman.diag(chains[,"cvD"])
 gelman.diag(chains[,"cvmuD"])
-
-
-
 
 
 # Traces

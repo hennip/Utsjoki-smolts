@@ -10,15 +10,22 @@
 #modelName<-"Smolts_standardqD_etaStarB"
 #modelName<-"Smolts_standardqD_oldinits"
 #modelName<-"Smolts_standardqD"
-modelName<-"Smolts_etaStarB_sdP"
+#modelName<-"Smolts_etaStarB_sdP"
+modelName<-"Smolts_etaB"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 
-# full data; temp data missing for 2012 and partly for 2010
-#years<-c(2005:2009,2011,2013:2014) 
-years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+# Select years
+#years<-c(2005:2006,2007,2008,2014) # 4 years of data plus simulated 2007  
+#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
+years<-c(2005:2009,2014) # 6 years to study
+#years<-c(2005:2011,2013,2014) # 2012 temp data missing
+dataName<-"0714"
+
 n_days<-61
-df<-smolts_data_to_jags(years, n_days) # 61: only june & july
+dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
+
+df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
 #load("02-Priors/priors-mvn.RData")
 
@@ -33,15 +40,11 @@ data<-list(
   nYears=length(years)
 )
 
-initials<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
+inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
                #                    aB=2,bB=0.03),
                list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears)))#,
                #                    aB=2,bB=0.03)
 )
-
-system.time(jm<-jags.model(Mname,inits=initials,
-                           n.adapt=500,
-                           data=data,n.chains=2))
 
 var_names<-c(
   "aD","bD","cvD","cvmuD",
@@ -54,15 +57,41 @@ var_names<-c(
   #  "Ntot","N"
 )
 
-system.time(chains1<-coda.samples(jm,variable.names=var_names,n.iter=100000, thin=100)) 
-system.time(chains2<-coda.samples(jm,variable.names=var_names,n.iter=100000, thin=100))
+t1<-Sys.time()
+run1 <- run.jags(Mname, 
+                 monitor= var_names,data=data,inits = inits,
+                 n.chains = 2, method = 'rjparallel', thin=300, burnin =0, 
+                 modules = "mix",keep.jags.files=F,sample =1000, adapt = 100, 
+                 progress.bar=TRUE)
+t2<-Sys.time()
+difftime(t2,t1)
 
-chainsP<-combine.mcmc(list(chains1, chains2))
+run<-run1
+save(run, str_c(pathOut,"Priors_",modelName,"_",dataName,"_run.RData"))
 
-save(chainsP, file=str_c(pathOut,"Priors_",modelName,".RData"))
+t1<-Sys.time()
+run2 <- extend.jags(run1, combine=F, sample=2000, thin=300, keep.jags.files=F)
+t2<-Sys.time()
+difftime(t2,t1)
 
-#summary(chainsP)
-#save(chainsP, file=paste(sep="", pathOut,"Priors_Smolts_17_09.RData"))
-#save(chainsP, file=paste(sep="", pathOut,"Priors_Smolts_17_09_fast.RData"))
+run<-run2
+save(run, str_c(pathOut,"Priors_",modelName,"_",dataName,"_run.RData"))
 
 
+summary(run, var="D")
+summary(run, var="P")
+summary(run, var="B")
+summary(run, var="Ntot")
+summary(run, var="eta_alphaN")
+summary(run, var="sum")
+
+
+plot(run, var="D")
+plot(run, var="P")
+plot(run, var="B")
+plot(run, var="Ntot")
+plot(run, var="eta_alphaN")
+
+chains<-as.mcmc.list(run)
+#chains<-window(chains,start=1000000)
+save(chains, str_c(pathOut,"Priors_",modelName,"_",dataName,"_chains.RData"))
