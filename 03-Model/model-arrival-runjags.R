@@ -266,6 +266,14 @@ difftime(t2,t1)
 run<-run5
 save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
 
+t1<-Sys.time()
+run6 <- extend.jags(run5, combine=T, sample=4000, thin=300, keep.jags.files=F)
+t2<-Sys.time()
+difftime(t2,t1)
+#2.1d
+
+run<-run6
+save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
 
 
 run<-run3
