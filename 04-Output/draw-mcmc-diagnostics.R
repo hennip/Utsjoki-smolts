@@ -16,9 +16,9 @@ plot(run, var="Ntot")
 plot(run, var="eta_alphaN")
 #plot(run, var="sum")
 
-#chains<-as.mcmc.list(run)
-#chains<-window(chains,start=1000000)
-#save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_chains.RData")
+chains<-as.mcmc.list(run)
+chains<-window(chains,start=1000000)
+save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_fixedObsProp_0714_chains.RData")
 
 
 gelman.diag(chains[,"Ntot[1]"])

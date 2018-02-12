@@ -38,7 +38,7 @@ ggplot(df, aes(x2))+
   labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
   geom_point(aes(x=x2, y=Ntot))+
   coord_cartesian(ylim=c(0,40000))+
-  theme_bw()
+  theme_bw()+
   geom_boxplot(data=df2,
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity", col="grey")

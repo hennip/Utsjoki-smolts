@@ -5,12 +5,15 @@ source("00-Functions/packages-and-paths.r")
 # Load jags simulations for arrival model
 
 # 2005:2009, 2014, 07 & 14 predictions
-load(file=paste(sep="",pathOut,"Smolts_etaB_0714_chains.RData")) 
-load(file=paste(sep="",pathOut,"Priors_Smolts_etaB_0714_chains.RData")) 
+  load(file=paste(sep="",pathOut,"Smolts_etaB_0714_chains.RData")) 
+  load(file=paste(sep="",pathOut,"Priors_Smolts_etaB_0714_chains.RData")) 
 #load(file=paste(sep="",pathOut,"Smolts_etaB_0714_run.RData")) 
 #chains<-as.mcmc.list(run)
 # run time 6.2d, burnin 1000k
 
+load(file=paste(sep="",pathOut,"Smolts_fixedObsProp_0714_run.RData")) 
+load(file=paste(sep="",pathOut,"Smolts_fixedObsProp_0714_chains.RData")) 
+chains2<-chains
 
 # 2005:2009, 2014, 07 predictions and 09 totally missing
 load(file=paste(sep="",pathOut,"Smolts_etaB_09_run1.RData")) 
