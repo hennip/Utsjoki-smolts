@@ -173,8 +173,8 @@ ggplot(df, aes(x))+
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
     #stat = "identity",fill=rgb(1,0,0,0.1))+
-  #labs(x="Temperature (degrees celsius)", y="Probability", title="Probability to begin migration at given temperature")+
-  labs(x="Temperature (degrees celsius)", y="Probability")+
+  labs(x="Temperature (degrees celsius)", y="Probability", title="Probability to begin migration at given temperature")+
+  #labs(x="Temperature (degrees celsius)", y="Probability")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50),col="grey")#+
   #theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
