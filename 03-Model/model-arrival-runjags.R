@@ -15,12 +15,12 @@ for(y in 1:nYears){
 for(i in 1:nDays){ # 61 days in June-July
 
 # Observed number of fish
- Nobs[i,y]~dbetabin(100,10,N[i,y])  
-#Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+# Nobs[i,y]~dbetabin(100,10,N[i,y])  
+Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
 #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
 
-#muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
-#BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
+muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
+BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
 
 #etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
 
@@ -83,8 +83,8 @@ for(i in 1:nDays){
 # p: probability to start migration at day t, if haven't done so earlier
 # departure probability depends on temperature
 logit(p[i,y])<-P[i,y]
-#P[i,y]~dnorm(aP+bP*Temp[i,y],1/pow(sdP,2))
-P[i,y]~dnorm(aP+bP*Temp[i,y],1000)
+P[i,y]~dnorm(aP+bP*Temp[i,y],1/pow(sdP,2))
+#P[i,y]~dnorm(aP+bP*Temp[i,y],1000)
 }
 }
 
@@ -162,8 +162,8 @@ sums2[i]<-sum(qD[i,i:(i+13),2])
 
 }"
 
-modelName<-"Smolts_fixedObsProp"
-modelName<-"Smolts_etaB"
+#modelName<-"Smolts_fixedObsProp"
+modelName<-"Smolts_etaB_sdP"
 
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -176,11 +176,12 @@ years<-c(2005:2009,2014) # 6 years to study
 #years<-c(2005:2011,2013,2014) # 2012 temp data missing
 
 n_days<-61
-#dat<-dat_all # all real data
+dat<-dat_all # all real data
 #dat<-dat_all2 # 2007 simulated
 #dat<-dat_all3 # 2007 first 17% missing, 2009 +- 2 days from the peak missing
 #dat<-dat_all3 # 2007 first 17% missing, 2009 totally missing
 dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
+#dataName<-"all"
 dataName<-"0714"
 
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
@@ -215,11 +216,11 @@ var_names<-c(
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
 
-t1<-Sys.time()
+t1<-Sys.time();t1
 run1 <- run.jags(M1, 
                  monitor= var_names,data=data,inits = inits,
-                 n.chains = 2, method = 'rjparallel', thin=300, burnin =0, 
-                 modules = "mix",keep.jags.files=F,sample =1000, adapt = 100, 
+                 n.chains = 2, method = 'parallel', thin=300, burnin =0, 
+                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 100, 
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
@@ -228,47 +229,38 @@ difftime(t2,t1)
 run<-run1
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
-t1<-Sys.time()
-run2 <- extend.jags(run1, combine=F, sample=2000, thin=300, keep.jags.files=F)
+t1<-Sys.time();t1
+run2 <- extend.jags(run1, combine=F, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#1.1d
+#2.2d?
 
 run<-run2
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
-t1<-Sys.time()
-run3 <- extend.jags(run2, combine=T, sample=2000, thin=300, keep.jags.files=F)
+t1<-Sys.time();t1
+run3 <- extend.jags(run2, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#1.1d
-
+#2.2d?
 run<-run3
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
-t1<-Sys.time()
-run4 <- extend.jags(run3, combine=T, sample=3000, thin=300, keep.jags.files=F)
+t1<-Sys.time();t1
+run4 <- extend.jags(run3, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 #1.6d
 run<-run4
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
-t1<-Sys.time()
-run5 <- extend.jags(run4, combine=T, sample=3000, thin=300, keep.jags.files=F)
-t2<-Sys.time()
-difftime(t2,t1)
-#1.6d
-run<-run5
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
-
-t1<-Sys.time()
-run6 <- extend.jags(run5, combine=T, sample=4000, thin=300, keep.jags.files=F)
+t1<-Sys.time();t1
+run5 <- extend.jags(run4, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 #2.1d
 
-run<-run6
+run<-run5
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 
