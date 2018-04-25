@@ -1,11 +1,12 @@
 
 
-years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2005:2009,2014) # 6 years of data for testing  
+#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
 years<-c(2005:2011,2013,2014) # 9 years, total time series so far (2012 missing)
 
-#years<-c(2006,2008) # 2 years of data for testing- schools model  
-#years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
+# years<-c(2006,2008) # 2 years of data for testing- schools model  
+# years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
+
+years<-c(2005:2009,2014) # 6 years of data for testing  
 n_days<-61
 df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
 
@@ -32,15 +33,15 @@ df2<-df2%>%
   mutate(x2=parse_factor(x, levels=NULL))
 
 ggplot(df, aes(x2))+
-  geom_boxplot(
-    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity")+
-  labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
-  coord_cartesian(ylim=c(0,40000))+
-  theme_bw()+
   geom_boxplot(data=df2,
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity", col="grey")+
+  labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
+  coord_cartesian(ylim=c(0,40000))+
+  theme_bw()+
+  geom_boxplot(
+    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.6))+
   geom_point(aes(x=x2, y=Ntot))
   
   
@@ -71,6 +72,8 @@ summary(as.mcmc(chains[,"Ntot[1]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$
 summary(as.mcmc(chains[,"Ntot[2]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[2]
 summary(as.mcmc(chains[,"Ntot[3]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[3]
 summary(as.mcmc(chains[,"Ntot[4]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[4]
+summary(as.mcmc(chains[,"Ntot[5]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[5]
+summary(as.mcmc(chains[,"Ntot[6]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[6]
 
 
 summary(as.mcmc(chainsP[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
@@ -104,19 +107,24 @@ df<-df2%>%
   left_join(dat_all)%>%
   select(Day,Month, Year,day, smolts, q50, everything())
 
+df_tmp<-df%>%
+  filter((Year=="2007" & day<25) | (Year=="2014" & day<41 & day>35))
+#mutate(incl=ifelse((Year=="2007" & day<25) | (Year=="2014" & day<41 & day>35), 0, 1))
+View(df_tmp)
 
 ggplot(df, aes(day))+
   geom_line(aes(day,q50))+
- geom_line(aes(day,smolts), col="grey50")+
- # geom_line(aes(day,meanTemp*100), col="red")+
+  geom_line(aes(day,smolts), col="grey80")+
+  # geom_line(aes(day,meanTemp*100), col="red")+
  # geom_line(aes(day,flow*10), col="blue")+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+
   facet_wrap(~Year)+
-  geom_point(mapping=aes(day,smolts), col="grey50")+
+  geom_point(mapping=aes(day,smolts), col="grey30")+
+  geom_point(data=df_tmp, mapping=aes(day,smolts), shape=21, fill="grey80", col="black")+
   labs(x="Day (in June-July)", y="Number of smolts")+
-  coord_cartesian(ylim=c(0,3700))+
+  coord_cartesian(ylim=c(0,3500))+
   theme_bw()
 
 
@@ -146,11 +154,11 @@ for(i in 1:23){
   tmp<-chains[,str_c("N[",i,",1]")][[1]]+tmp
   tmp2<-chains2[,str_c("N[",i,",1]")][[1]]+tmp2
 }
-summary(tmp)
-summary(tmp2)
+summary(tmp, quantiles=c(0.05,0.25,0.5,0.75,0.95))
+summary(tmp2, quantiles=c(0.05,0.25,0.5,0.75,0.95))
 
-summary(tmp/chains[,"Ntot[1]"][[1]])
-summary(tmp2/chains2[,"Ntot[1]"][[1]])
+summary(tmp/chains[,"Ntot[1]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
+summary(tmp2/chains2[,"Ntot[1]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
 
 
 # Prob to start migration vs. temperature
@@ -172,9 +180,8 @@ ggplot(df, aes(x))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-    #stat = "identity",fill=rgb(1,0,0,0.1))+
-  labs(x="Temperature (degrees celsius)", y="Probability", title="Probability to begin migration at given temperature")+
-  #labs(x="Temperature (degrees celsius)", y="Probability")+
+  labs(x=expression(Temperature~(degree*C)), y="Probability", 
+       title="Probability to begin migration at given temperature")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50),col="grey")#+
   #theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
@@ -202,9 +209,10 @@ plot1<-ggplot(df, aes(x))+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  labs(x="Days", y="Cumulative probability", title="Cumulative travel time to video site with flow velocity 10m3/s on the day of departure")+
+  labs(x="Days", y="Cumulative proportion", 
+       title=expression("Cumulative travel time to video site with flow velocity 10m"^{3}*"/s on the day of departure"))+
+#         "Cumulative travel time to video site with flow velocity 10m3/s on the day of departure")+
   geom_line(aes(x,q50))+
-  #coord_cartesian(xlim=c(1:14), ylim=c(0,0.8))+
   coord_cartesian(xlim=c(1:14), ylim=c(0,1))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6))+
   theme_bw()
@@ -227,7 +235,8 @@ plot2<-ggplot(df, aes(x))+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  labs(x="Days", y="Cumulative probability", title="Cumulative travel time to video site with flow velocity 100m3/s on the day of departure")+
+  labs(x="Days", y="Cumulative proportion", 
+       title=expression("Cumulative travel time to video site with flow velocity 100m"^{3}*"/s on the day of departure"))+
   geom_line(aes(x,q50))+
   coord_cartesian(xlim=c(1:14), ylim=c(0,1))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6))+
@@ -252,7 +261,7 @@ ggplot(df, aes(x))+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  labs(x="Flow (m3/s)", y="Probability", title="Probability to observe a smolt at given flow")+
+  labs(x="Flow velocity (m3/s)", y="Probability", title="Probability to observe a smolt at given flow velocity")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
