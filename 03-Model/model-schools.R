@@ -20,8 +20,8 @@ model{
       
       # Observed number of fish
       # Nobs[i,y]~dbetabin(100,10,N[i,y])  
-      #Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])  
+      Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+      #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])  
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
@@ -68,9 +68,10 @@ model{
 }
 "
 
+modelName<-"Schools_etaB_dirich"
 #modelName<-"Schools_etaStarB_indepN"
 #modelName<-"Schools"
-modelName<-"Schools_etaStarB"
+#modelName<-"Schools_etaStarB"
 #modelName<-"Schools_etaB_indepN"
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -82,6 +83,8 @@ cat(M1,file=Mname)
 #years<-c(2005:2009,2011,2013:2014) 
 #years<-c(2005:2006,2008,2014) # 4 years of data for testing  
 years<-c(2005,2006,2008)
+dataName<-"050608"
+
 n_days<-61
 dat<-dat_all # all real data
 #dat<-dat_all2 # 2007 simulated
@@ -100,45 +103,62 @@ data<-list(
   nYears=length(years)
 )
 
-initials<-list(list(LNtot=rep(14,data$nYears)),
+inits<-list(list(LNtot=rep(14,data$nYears)),
                list(LNtot=rep(14,data$nYears)))
 #initials<-list(list(logN=array(8.2,dim=c(data$nDays,data$nYears))),
 #               list(logN=array(8.2,dim=c(data$nDays,data$nYears))))
 
-system.time(jm<-jags.model(Mname,inits=initials,n.adapt=100000, data=data,n.chains=2))
-
 var_names<-c(
+  "etaB",
   "muB", "qN",
   "aB","bB","sdBB",
   "K","slope","cvS", "cvmuS",
   "Ntot","N"
 )
-#
-#system.time(chains0<-coda.samples(jm,variable.names=var_names,n.iter=1000, thin=1))
 
-a1<-Sys.time();a1
-chains1<-coda.samples(jm,variable.names=var_names,n.iter=10000000, thin=10000) #16h
-b1<-Sys.time() ; t1<-b1-a1; t1
 
-a2<-Sys.time();a2
-chains2<-coda.samples(jm,variable.names=var_names,n.iter=10000000, thin=10000) #16h
-b2<-Sys.time() ; t2<-b2-a2; t2
+t1<-Sys.time();t1
+run1 <- run.jags(M1, 
+                 monitor= var_names,data=data,inits = inits,
+                 n.chains = 2, method = 'parallel', thin=300, burnin =0, 
+                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 100, 
+                 progress.bar=TRUE)
+t2<-Sys.time()
+difftime(t2,t1)
+# 17h
 
-chains<-combine.mcmc(list(chains1, chains2))
-save(chains, file=str_c(pathOut,modelName,".RData"))
 
-a3<-Sys.time();a3
-chains3<-coda.samples(jm,variable.names=var_names,n.iter=20000000, thin=10000) #16h
-b3<-Sys.time() ; t3<-b3-a3; t3
+t1<-Sys.time();t1
+run2 <- extend.jags(run1, combine=F, sample=4000, thin=300, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+#2.2d?
 
-chains<-combine.mcmc(list(chains1, chains2, chains3))
-save(chains, file=str_c(pathOut,modelName,".RData"))
+run<-run2
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
-a4<-Sys.time();a4
-chains4<-coda.samples(jm,variable.names=var_names,n.iter=20000000, thin=10000) #16h
-b4<-Sys.time() ; t4<-b4-a4; t4
+t1<-Sys.time();t1
+run3 <- extend.jags(run2, combine=T, sample=4000, thin=300, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+#2.2d?
+run<-run3
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
-chains<-combine.mcmc(list(chains1, chains2, chains3, chains4))
-save(chains, file=str_c(pathOut,modelName,".RData"))
+t1<-Sys.time();t1
+run4 <- extend.jags(run3, combine=T, sample=4000, thin=300, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+#1.6d
+run<-run4
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
+t1<-Sys.time();t1
+run5 <- extend.jags(run4, combine=T, sample=4000, thin=300, keep.jags.files=T)
+t2<-Sys.time()
+difftime(t2,t1)
+#2.1d
+
+run<-run5
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
