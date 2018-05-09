@@ -20,8 +20,8 @@ model{
       
       # Observed number of fish
       # Nobs[i,y]~dbetabin(100,10,N[i,y])  
-      Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-      #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])  
+      #Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])  
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
@@ -68,7 +68,8 @@ model{
 }
 "
 
-modelName<-"Schools_etaB_dirich"
+modelName<-"Schools_etaStarB_dirich"
+#modelName<-"Schools_etaB_dirich"
 #modelName<-"Schools_etaStarB_indepN"
 #modelName<-"Schools"
 #modelName<-"Schools_etaStarB"
@@ -125,39 +126,39 @@ run1 <- run.jags(M1,
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
-# 17h
+# 20min
 
 
 t1<-Sys.time();t1
-run2 <- extend.jags(run1, combine=F, sample=4000, thin=300, keep.jags.files=T)
+run2 <- extend.jags(run1, combine=F, sample=4000, thin=3000, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#2.2d?
+#10h
 
 run<-run2
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time();t1
-run3 <- extend.jags(run2, combine=T, sample=4000, thin=300, keep.jags.files=T)
+run3 <- extend.jags(run2, combine=F, sample=4000, thin=3000, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#2.2d?
+#10h
 run<-run3
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time();t1
-run4 <- extend.jags(run3, combine=T, sample=4000, thin=300, keep.jags.files=T)
+run4 <- extend.jags(run3, combine=T, sample=4000, thin=3000, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#1.6d
+#10h
 run<-run4
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time();t1
-run5 <- extend.jags(run4, combine=T, sample=4000, thin=300, keep.jags.files=T)
+run5 <- extend.jags(run4, combine=T, sample=4000, thin=3000, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#2.1d
+#10h
 
 run<-run5
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
