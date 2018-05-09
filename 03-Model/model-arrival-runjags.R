@@ -16,16 +16,16 @@ for(i in 1:nDays){ # 61 days in June-July
 
 # Observed number of fish
 # Nobs[i,y]~dbetabin(100,10,N[i,y])  
-Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-#Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
+#Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
 
 muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
 BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
 
-#etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
+etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
 
-#s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
-#muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
+s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
+muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
 }
 }
 # priors for observation process
@@ -35,13 +35,13 @@ sdBB~dlnorm(-0.23,210)
 etaB~dunif(5,1000)
 
 # priors for schooling
-#  K~dlnorm(6.07,0.7)
-#  slope~dlnorm(-1.94,66)
-#  cvS~dunif(0.001,2)
-#  cvmuS~dunif(0.001,2)
+  K~dlnorm(6.07,0.7)
+  slope~dlnorm(-1.94,66)
+  cvS~dunif(0.001,2)
+  cvmuS~dunif(0.001,2)
 
-#  TmuS<-1/log(cvmuS*cvmuS+1)
-#  TS<-1/log(cvS*cvS+1)
+  TmuS<-1/log(cvmuS*cvmuS+1)
+  TS<-1/log(cvS*cvS+1)
 
 
 # Abundance
@@ -163,7 +163,8 @@ sums2[i]<-sum(qD[i,i:(i+13),2])
 }"
 
 #modelName<-"Smolts_fixedObsProp"
-modelName<-"Smolts_etaB_sdP"
+#modelName<-"Smolts_etaB_sdP"
+modelName<-"Smolts_etaStarB_sdP"
 
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -187,7 +188,7 @@ dataName<-"0714"
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
 data<-list(
-  # s=df$Schools,
+   s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -202,7 +203,7 @@ inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
 
 var_names<-c(
   "aD","bD","cvD","cvmuD",
-  #  "K","slope","cvS", "cvmuS",
+    "K","slope","cvS", "cvmuS",
   "sums1","sums2",
   "aP","bP","sdP",
 #  "etaB",
@@ -216,6 +217,7 @@ var_names<-c(
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
 
+
 t1<-Sys.time();t1
 run1 <- run.jags(M1, 
                  monitor= var_names,data=data,inits = inits,
@@ -224,8 +226,7 @@ run1 <- run.jags(M1,
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
-# 17h
-
+# 20h
 run<-run1
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
@@ -233,8 +234,7 @@ t1<-Sys.time();t1
 run2 <- extend.jags(run1, combine=F, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#2.2d?
-
+#3.3d?
 run<-run2
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
@@ -242,7 +242,6 @@ t1<-Sys.time();t1
 run3 <- extend.jags(run2, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#2.2d?
 run<-run3
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
@@ -250,7 +249,6 @@ t1<-Sys.time();t1
 run4 <- extend.jags(run3, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#1.6d
 run<-run4
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
@@ -258,43 +256,7 @@ t1<-Sys.time();t1
 run5 <- extend.jags(run4, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#2.1d
-
 run<-run5
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 
-run<-run3
-
-summary(run, var="D")
-summary(run, var="P")
-summary(run, var="B")
-summary(run, var="Ntot")
-summary(run, var="eta_alphaN")
-summary(run, var="sum")
-
-
-plot(run, var="D")
-plot(run, var="P")
-plot(run, var="B")
-plot(run, var="Ntot")
-plot(run, var="eta_alphaN")
-#plot(run, var="sum")
-
-chains<-as.mcmc.list(run)
-chains<-window(chains,start=1000000)
-#save(run, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_run.RData")
-save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_etaB_0714_chains.RData")
-
-
-gelman.diag(chains[,"Ntot[1]"])
-gelman.diag(chains[,"Ntot[2]"])
-gelman.diag(chains[,"Ntot[3]"])
-gelman.diag(chains[,"Ntot[4]"])
-gelman.diag(chains[,"Ntot[5]"])
-
-gelman.diag(chains[,"aP"])
-gelman.diag(chains[,"bP"])
-gelman.diag(chains[,"aD"])
-gelman.diag(chains[,"cvD"])
-gelman.diag(chains[,"cvmuD"])
