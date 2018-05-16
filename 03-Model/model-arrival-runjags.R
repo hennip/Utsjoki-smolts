@@ -222,7 +222,7 @@ t1<-Sys.time();t1
 run1 <- run.jags(M1, 
                  monitor= var_names,data=data,inits = inits,
                  n.chains = 2, method = 'parallel', thin=300, burnin =0, 
-                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 100, 
+                 modules = "mix",keep.jags.files=T,sample =10000, adapt = 100, 
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
