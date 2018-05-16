@@ -184,6 +184,7 @@ dat<-dat_all # all real data
 dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
 #dataName<-"all"
 dataName<-"0714"
+compName<-"ould017"
 
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
@@ -222,13 +223,13 @@ t1<-Sys.time();t1
 run1 <- run.jags(M1, 
                  monitor= var_names,data=data,inits = inits,
                  n.chains = 2, method = 'parallel', thin=300, burnin =0, 
-                 modules = "mix",keep.jags.files=T,sample =10000, adapt = 100, 
+                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 100, 
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
 # 20h
 run<-run1
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time();t1
 run2 <- extend.jags(run1, combine=F, sample=4000, thin=300, keep.jags.files=T)
@@ -236,27 +237,27 @@ t2<-Sys.time()
 difftime(t2,t1)
 #3.3d?
 run<-run2
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time();t1
 run3 <- extend.jags(run2, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 run<-run3
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time();t1
 run4 <- extend.jags(run3, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 run<-run4
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time();t1
 run5 <- extend.jags(run4, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 run<-run5
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
+save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 
