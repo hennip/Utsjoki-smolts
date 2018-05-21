@@ -226,12 +226,12 @@ run1 <- run.jags(M1,
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
-# 20h
+# 7d
 run<-run1
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run.RData"))
 
 t1<-Sys.time();t1
-run2 <- extend.jags(run1, combine=F, sample=4000, thin=300, keep.jags.files=T)
+run2 <- extend.jags(run1, combine=T, sample=4000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 #3.3d?
