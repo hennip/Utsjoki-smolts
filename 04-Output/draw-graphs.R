@@ -1,8 +1,8 @@
 
 
-#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2005:2011,2013,2014) # 9 years, total time series so far (2012 missing)
+#years<-c(2005:2011,2013,2014) # 9 years, total time series so far (2012 missing)
 
+#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
 # years<-c(2006,2008) # 2 years of data for testing- schools model  
 # years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
 
@@ -45,54 +45,6 @@ ggplot(df, aes(x2))+
   geom_point(aes(x=x2, y=Ntot))
   
   
-summary(as.mcmc(chains[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
-summary(as.mcmc(chains[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
-summary(as.mcmc(chains[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
-summary(as.mcmc(chains[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
-summary(as.mcmc(chains[,"Ntot[5]"][[1]]))$statistics[1]/Ntot[5]
-summary(as.mcmc(chains[,"Ntot[6]"][[1]]))$statistics[1]/Ntot[6]
-
-summary(as.mcmc(chains2[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
-summary(as.mcmc(chains2[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
-summary(as.mcmc(chains2[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
-summary(as.mcmc(chains2[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
-summary(as.mcmc(chains2[,"Ntot[5]"][[1]]))$statistics[1]/Ntot[5]
-summary(as.mcmc(chains2[,"Ntot[6]"][[1]]))$statistics[1]/Ntot[6]
-
-
-summary(as.mcmc(chains2[,"Ntot[1]"][[1]]))$quantiles/Ntot[1]
-summary(as.mcmc(chains2[,"Ntot[2]"][[1]]))$quantiles/Ntot[2]
-summary(as.mcmc(chains2[,"Ntot[3]"][[1]]))$quantiles/Ntot[3]
-summary(as.mcmc(chains2[,"Ntot[4]"][[1]]))$quantiles/Ntot[4]
-summary(as.mcmc(chains2[,"Ntot[5]"][[1]]))$quantiles/Ntot[5]
-summary(as.mcmc(chains2[,"Ntot[6]"][[1]]))$quantiles/Ntot[6]
-
-
-summary(as.mcmc(chains[,"Ntot[1]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[1]
-summary(as.mcmc(chains[,"Ntot[2]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[2]
-summary(as.mcmc(chains[,"Ntot[3]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[3]
-summary(as.mcmc(chains[,"Ntot[4]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[4]
-summary(as.mcmc(chains[,"Ntot[5]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[5]
-summary(as.mcmc(chains[,"Ntot[6]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[6]
-
-
-summary(as.mcmc(chainsP[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
-summary(as.mcmc(chainsP[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
-summary(as.mcmc(chainsP[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
-summary(as.mcmc(chainsP[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
-
-gelman.diag(chains[,"N[25,5]"])
-gelman.diag(chains[,"N[26,5]"])
-gelman.diag(chains[,"N[27,5]"])
-gelman.diag(chains[,"N[28,5]"])
-gelman.diag(chains[,"N[29,5]"])
-gelman.diag(chains[,"N[30,5]"])
-gelman.diag(chains[,"N[31,5]"])
-gelman.diag(chains[,"N[32,5]"])
-gelman.diag(chains[,"N[33,5]"])
-gelman.diag(chains[,"N[34,5]"])
-
-summary(as.mcmc(chains[,"Ntot[1]"][[1]]))
 
 
 # Daily numbers
@@ -110,7 +62,7 @@ df<-df2%>%
 df_tmp<-df%>%
   filter((Year=="2007" & day<25) | (Year=="2014" & day<41 & day>35))
 #mutate(incl=ifelse((Year=="2007" & day<25) | (Year=="2014" & day<41 & day>35), 0, 1))
-View(df_tmp)
+#View(df_tmp)
 
 ggplot(df, aes(day))+
   geom_line(aes(day,q50))+
@@ -141,22 +93,6 @@ ggplot(df, aes(day))+
   geom_point(filter(df, day<25),mapping=aes(day,smolts), col="red")+
   labs(x="Day (in June-July)", y="Number of smolts")+
   theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
-
-
-#########################################
-# 2005 proportion missed (first 23 days)
-
-tmp<-0
-tmp2<-0
-for(i in 1:23){
-  tmp<-chains[,str_c("N[",i,",1]")][[1]]+tmp
-  tmp2<-chains2[,str_c("N[",i,",1]")][[1]]+tmp2
-}
-summary(tmp, quantiles=c(0.05,0.25,0.5,0.75,0.95))
-summary(tmp2, quantiles=c(0.05,0.25,0.5,0.75,0.95))
-
-summary(tmp/chains[,"Ntot[1]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
-summary(tmp2/chains2[,"Ntot[1]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
 
 
 # Prob to start migration vs. temperature
@@ -279,16 +215,144 @@ df.prior<-boxplot.df(muS_sampP, Ntrue)
 ggplot(df, aes(x))+
   geom_boxplot(data=df.prior,
                mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-               stat = "identity",
+               stat = "identity", size=5,
                col="grey", fill="grey95")+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity",fill=rgb(1,1,1,0.6))+
+    stat = "identity",fill=rgb(1,1,1,0.6), size=5)+
   labs(x="Daily passage (number of smolts)", y="School size", title="Expected school size at given daily passage")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
-  coord_cartesian(ylim=c(0,30))
+  coord_cartesian(ylim=c(0,100), xlim=c(0,1000))+
+  geom_point(data=dat_all3,aes(x=smolts, y=schools))
 
 
 
+#########################################
+# Predictions on missing counts
+
+# 2005 missing (first 23 days)
+# ------------------------------
+tmp<-0
+tmp2<-0
+for(i in 1:23){
+  tmp<-chains[,str_c("N[",i,",1]")][[1]]+tmp
+  tmp2<-chains2[,str_c("N[",i,",1]")][[1]]+tmp2
+}
+summary(tmp, quantiles=c(0.05,0.25,0.5,0.75,0.95))
+summary(tmp2, quantiles=c(0.05,0.25,0.5,0.75,0.95))
+
+summary(tmp/chains[,"Ntot[1]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
+summary(tmp2/chains2[,"Ntot[1]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
+
+# 2007 missing (first 24 days, 17% from beginning)
+# ------------------------------
+
+tmp<-0
+tmp2<-0
+for(i in 1:24){
+  tmp<-chains[,str_c("N[",i,",3]")][[1]]+tmp
+  tmp2<-chains2[,str_c("N[",i,",3]")][[1]]+tmp2
+}
+summary(tmp, quantiles=c(0.05,0.25,0.5,0.75,0.95))
+summary(tmp2, quantiles=c(0.05,0.25,0.5,0.75,0.95))
+
+summary(tmp/chains[,"Ntot[3]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
+summary(tmp2/chains2[,"Ntot[3]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
+
+m<-filter(dat_all, Year=="2007", day<25) 
+nm<-summarise(m, sum(smolts));nm # sum of missing counts
+nm/Ntot[3] # proportion of missing out of total count
+
+x07<-c()
+for( i in 1: length(tmp)){
+  x07[i]<-ifelse(tmp[i]-nm>0,1,0)
+  
+}
+mean(x07) # probability that the annual predicted number is higher than the sum of missed counts
+
+
+
+# 2014 missing (peak +-2 days, 17% from beginning)
+# ------------------------------
+
+tmp<-0
+tmp2<-0
+for(i in 36:40){
+  tmp<-chains[,str_c("N[",i,",6]")][[1]]+tmp
+  tmp2<-chains2[,str_c("N[",i,",6]")][[1]]+tmp2
+}
+
+m<-filter(dat_all, Year=="2014", day<41, day>35)
+nm<-summarise(m, sum(smolts));nm # sum of missing counts
+nm/Ntot[6] # proportion of missing out of total count
+
+x14<-c()
+for( i in 1: length(tmp)){
+  x14[i]<-ifelse(tmp[i]-nm>0,1,0)
+  
+}
+mean(x14)
+
+summary(tmp, quantiles=c(0.05,0.25,0.5,0.75,0.95))
+summary(tmp/chains[,"Ntot[6]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
+
+summary(tmp2, quantiles=c(0.05,0.25,0.5,0.75,0.95))
+summary(tmp2/chains2[,"Ntot[6]"][[1]], quantiles=c(0.05,0.25,0.5,0.75,0.95))
+
+
+summary(chains[,str_c("N[",40,",6]")][[1]])
+
+
+
+# ------------------------------
+
+summary(as.mcmc(chains[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
+summary(as.mcmc(chains[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
+summary(as.mcmc(chains[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
+summary(as.mcmc(chains[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
+summary(as.mcmc(chains[,"Ntot[5]"][[1]]))$statistics[1]/Ntot[5]
+summary(as.mcmc(chains[,"Ntot[6]"][[1]]))$statistics[1]/Ntot[6]
+
+summary(as.mcmc(chains2[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
+summary(as.mcmc(chains2[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
+summary(as.mcmc(chains2[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
+summary(as.mcmc(chains2[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
+summary(as.mcmc(chains2[,"Ntot[5]"][[1]]))$statistics[1]/Ntot[5]
+summary(as.mcmc(chains2[,"Ntot[6]"][[1]]))$statistics[1]/Ntot[6]
+
+
+summary(as.mcmc(chains2[,"Ntot[1]"][[1]]))$quantiles/Ntot[1]
+summary(as.mcmc(chains2[,"Ntot[2]"][[1]]))$quantiles/Ntot[2]
+summary(as.mcmc(chains2[,"Ntot[3]"][[1]]))$quantiles/Ntot[3]
+summary(as.mcmc(chains2[,"Ntot[4]"][[1]]))$quantiles/Ntot[4]
+summary(as.mcmc(chains2[,"Ntot[5]"][[1]]))$quantiles/Ntot[5]
+summary(as.mcmc(chains2[,"Ntot[6]"][[1]]))$quantiles/Ntot[6]
+
+
+summary(as.mcmc(chains[,"Ntot[1]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[1]
+summary(as.mcmc(chains[,"Ntot[2]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[2]
+summary(as.mcmc(chains[,"Ntot[3]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[3]
+summary(as.mcmc(chains[,"Ntot[4]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[4]
+summary(as.mcmc(chains[,"Ntot[5]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[5]
+summary(as.mcmc(chains[,"Ntot[6]"][[1]]), quantiles=c(0.05,0.25,0.5,0.75,0.95))$quantiles/Ntot[6]
+
+
+summary(as.mcmc(chainsP[,"Ntot[1]"][[1]]))$statistics[1]/Ntot[1]
+summary(as.mcmc(chainsP[,"Ntot[2]"][[1]]))$statistics[1]/Ntot[2]
+summary(as.mcmc(chainsP[,"Ntot[3]"][[1]]))$statistics[1]/Ntot[3]
+summary(as.mcmc(chainsP[,"Ntot[4]"][[1]]))$statistics[1]/Ntot[4]
+
+gelman.diag(chains[,"N[25,5]"])
+gelman.diag(chains[,"N[26,5]"])
+gelman.diag(chains[,"N[27,5]"])
+gelman.diag(chains[,"N[28,5]"])
+gelman.diag(chains[,"N[29,5]"])
+gelman.diag(chains[,"N[30,5]"])
+gelman.diag(chains[,"N[31,5]"])
+gelman.diag(chains[,"N[32,5]"])
+gelman.diag(chains[,"N[33,5]"])
+gelman.diag(chains[,"N[34,5]"])
+
+summary(as.mcmc(chains[,"Ntot[1]"][[1]]))
