@@ -10,6 +10,12 @@ source("01-Data/data-smolts-covariates.r")
 #  geom_point()+
 #  geom_line()
 
+# number of observed smolts vs average school size per day
+ggplot(dat_all)+
+  geom_point(aes(x=smolts, y=schools))
+
+
+
 ## ---- draw-some-data-smolts ----
 ggplot(dat_all,aes(x = day, y = smolts)) + 
   geom_point()+

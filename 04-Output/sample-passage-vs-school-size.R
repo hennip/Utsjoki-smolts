@@ -1,7 +1,9 @@
 #################################
 # Daily passage vs school size
 
-Ntrue<-seq(10,1000, by=50)
+tmp<-seq(0,8, by=0.4)
+Ntrue<-exp(tmp)
+#Ntrue<-seq(10,1000, by=50)
 n<-length(Ntrue)
 
 # pick chains for comparison

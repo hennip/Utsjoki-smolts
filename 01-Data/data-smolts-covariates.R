@@ -7,7 +7,44 @@ ColNames<-c("smolts", "empty", "n_schools", "school_size")
 Day<-c(c(1:30), c(1:31), c(1:31))
 Month<-c(rep(6,30), rep(7,31), rep(8,31))
 
-D05<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2005.xls"),
+
+D02<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2002.xls"),
+              sheet=1, na="", 
+              range="B5:F60", col_names=c("smolts", "prop%", "n_schools", "prop2%","school_size"))
+tmp<-array(NA, dim=c(6,5));colnames(tmp)<-colnames(D02)
+D02<-rbind(tmp,D02) #1.6.-6.6. missing
+tmp<-array(0, dim=c(30,5));colnames(tmp)<-colnames(D02)
+D02<-rbind(D02, tmp) #2.8.-31.8. missing but replace with zeros
+D02<-D02%>% mutate(day=c(1:92))%>%
+  mutate(Year=2002)%>%
+  mutate(Day=Day)%>%
+  mutate(Month=Month)%>%
+  select(Year,Month,Day,day,smolts, school_size)
+
+D03<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2003.xls"),
+              sheet=1, na="", 
+              range="Z11:AD71", col_names=c("smolts", "empty", "prop%", "n_schools", "school_size"))
+tmp<-array(0, dim=c(31,5));colnames(tmp)<-colnames(D03)
+D03<-rbind(D03, tmp) #1.8.-31.8. missing but replace with zeros
+D03<-D03%>% mutate(day=c(1:92))%>%
+  mutate(Year=2003)%>%
+  mutate(Day=Day)%>%
+  mutate(Month=Month)%>%
+  select(Year,Month,Day,day,smolts, school_size)
+
+
+D04<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2004.xls"),
+              sheet=1, na="", 
+              range="Z8:AD68", col_names=c("smolts", "empty", "prop%", "n_schools", "school_size"))
+tmp<-array(0, dim=c(31,5));colnames(tmp)<-colnames(D04)
+D04<-rbind(D04, tmp) #1.8.-31.8. missing but replace with zeros
+D04<-D04%>% mutate(day=c(1:92))%>%
+  mutate(Year=2004)%>%
+  mutate(Day=Day)%>%
+  mutate(Month=Month)%>%
+  select(Year,Month,Day,day,smolts, school_size)
+
+D05<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2005.xls"),
               sheet=1, na="", 
               range="Z10:AC70", col_names=ColNames)
 D05[23,]<-rep(NA,4) # 23.6. 00-09 missing
@@ -20,7 +57,7 @@ D05<-D05 %>% mutate(day=c(1:92))%>%
   select(Year,Month,Day,day,smolts, school_size)
 #View(D05)
 
-D06<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2006.xls"),
+D06<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2006.xls"),
               sheet=1, na="", range="Z23:AD114", 
               col_names=c("smolts", "empty", "prop%", "n_schools", "school_size"))%>% 
   mutate(day=c(1:92))%>%
@@ -29,7 +66,7 @@ D06<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2006.xls")
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
-D07<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2007.xls"),
+D07<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2007.xls"),
               sheet=1, na="", range="Z8:AC94", 
               col_names=ColNames)
 tmp<-array(0, dim=c(5,4));colnames(tmp)<-colnames(D07)
@@ -41,7 +78,7 @@ D07<-D07 %>%
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
-D08<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2008.xls"),
+D08<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2008.xls"),
               sheet=1, na="", range="Z25:AC116",col_names=ColNames)%>% 
   mutate(day=c(1:92))%>%
   mutate(Year=2008)%>%
@@ -49,7 +86,7 @@ D08<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2008.xls")
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
-D09<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2009.xls"),
+D09<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2009.xls"),
               sheet=1, na="", range="Z16:AC107",col_names=ColNames)%>% 
   mutate(day=c(1:92))%>%
   mutate(Year=2009)%>%
@@ -57,7 +94,7 @@ D09<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2009.xls")
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
-D10<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2010.xls"),
+D10<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2010.xls"),
               sheet=1, na="", range="Z16:AC107",col_names=ColNames)%>% 
   mutate(day=c(1:92))%>%
   mutate(Year=2010)%>%
@@ -65,7 +102,7 @@ D10<-read_xls(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2010.xls")
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
-D11<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2011.xlsx"),
+D11<-read_xlsx(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2011.xlsx"),
               sheet=1, na="", range="Z16:AC107", col_names=ColNames)%>% 
   mutate(day=c(1:92))%>%
   mutate(Year=2011)%>%
@@ -73,7 +110,7 @@ D11<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2011.xlsx
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
-D12<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2012.xlsx"),
+D12<-read_xlsx(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2012.xlsx"),
                sheet=1, na="", range="Z8:AC99", col_names=ColNames)%>% 
   mutate(day=c(1:92))%>%
   mutate(Year=2012)%>%
@@ -81,7 +118,7 @@ D12<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2012.xlsx
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
-D13<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2013.xlsx"),
+D13<-read_xlsx(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2013.xlsx"),
                sheet=1, na="", range="Z9:AC100",col_names=ColNames)%>% 
   mutate(day=c(1:92))%>%
   mutate(Year=2013)%>%
@@ -89,7 +126,7 @@ D13<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2013.xlsx
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
-D14<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2014.xlsx"),
+D14<-read_xlsx(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2014.xlsx"),
                sheet=1, na="", range="Z8:AC99", col_names=ColNames)%>% 
   mutate(day=c(1:92))%>%
   mutate(Year=2014)%>%
@@ -99,7 +136,11 @@ D14<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2014.xlsx
 
 
 dat_smolts<-
-  D05%>%full_join(D06, by=NULL)%>%
+  D02%>%full_join(D03, by=NULL)%>%
+  full_join(D04, by=NULL)%>%
+  full_join(D05, by=NULL)%>%
+  full_join(D06, by=NULL)%>%
+  #  D05%>%full_join(D06, by=NULL)%>%
   full_join(D07, by=NULL)%>%
   full_join(D08, by=NULL)%>%
   full_join(D09, by=NULL)%>%
@@ -122,32 +163,37 @@ dat_smolts<-
 
 # Flow
 # ============
-dat_flow<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI VIRTAAMADATA/Virtaama_Patoniva 1963-2014.xlsx"),
+dat_flow<-read_xlsx(str_c(pathIn2,"UTSJOKI VIRTAAMADATA/Virtaama_Patoniva 1963-2014.xlsx"),
                sheet="Patoniva_virtaama_1963-2014", skip=1,
                col_names = c("Day", "Month", "Year", "flow")) %>%
-  filter(Year>2004)%>%
+  filter(Year>2001)%>%
   filter(Month==6 | Month==7 | Month==8)
 
 # Temperature
 # ============
+
+#T04<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2004_cam4.xls"),
+#              skip=36, col_names=c("Date", "Temp"))%>%
+#  mutate(Date=date(as.POSIXct(Date)))
+
 # Note! Some weird logger points left out from 2005 data (15.6. & 21.6.)
-T05<-read_xls(paste(sep="",pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2005_cam4.xls"),
+T05<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2005_cam4.xls"),
               skip=36, col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))
 
-T06<-read_xls(paste(sep="",pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2006.xls"),
+T06<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2006.xls"),
               range="A36:B1834", col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))
 
-T07<-read_xls(paste(sep="",pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2007.xls"),
+T07<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2007.xls"),
               range="A3:B2244",col_names=c("Date", "Temp"))%>%
   mutate(Date=date(parse_datetime(Date, "%d. %B %Y %H:%M")))
 
-T08<-read_xls(paste(sep="",pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2008.xls"),
+T08<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2008.xls"),
               sheet="UTS2008", range="A35:B3060", col_names=c("Date", "Temp"))%>%
       mutate(Date=date(parse_datetime(Date, "%d. %B %Y %H:%M")))
 
-T09<-read_xls(paste(sep="",pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2009.xls"),
+T09<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2009.xls"),
               sheet="UTS2009", range="A34:E3928",
               col_names=c("Day", "month", "Year","time", "Temp"))%>%
   select(Day, month, Year, Temp)%>%
@@ -160,20 +206,20 @@ T09<-read_xls(paste(sep="",pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2009.
   group_by(Year,Month,Day)%>%
   summarize(meanTemp=mean(Temp))
 
-T10<-read_xls(paste(sep="",pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2010.xls"),
+T10<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2010.xls"),
               range="A36:B1834", col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))
 
-T11<-read_xlsx(paste(sep="",pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2011.xlsx"),
+T11<-read_xlsx(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2011.xlsx"),
               sheet="Sheet1", range="B6:C4040", col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))
 
-T13<-read_xlsx(paste(sep="",pathIn2,
+T13<-read_xlsx(str_c(pathIn2,
 "UTSJOKI_VEDEN LAMPO/Utsjoki_veden lampo_2013-2014.xlsx"),
                sheet="Sheet1", range="B6:C8749", col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))
 
-T14<-read_xlsx(paste(sep="",pathIn2,
+T14<-read_xlsx(str_c(pathIn2,
                      "UTSJOKI_VEDEN LAMPO/Utsjoki_veden lampo_2014-2015.xlsx"),
                sheet="Sheet1", range="B7:C8634", col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))

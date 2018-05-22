@@ -1,7 +1,7 @@
 #################################
 # Observation probability vs flow
 
-Flow<-seq(-10,100, by=5)
+Flow<-seq(0,100, by=5)
 nF<-length(Flow)
 
 # pick chains for comparison

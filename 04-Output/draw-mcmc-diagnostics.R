@@ -1,6 +1,20 @@
 
 # runjags diagnostics (object "run")
 
+# parvimalli:
+summary(run, var="aB")
+summary(run, var="bB")
+summary(run, var="etaB")
+
+summary(run, var="S")
+
+summary(run, var="K")
+summary(run, var="slope")
+
+
+plot(run, var="S")
+
+
 summary(run, var="D")
 summary(run, var="P")
 summary(run, var="B")
@@ -17,8 +31,8 @@ plot(run, var="eta_alphaN")
 #plot(run, var="sum")
 
 chains<-as.mcmc.list(run)
-chains<-window(chains,start=1000000)
-save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_fixedObsProp_0714_chains.RData")
+chains<-window(chains,start=500000)
+#save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_fixedObsProp_0714_chains.RData")
 
 
 gelman.diag(chains[,"Ntot[1]"])
