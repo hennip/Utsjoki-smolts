@@ -24,8 +24,7 @@ BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
 
 etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
 
-s[i,y]~dlnorm(log(muS[i,y])-0.5/TS,TS)
-muS[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TmuS,TmuS)
+s[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TS,TS)
 }
 }
 # priors for observation process
@@ -38,11 +37,7 @@ etaB~dunif(5,1000)
   K~dlnorm(6.07,0.7)
   slope~dlnorm(-1.94,66)
   cvS~dunif(0.001,2)
-  cvmuS~dunif(0.001,2)
-
-  TmuS<-1/log(cvmuS*cvmuS+1)
   TS<-1/log(cvS*cvS+1)
-
 
 # Abundance
 # ==============
