@@ -215,16 +215,17 @@ df.prior<-boxplot.df(muS_sampP, Ntrue)
 ggplot(df, aes(x))+
   geom_boxplot(data=df.prior,
                mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-               stat = "identity", size=5,
+               stat = "identity", #size=5,
                col="grey", fill="grey95")+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity",fill=rgb(1,1,1,0.6), size=5)+
+    stat = "identity",fill=rgb(1,1,1,0.6)#, size=5
+    )+
   labs(x="Daily passage (number of smolts)", y="School size", title="Expected school size at given daily passage")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
-  coord_cartesian(ylim=c(0,100), xlim=c(0,1000))+
+  coord_cartesian(ylim=c(0,50), xlim=c(0,100))+
   geom_point(data=dat_all3,aes(x=smolts, y=schools))
 
 

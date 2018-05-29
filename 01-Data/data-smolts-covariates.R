@@ -140,7 +140,6 @@ dat_smolts<-
   full_join(D04, by=NULL)%>%
   full_join(D05, by=NULL)%>%
   full_join(D06, by=NULL)%>%
-  #  D05%>%full_join(D06, by=NULL)%>%
   full_join(D07, by=NULL)%>%
   full_join(D08, by=NULL)%>%
   full_join(D09, by=NULL)%>%
@@ -169,14 +168,22 @@ dat_flow<-read_xlsx(str_c(pathIn2,"UTSJOKI VIRTAAMADATA/Virtaama_Patoniva 1963-2
   filter(Year>2001)%>%
   filter(Month==6 | Month==7 | Month==8)
 
+View(filter(dat_flow, Year==2012))
+
 # Temperature
 # ============
 
-#T04<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2004_cam4.xls"),
-#              skip=36, col_names=c("Date", "Temp"))%>%
-#  mutate(Date=date(as.POSIXct(Date)))
+T03<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2003.xls"),
+              sheet = "Utsjoki_raakadata", range="I8:J3074",
+              col_names=c("Date", "Temp"))%>%
+  mutate(Date=date(as.POSIXct(Date)))
 
-# Note! Some weird logger points left out from 2005 data (15.6. & 21.6.)
+T04<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2004_cam4.xls"),
+              sheet = "Min-max lampotilat", range="A4:B1478",
+              col_names=c("Date", "Temp"))%>%
+  mutate(Date=date(as.POSIXct(Date)))
+
+# Note! Some weird logger points removed from 2005 data (15.6. & 21.6.)
 T05<-read_xls(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2005_cam4.xls"),
               skip=36, col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))
@@ -214,6 +221,10 @@ T11<-read_xlsx(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2011.xlsx")
               sheet="Sheet1", range="B6:C4040", col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))
 
+T12<-read_xlsx(str_c(pathIn2,"UTSJOKI_VEDEN LAMPO/Temperature_Utsjoki2012.xlsx"),
+               sheet="Sheet1", range="B6:C4612", col_names=c("Date", "Temp"))%>%
+  mutate(Date=date(as.POSIXct(Date)))
+
 T13<-read_xlsx(str_c(pathIn2,
 "UTSJOKI_VEDEN LAMPO/Utsjoki_veden lampo_2013-2014.xlsx"),
                sheet="Sheet1", range="B6:C8749", col_names=c("Date", "Temp"))%>%
@@ -226,12 +237,15 @@ T14<-read_xlsx(str_c(pathIn2,
 
 #View(T14)
 
-dat_temp<-T05%>%
+dat_temp<-T03%>%
+  full_join(T04, by=NULL)%>%
+  full_join(T05, by=NULL)%>%
   full_join(T06, by=NULL)%>%
   full_join(T07, by=NULL)%>%
   full_join(T08, by=NULL)%>%
   full_join(T10, by=NULL)%>%
   full_join(T11, by=NULL)%>%
+  full_join(T12, by=NULL)%>%
   full_join(T13, by=NULL)%>%
   full_join(T14, by=NULL)%>%
   group_by(Date)%>%
@@ -246,4 +260,8 @@ dat_temp<-T05%>%
 dat_all<-dat_smolts%>%
   full_join(dat_flow, by=NULL)%>%
   full_join(dat_temp, by=NULL)
+
+
+#View(filter(dat_all, is.na(meanTemp)==T, Month<8))
+#View(filter(dat_all, is.na(flow)==T, Month<8))
 
