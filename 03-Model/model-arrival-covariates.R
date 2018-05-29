@@ -16,15 +16,15 @@ for(i in 1:nDays){ # 61 days in June-July
 
 # Observed number of fish
 # Nobs[i,y]~dbetabin(100,10,N[i,y])  
-#Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
+Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+#Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
 
 muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
 BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
 
-etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
+#etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
 
-s[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TS,TS)
+#s[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TS,TS)
 
 # If covariate is missing, estimate based on observations at corresponding date over the study period
 Temp[i,y]~dlnorm(MT[i],TT)
@@ -47,9 +47,9 @@ etaB~dunif(5,1000)
 #priors for covariates
 for(i in 1:nDays){
   MT[i]<-log(muT[i])-0.5/TT
-  muT[i]<-dunif(1,25)
+  muT[i]~dunif(1,25)
   MF[i]<-log(muF[i])-0.5/TF
-  muF[i]<-dunif(1,25)
+  muF[i]~dunif(1,25)
 }
 TT<-1/log(cvT*cvT+1)
 cvT~dunif(0.01,2)
@@ -175,33 +175,36 @@ sums2[i]<-sum(qD[i,i:(i+13),2])
 }"
 
 #modelName<-"Smolts_fixedObsProp"
-#modelName<-"Smolts_etaB_sdP"
-modelName<-"Smolts_etaStarB_sdP"
+modelName<-"Smolts_etaB_covs"
+#modelName<-"Smolts_etaStarB_sdP"
 
 
 Mname<-str_c("03-Model/",modelName, ".txt")
 cat(M1,file=Mname)
 
-# Select years
-#years<-c(2005:2006,2007,2008,2014) # 4 years of data plus simulated 2007  
-#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-years<-c(2005:2009,2014) # 6 years to study
-#years<-c(2005:2011,2013,2014) # 2012 temp data missing
-
-n_days<-61
+# Select data
+# =================================
+# Real data or partly missing
 dat<-dat_all # all real data
-#dat<-dat_all2 # 2007 simulated
-#dat<-dat_all3 # 2007 first 17% missing, 2009 +- 2 days from the peak missing
-#dat<-dat_all3 # 2007 first 17% missing, 2009 totally missing
-dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
-#dataName<-"all"
-dataName<-"0714"
-compName<-"ould017"
+dataName<-"all"
+#dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
+#dataName<-"0714"
 
-df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
+# Years to include
+#years<-c(2005:2009,2014) # 6 years 
+years<-c(2002:2014) # 13 years 
+
+# Number of days to include
+n_days<-61 # june & july
+
+# Computer name
+compName<-"turd010"#"ould017"
+
+
+df<-smolts_data_to_jags(dat, years, n_days)
 
 data<-list(
-   s=df$Schools,
+  # s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -215,20 +218,28 @@ inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
 
 
 var_names<-c(
+  "muT", "cvT", "muF", "cvF",
   "aD","bD","cvD","cvmuD",
-    "K","slope","cvS", "cvmuS",
-  "sums1","sums2",
   "aP","bP","sdP",
-#  "etaB",
   "aB","bB","sdBB",
-  "eta_alphaN",
-  #"Nobs",  
-  "Ntot","N"
+  "etaB",
+  # "K","slope","cvS", "cvmuS",
+  # "sums1","sums2",
+  "Ntot","N","eta_alphaN"
 )
 
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
+
+#t1<-Sys.time();t1
+#run0 <- run.jags(M1, 
+#                 monitor= var_names,data=data,inits = inits,
+#                 n.chains = 2, method = 'parallel', thin=1, burnin =0, 
+#                 modules = "mix",keep.jags.files=T,sample =100, adapt = 100, 
+#                 progress.bar=TRUE)
+#t2<-Sys.time()
+#difftime(t2,t1)
 
 
 t1<-Sys.time();t1
@@ -239,37 +250,29 @@ run1 <- run.jags(M1,
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
-# 7d
+# 2d
 run<-run1
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time();t1
-run2 <- extend.jags(run1, combine=T, sample=4000, thin=300, keep.jags.files=T)
+run2 <- extend.jags(run1, combine=T, sample=2000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
-#3.3d?
+#4.5d?
 run<-run2
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time();t1
-run3 <- extend.jags(run2, combine=T, sample=4000, thin=300, keep.jags.files=T)
+run3 <- extend.jags(run2, combine=T, sample=2000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 run<-run3
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time();t1
-run4 <- extend.jags(run3, combine=T, sample=4000, thin=300, keep.jags.files=T)
+run4 <- extend.jags(run3, combine=T, sample=2000, thin=300, keep.jags.files=T)
 t2<-Sys.time()
 difftime(t2,t1)
 run<-run4
 save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
-
-t1<-Sys.time();t1
-run5 <- extend.jags(run4, combine=T, sample=4000, thin=300, keep.jags.files=T)
-t2<-Sys.time()
-difftime(t2,t1)
-run<-run5
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
-
 
