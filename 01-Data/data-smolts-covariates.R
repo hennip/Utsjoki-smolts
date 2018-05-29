@@ -152,7 +152,7 @@ dat_smolts<-
   # What should schools be when smolts==0 ?
   # mutate(schools=if_else(smolts==0, NA_real_, school_size))%>%
   #mutate(schools=if_else(smolts==0, 1, school_size))%>%
-  mutate(schools=if_else(smolts==0, 0.1, school_size))%>%
+  mutate(schools=if_else(smolts==0, 0.001, school_size))%>%
   
   # What should schools be when smolts==NA
   # mutate(schools=if_else(is.na(smolts)==T, 1, schools))%>%
