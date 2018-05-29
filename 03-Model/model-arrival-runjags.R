@@ -144,8 +144,6 @@ eta_alphaN~dunif(0.001,100000)
 aP~dnorm(-20,1) #mu=-20
 bP~dlnorm(0.6,10) #mu=1.91
 sdP~dlnorm(0,1) #mu=1.6
-#sdPx~dbeta(3,7)
-#sdP<-sdPx*3
 
 # check sums (should be close to 1, otherwise fish is lost)
 for(i in 48:61){ # last 2 weeks of July 2006
@@ -179,7 +177,7 @@ dat<-dat_all # all real data
 dat<-dat_all3 # 2007 first 17% missing, 2014 +- 2 days from the peak missing
 #dataName<-"all"
 dataName<-"0714"
-compName<-"ould017"
+compName<-"turd010"
 
 df<-smolts_data_to_jags(dat,years, n_days) # 61: only june & july
 
@@ -218,7 +216,7 @@ t1<-Sys.time();t1
 run1 <- run.jags(M1, 
                  monitor= var_names,data=data,inits = inits,
                  n.chains = 2, method = 'parallel', thin=300, burnin =0, 
-                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 100, 
+                 modules = "mix",keep.jags.files=T,sample =10000, adapt = 100, 
                  progress.bar=TRUE)
 t2<-Sys.time()
 difftime(t2,t1)
