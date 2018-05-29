@@ -168,7 +168,7 @@ dat_flow<-read_xlsx(str_c(pathIn2,"UTSJOKI VIRTAAMADATA/Virtaama_Patoniva 1963-2
   filter(Year>2001)%>%
   filter(Month==6 | Month==7 | Month==8)
 
-View(filter(dat_flow, Year==2012))
+#View(filter(dat_flow, Year==2012))
 
 # Temperature
 # ============
