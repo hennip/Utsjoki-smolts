@@ -7,9 +7,13 @@ source("00-Functions/packages-and-paths.r")
 # sdP added again
 load(str_c(pathOut,"Priors_Smolts_etaStarB_sdP_0714_run_ould017.RData")) 
 chainsP<-as.mcmc.list(run)
-load(str_c(pathOut,"Smolts_etaStarB_sdP_0714_run.RData")) 
+
+# here school size ==0.001 when Nobs==0, extend.jags does not work
+load(str_c(pathOut,"Smolts_etaStarB_s_0714_run_turd010.RData")) 
+#load(str_c(pathOut,"Smolts_etaStarB_sdP_0714_run.RData")) # school size =1 when Nobs=0
 chains<-as.mcmc.list(run)
-#chains2<-window(chains2,start=50000)
+chains<-window(chains,start=50000)
+# TÄSTÄ TÄYTYY AJAA VASTAAVA PRIORI!!
 
 
 load(str_c(pathOut,"Smolts_fixedObsProp_sdP_0714_run.RData")) 
@@ -19,12 +23,16 @@ chains2<-window(chains2,start=50000)
 
 load(str_c(pathOut,"Smolts_etaB_sdP_0714_run.RData")) 
 chains<-as.mcmc.list(run)
+#chains2<-chains
 load(str_c(pathOut,"Priors_Smolts_etaB_sdP_0714_chains.RData")) 
 
 
 
 # Whole time series, for Yann's model
-load(str_c(pathOut,"Smolts_etaB_all_run.RData")) 
+load(str_c(pathOut,"Smolts_etaB_covs_all_run_turd010.RData")) 
+chains<-as.mcmc.list(run)
+chains<-window(chains,start=100000)
+load(str_c(pathOut,"Priors_Smolts_etaB_sdP_0714_chains.RData")) 
 
 
 # 2005:2009, 2014, 07 & 14 predictions (NOTE! sdP is fixed!!)

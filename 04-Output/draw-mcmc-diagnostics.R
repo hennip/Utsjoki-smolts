@@ -31,7 +31,7 @@ plot(run, var="eta_alphaN")
 #plot(run, var="sum")
 
 chains<-as.mcmc.list(run)
-chains<-window(chains,start=500000)
+chains<-window(chains,start=50000)
 #save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_fixedObsProp_0714_chains.RData")
 
 
@@ -48,9 +48,9 @@ gelman.diag(chains[,"aD"])
 gelman.diag(chains[,"cvD"])
 gelman.diag(chains[,"cvmuD"])
 
-summary(chains[,"sums1[48]"])
-#summary(chains[,"sums[48]"])
 
+summary(chains[,"Ntot[1]"])$statistics
+write.xlsx(summary(chains), str_c(pathOut, "summary.xlsx"))
 
 # Traces
 par(mfrow=c(3,3),mar=c(2.5,4,4,1))

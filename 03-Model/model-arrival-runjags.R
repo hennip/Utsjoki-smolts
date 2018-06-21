@@ -44,7 +44,7 @@ model{
   for(y in 1:nYears){
     Ntot[y]<-exp(LNtot[y])
     LNtot[y]~dunif(7,15) # total run size in year y
-    #Ntot[y]<-20000
+    #Ntot[y]<-100000
     
     #N[1:nDays,y]~dmulti(qN[1:nDays,y],Ntot[y]) # daily true number of fish
     for(i in 1:(nDays-1)){
@@ -155,6 +155,7 @@ model{
   
 }"
 
+#modelName<-"Smolts_fixedNumber" # to make a prior model on arrival dist
 #modelName<-"Smolts_fixedObsProp"
 #modelName<-"Smolts_etaB_sdP"
 modelName<-"Smolts_etaStarB_s" # school size ==0.001 when Nobs==0

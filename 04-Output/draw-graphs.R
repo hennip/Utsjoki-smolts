@@ -1,10 +1,8 @@
 
 
-#years<-c(2005:2011,2013,2014) # 9 years, total time series so far (2012 missing)
-
-#years<-c(2005:2006,2008,2014) # 4 years of data for testing  
-# years<-c(2006,2008) # 2 years of data for testing- schools model  
 # years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
+
+years<-c(2002:2014) # 13 years, total time series
 
 years<-c(2005:2009,2014) # 6 years of data for testing  
 n_days<-61
@@ -33,9 +31,9 @@ df2<-df2%>%
   mutate(x2=parse_factor(x, levels=NULL))
 
 ggplot(df, aes(x2))+
-  geom_boxplot(data=df2,
-    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity", col="grey")+
+#  geom_boxplot(data=df2,
+#    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+#    stat = "identity", col="grey")+
   labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
   coord_cartesian(ylim=c(0,40000))+
   theme_bw()+
@@ -213,19 +211,19 @@ df.prior<-boxplot.df(muS_sampP, Ntrue)
 
 
 ggplot(df, aes(x))+
-  geom_boxplot(data=df.prior,
-               mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-               stat = "identity", #size=5,
-               col="grey", fill="grey95")+
+#  geom_boxplot(data=df.prior,
+#               mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+#               stat = "identity", #size=5,
+ #              col="grey", fill="grey95")+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6)#, size=5
     )+
   labs(x="Daily passage (number of smolts)", y="School size", title="Expected school size at given daily passage")+
   geom_line(aes(x,q50))+
-  geom_line(data=df.prior, aes(x,q50), color="grey")+
+#  geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
-  coord_cartesian(ylim=c(0,50), xlim=c(0,100))+
+  coord_cartesian(ylim=c(0,50), xlim=c(0,1000))+
   geom_point(data=dat_all3,aes(x=smolts, y=schools))
 
 

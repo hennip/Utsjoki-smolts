@@ -7,9 +7,11 @@
 #source("00-Functions/packages-and-paths.r")
 
 
+modelName<-"Smolts_fixedNumber" # to make a prior model on arrival dist
+
 #modelName<-"Smolts_etaB"
 #modelName<-"Smolts_etaB_sdP"
-modelName<-"Smolts_etaStarB_sdP"
+#modelName<-"Smolts_etaStarB_sdP"
 
 
 
@@ -21,7 +23,7 @@ Mname<-str_c("03-Model/",modelName, ".txt")
 years<-c(2005:2009,2014) # 6 years to study
 #years<-c(2005:2011,2013,2014) # 2012 temp data missing
 dataName<-"0714"
-compName<-"ould017"
+compName<-"laptop"#"ould017"
 
 
 n_days<-61
@@ -46,14 +48,15 @@ inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
 )
 
 var_names<-c(
+  #  "Ntot",
+  "N",
   "aD","bD","cvD","cvmuD",
   "K","slope","cvS", "cvmuS",
-  "sums1","sums2",
+  #"sums1","sums2",
   
   "aP","bP","sdP",
   "etaB","aB","bB","sdBB",
   "eta_alphaN"
-  #  "Ntot","N"
 )
 
 t1<-Sys.time()
@@ -69,7 +72,7 @@ run<-run1
 save(run, file=str_c(pathOut,"Priors_",modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time()
-run2 <- extend.jags(run1, combine=F, sample=20000, thin=100, keep.jags.files="priors")
+run2 <- extend.jags(run1, combine=F, sample=1000, thin=10, keep.jags.files="priors")
 t2<-Sys.time()
 difftime(t2,t1)
 
@@ -94,3 +97,30 @@ plot(run, var="eta_alphaN")
 chainsP<-as.mcmc.list(run)
 #chainsP<-window(chainsP,start=1000000)
 save(chainsP, file=str_c(pathOut,"Priors_",modelName,"_",dataName,"_chains.RData"))
+
+
+chains<-as.mcmc.list(run)
+# Daily numbers
+for(i in 1:length(years)){
+  df<-boxplot.jags.df2(chains, "N[",str_c(i,"]"),1:n_days)%>%
+    mutate(Year=years[i])
+  ifelse(i>1, df2<-bind_rows(df2,df),df2<-df)
+}
+df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","Year"))
+
+df<-df2%>%
+  left_join(dat_all)%>%
+  select(Day,Month, Year,day, smolts, q50, everything())%>%
+  mutate(q5=q5/100000, q25=q25/100000,q50=q50/100000,q75=q75/100000,q95=q95/100000)
+
+
+ggplot(df, aes(day))+
+  geom_line(aes(day,q50))+
+  geom_boxplot(
+    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity")+
+  facet_wrap(~Year)+
+  labs(x="Day (in June-July)", y="Proportion of the smolt run")+
+  theme_bw()
+
+
