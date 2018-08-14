@@ -142,7 +142,7 @@ plot1<-ggplot(df, aes(x))+
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
   labs(x="Days", y="Cumulative proportion", 
-       title=expression("Cumulative travel time to video site with flow velocity 10m"^{3}*"/s on the day of departure"))+
+       title=expression("Cumulative travel time to video site with discharge 10m"^{3}*"/s on the day of departure"))+
 #         "Cumulative travel time to video site with flow velocity 10m3/s on the day of departure")+
   geom_line(aes(x,q50))+
   coord_cartesian(xlim=c(1:14), ylim=c(0,1))+
@@ -168,7 +168,7 @@ plot2<-ggplot(df, aes(x))+
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
   labs(x="Days", y="Cumulative proportion", 
-       title=expression("Cumulative travel time to video site with flow velocity 100m"^{3}*"/s on the day of departure"))+
+       title=expression("Cumulative travel time to video site with discharge 100m"^{3}*"/s on the day of departure"))+
   geom_line(aes(x,q50))+
   coord_cartesian(xlim=c(1:14), ylim=c(0,1))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6))+
@@ -193,7 +193,7 @@ ggplot(df, aes(x))+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  labs(x="Flow velocity (m3/s)", y="Probability", title="Probability to observe a smolt at given flow velocity")+
+  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Probability that a smolt is observed")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+

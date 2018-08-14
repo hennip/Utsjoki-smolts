@@ -25,7 +25,7 @@ facet_wrap(~Year)
 
 # Temperature
 ## ---- draw-some-data-temp ----
-dat<-filter(dat_all, Year==2005:2009 |Year==2014)
+dat<-filter(dat_all, (Year<2010 & Year>2004) |Year==2014)
 #dat<-dat_all
 plot1 <- 
   ggplot(dat)+
@@ -38,13 +38,13 @@ theme_bw()+
 
 # Flow
 ## ---- draw-some-data-flow ----
-dat<-filter(dat_all, Year==2005:2009 |Year==2014)
+dat<-filter(dat_all, (Year<2010 & Year>2004) |Year==2014)
 #dat<-dat_all
 plot2 <-ggplot(dat)+
   geom_line(aes(x = day, y = flow, color=as.factor(Year)), size=1.2)+
   scale_colour_grey()+
   coord_cartesian(ylim=c(0,160))+
-  labs(x="Day (June-July)", y=expression("Flow velocity (m"^{3}*"/s)"), color="Year")+
+  labs(x="Day (June-July)", y=expression("Discharge (m"^{3}*"/s)"), color="Year")+
   theme_bw()+
   theme(legend.position = c(0.88,0.75))
   #theme_bw()

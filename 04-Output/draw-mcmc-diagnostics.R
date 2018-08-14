@@ -31,8 +31,9 @@ plot(run, var="eta_alphaN")
 #plot(run, var="sum")
 
 chains<-as.mcmc.list(run)
-chains<-window(chains,start=50000)
+chains<-window(chains,start=500000)
 #save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_fixedObsProp_0714_chains.RData")
+
 
 
 gelman.diag(chains[,"Ntot[1]"])
@@ -48,9 +49,6 @@ gelman.diag(chains[,"aD"])
 gelman.diag(chains[,"cvD"])
 gelman.diag(chains[,"cvmuD"])
 
-
-summary(chains[,"Ntot[1]"])$statistics
-write.xlsx(summary(chains), str_c(pathOut, "summary.xlsx"))
 
 # Traces
 par(mfrow=c(3,3),mar=c(2.5,4,4,1))
@@ -248,49 +246,6 @@ gelman.plot(chains[,"N"])
 
 
 
-##########
-
-# Summaries 
-
-summary(chains[,"eta_alphaN"])
-summary(chains[,"etaB"])
-summary(chains[,"sum1"])
-summary(chains[,"sum31"])
-
-summary(chains[,"aB"])
-summary(chains[,"bB"])
-
-summary(chains[,"aP"])
-summary(chains[,"bP"])
-summary(chains[,"sdP"])
-
-summary(chains[,"aD"])
-summary(chains[,"bD"])
-summary(chains[,"cvD"])
-summary(chains[,"cvmuD"])
-
-# joutohetkena taman voisi kirjoittaa funktioksi jossa vaihtoehdot 2 tai 3 -ulotteisille dimensioille
-# ts. syotettaisiin sisaan muuttuja (ja nimi), laskisi suoraan tunnusluvut ja tallentaisi excelin oikealla nimella 
-# saveStats
-
-#saveStats<-function{}
-
-qmu<-array(NA, dim=c(61,7))
-for(i in 1:61){
-  qmu[i,1:2]<-summary(chains[,paste(sep="","qmu[",i,",3]")])$statistics[1:2]
-  qmu[i,3:7]<-summary(chains[,paste(sep="","qmu[",i,",3]")])$quantiles
-}
-colnames(qmu)<-c("mean","sd","2.5%","25%","50%","75%","97.5%")
-write.xlsx(qmu, "qmuStats_cv.xlsx")
-
-
-N05<-array(NA, dim=c(61,7))
-for(i in 1:61){
-  N05[i,1:2]<-summary(chains[,paste(sep="","N[",i,",3]")])$statistics[1:2]
-  N05[i,3:7]<-summary(chains[,paste(sep="","N[",i,",3]")])$quantiles
-}
-colnames(N05)<-c("mean","sd","2.5%","25%","50%","75%","97.5%")
-write.xlsx(N05, "N05Stats_cv.xlsx")
 
 
 

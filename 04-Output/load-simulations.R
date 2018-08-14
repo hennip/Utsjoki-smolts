@@ -12,10 +12,12 @@ chainsP<-as.mcmc.list(run)
 load(str_c(pathOut,"Smolts_etaStarB_s_0714_run_turd010.RData")) 
 #load(str_c(pathOut,"Smolts_etaStarB_sdP_0714_run.RData")) # school size =1 when Nobs=0
 chains<-as.mcmc.list(run)
-chains<-window(chains,start=50000)
+chains<-window(chains,start=500000)
 # TÄSTÄ TÄYTYY AJAA VASTAAVA PRIORI!!
 
 
+####
+#### Nämä tässä ovat smolttipaperissa olevat versiot. sdP:lle annetaan priori niinkuin kuuluu
 load(str_c(pathOut,"Smolts_fixedObsProp_sdP_0714_run.RData")) 
 chains2<-as.mcmc.list(run)
 chains2<-window(chains2,start=50000)
@@ -26,14 +28,19 @@ chains<-as.mcmc.list(run)
 #chains2<-chains
 load(str_c(pathOut,"Priors_Smolts_etaB_sdP_0714_chains.RData")) 
 
+####
+####
 
 
-# Whole time series, for Yann's model
+# Whole time series (for Yann's model etc)
 load(str_c(pathOut,"Smolts_etaB_covs_all_run_turd010.RData")) 
 chains<-as.mcmc.list(run)
 chains<-window(chains,start=100000)
+ModelName<-"Smolts_etaB_covs_all"
 load(str_c(pathOut,"Priors_Smolts_etaB_sdP_0714_chains.RData")) 
 
+
+# Tästä alaspäin voisi melkeimpä deletoida.
 
 # 2005:2009, 2014, 07 & 14 predictions (NOTE! sdP is fixed!!)
 load(str_c(pathOut,"Smolts_etaB_0714_chains.RData")) ; chains2<-chains
