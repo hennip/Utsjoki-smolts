@@ -15,6 +15,7 @@ df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
 # Annual totals
 Year<-years
 df<-boxplot.jags.df(chains, "Ntot",Year)
+
 #chains2<-chainsP
 df2<-boxplot.jags.df(chains2, "Ntot",Year)
 
@@ -22,26 +23,42 @@ Ntot<-c()
 for(i in 1:length(years)){
   Ntot[i]<-sum(filter(dat_all, Year==years[i])$smolts, na.rm=T) 
 }
+
 df<-df%>%
   mutate(Ntot)%>%
-  mutate(x2=parse_factor(x, levels=NULL))
+  mutate(x2=as.factor(x))
 
 df2<-df2%>%
   mutate(Ntot)%>%
-  mutate(x2=parse_factor(x, levels=NULL))
+  mutate(x2=as.factor(x))
 
 ggplot(df, aes(x2))+
 #  geom_boxplot(data=df2,
 #    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
 #    stat = "identity", col="grey")+
-  labs(x="Year", y="Number of smolts", title="Annual size of the smolt run")+
-  coord_cartesian(ylim=c(0,40000))+
+  labs(x="Year", y="Number of smolts (in 1000's)", title="Annual size of the smolt run")+
+  coord_cartesian(ylim=c(0,40))+
   theme_bw()+
   geom_boxplot(
-    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  geom_point(aes(x=x2, y=Ntot))
-  
+  geom_point(aes(x=x2, y=Ntot/1000), size=3)+
+  theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
+
+
+
+# ARKTIKO poster
+ggplot(df, aes(x2))+
+  labs(x="", y="Number of migratory juveniles in Utsjoki (in 1000's)", title="")+
+  coord_cartesian(ylim=c(7,35))+
+  theme_bw()+
+  geom_boxplot(
+    aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
+    stat = "identity",fill=rgb(1,1,1,0.6), size=1)+
+  geom_point(aes(x=x2, y=Ntot/1000), size=3)+
+  theme(title = element_text(size=15), axis.text = element_text(size=17), 
+        strip.text = element_text(size=15))
+
   
 
 
@@ -73,9 +90,13 @@ ggplot(df, aes(day))+
   facet_wrap(~Year)+
   geom_point(mapping=aes(day,smolts), col="grey10")+
   geom_point(data=df_tmp, mapping=aes(day,smolts), shape=21, fill="grey60", col="grey60")+
-  labs(x="Day (in June-July)", y="Number of smolts")+
+  labs(x="Day (in June-July)", y="Daily number of smolts")+
   coord_cartesian(ylim=c(0,3500))+
-  theme_bw()
+  theme_bw()+
+  theme(title = element_text(size=15), axis.text = element_text(size=12), 
+        strip.text = element_text(size=15))
+
+# For priors only, see model-arrival-priors.R
 
 
 # Poster

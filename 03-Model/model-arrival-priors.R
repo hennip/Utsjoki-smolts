@@ -72,17 +72,17 @@ run<-run1
 save(run, file=str_c(pathOut,"Priors_",modelName,"_",dataName,"_run_",compName,".RData"))
 
 t1<-Sys.time()
-run2 <- extend.jags(run1, combine=F, sample=1000, thin=10, keep.jags.files="priors")
+run2 <- extend.jags(run1, combine=F, sample=5000, thin=10, keep.jags.files="priors")
 t2<-Sys.time()
 difftime(t2,t1)
 
-run<-run2
+run<-run3
 save(run, file=str_c(pathOut,"Priors_",modelName,"_",dataName,"_run_",compName,".RData"))
 
 run<-run2
 summary(run, var="D")
 summary(run, var="P")
-summary(run, var="B")
+summary(run, var="N")
 summary(run, var="Ntot")
 summary(run, var="eta_alphaN")
 summary(run, var="sum")
@@ -99,10 +99,9 @@ chainsP<-as.mcmc.list(run)
 save(chainsP, file=str_c(pathOut,"Priors_",modelName,"_",dataName,"_chains.RData"))
 
 
-chains<-as.mcmc.list(run)
 # Daily numbers
 for(i in 1:length(years)){
-  df<-boxplot.jags.df2(chains, "N[",str_c(i,"]"),1:n_days)%>%
+  df<-boxplot.jags.df2(chainsP, "N[",str_c(i,"]"),1:n_days)%>%
     mutate(Year=years[i])
   ifelse(i>1, df2<-bind_rows(df2,df),df2<-df)
 }
@@ -121,6 +120,9 @@ ggplot(df, aes(day))+
     stat = "identity")+
   facet_wrap(~Year)+
   labs(x="Day (in June-July)", y="Proportion of the smolt run")+
-  theme_bw()
+  theme_bw()+
+  theme(title = element_text(size=15), axis.text = element_text(size=12), 
+        strip.text = element_text(size=15))
+
 
 

@@ -22,9 +22,10 @@ load(str_c(pathOut,"Smolts_fixedObsProp_sdP_0714_run.RData"))
 chains2<-as.mcmc.list(run)
 chains2<-window(chains2,start=50000)
 
-
 load(str_c(pathOut,"Smolts_etaB_sdP_0714_run.RData")) 
 chains<-as.mcmc.list(run)
+#ModelName<-"etaB_sdP_0714"
+
 #chains2<-chains
 load(str_c(pathOut,"Priors_Smolts_etaB_sdP_0714_chains.RData")) 
 
