@@ -3,7 +3,7 @@ source("01-Data/data-smolts-covariates.r")
 
 
 # Data
-##########
+#############
 
 # Number of smolts
 #ggplot(filter(dat_all, Year==2005), aes(x=day, y=smolts))+
