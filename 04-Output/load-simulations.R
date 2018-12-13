@@ -18,6 +18,12 @@ chains<-window(chains,start=500000)
 
 ####
 #### Nämä tässä ovat smolttipaperissa olevat versiot. sdP:lle annetaan priori niinkuin kuuluu
+
+# Continued run, etaB monitored
+load(str_c(pathOut,"Smolts_etaB_sdP_extra_0714_run_turd010.RData"))
+chains<-as.mcmc.list(run)
+
+
 load(str_c(pathOut,"Smolts_fixedObsProp_sdP_0714_run.RData")) 
 chains2<-as.mcmc.list(run)
 chains2<-window(chains2,start=50000)

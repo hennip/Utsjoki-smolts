@@ -218,7 +218,8 @@ ggplot(df, aes(x))+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
-  coord_cartesian(ylim=c(0,1))#+
+  coord_cartesian(ylim=c(0,1))+
+scale_x_continuous(breaks = scales::pretty_breaks(n = 5))
 #  theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
 
 

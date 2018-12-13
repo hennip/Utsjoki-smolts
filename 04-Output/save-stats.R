@@ -3,6 +3,8 @@ d<-as.matrix(chains)
 dim(d)
 #[1]  13334   942 # dimensions: iterations x number of variables
 
+#ModelName<-"Smolts_etaStarB_s_0714_run_turd010"
+
 headtext<-c("Varname","mean","sd","cv","5%","50%","95%","grdPE", "grdUCI")
 statsfile<-str_c(pathOut,"stats_",ModelName,".csv")
 

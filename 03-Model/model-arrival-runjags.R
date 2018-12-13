@@ -16,20 +16,23 @@ model{
     
       # Observed number of fish
       #Nobs[i,y]~dbetabin(100,10,N[i,y])  
-      #Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-      Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
+      Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
+      #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
       
       muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
       BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
       
-      etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
+      #etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
       
-      s[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TS,TS)
+      #s[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TS,TS)
     }
   }
   # priors for observation process
-  aB~dnorm(2.9,60)
-  bB~dlnorm(-2.6,984)
+# wide priors 
+aB~dnorm(2.9,1)
+bB~dlnorm(-2.6,1)
+#  aB~dnorm(2.9,60)
+#  bB~dlnorm(-2.6,984)
   sdBB~dlnorm(-0.23,210)
   etaB~dunif(5,1000)
   
@@ -158,7 +161,8 @@ model{
 #modelName<-"Smolts_fixedNumber" # to make a prior model on arrival dist
 #modelName<-"Smolts_fixedObsProp"
 #modelName<-"Smolts_etaB_sdP"
-modelName<-"Smolts_etaStarB_s" # school size ==0.001 when Nobs==0
+modelName<-"Smolts_etaB_wideB"
+#modelName<-"Smolts_etaStarB_s" # school size ==0.001 when Nobs==0
 
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -185,7 +189,7 @@ compName<-"turd010"#"ould017"
 df<-smolts_data_to_jags(dat, years, n_days)
 
 data<-list(
-   s=df$Schools,
+ #  s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,                     
   Temp=df$Temp,
@@ -203,7 +207,7 @@ var_names<-c(
   "aD","bD","cvD","cvmuD",
   "aP","bP","sdP",
   "aB","bB","sdBB",
-  #"etaB",
+  "etaB",
    "K","slope","cvS", 
   # "sums1","sums2",
   "Ntot","N","eta_alphaN"
@@ -212,7 +216,6 @@ var_names<-c(
 
 #nb of samples = samples * thin, burnin doesn't take into account thin
 # sample on tässä lopullinen sample, toisin kuin rjagsissa!!!
-
 
 t1<-Sys.time();t1
 run1 <- run.jags(M1, 
