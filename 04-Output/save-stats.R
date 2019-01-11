@@ -3,10 +3,12 @@ d<-as.matrix(chains)
 dim(d)
 #[1]  13334   942 # dimensions: iterations x number of variables
 
-#ModelName<-"Smolts_etaStarB_s_0714_run_turd010"
+#modelName<-"Smolts_etaB_0714_extra"
+modelName<-"Smolts_etaB_wideB"
+
 
 headtext<-c("Varname","mean","sd","cv","5%","50%","95%","grdPE", "grdUCI")
-statsfile<-str_c(pathOut,"stats_",ModelName,".csv")
+statsfile<-str_c(pathOut,"stats_",modelName,".csv")
 
 write.table(t(as.matrix(headtext)),file=statsfile,sep=',',row.names=F, col.names=F)
 

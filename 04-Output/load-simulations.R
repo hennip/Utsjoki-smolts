@@ -4,6 +4,12 @@ source("00-Functions/packages-and-paths.r")
 #######################
 # Load jags simulations for arrival model
 
+
+# Wide priors for observation process -> for sensitivity analysis
+load(str_c(pathOut,"Smolts_etaB_wideB_0714_chains.RData"))
+load(str_c(pathOut,"Priors_Smolts_etaB_wideB_0714_chains.RData"))
+
+#######################
 # sdP added again
 load(str_c(pathOut,"Priors_Smolts_etaStarB_sdP_0714_run_ould017.RData")) 
 chainsP<-as.mcmc.list(run)

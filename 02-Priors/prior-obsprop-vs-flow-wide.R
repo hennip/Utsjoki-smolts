@@ -119,14 +119,13 @@ tauB<-1/pow(sdB,2)
 #bB~dlnorm(M.bB,T.bB)
 #sdB~dlnorm(M.sdB,T.sdB)
 
-aB~dnorm(2.9,0.5)
-bB~dlnorm(-2.6,0.5)
+#aB~dnorm(2.9,1)
+#bB~dlnorm(-2.6,1)
+
+aB~dnorm(2.9,60)
+bB~dlnorm(-2.6,984)
+
 sdB~dlnorm(-0.23,210)
-
-#aB~dnorm(2.9,60)
-#bB~dlnorm(-2.6,984)
-#sdB~dlnorm(-0.23,210)
-
 
 }"
 

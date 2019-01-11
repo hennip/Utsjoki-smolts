@@ -6,8 +6,10 @@
 
 #source("00-Functions/packages-and-paths.r")
 
+modelName<-"Smolts_etaB_wideB"
 
-modelName<-"Smolts_fixedNumber" # to make a prior model on arrival dist
+
+#modelName<-"Smolts_fixedNumber" # to make a prior model on arrival dist
 
 #modelName<-"Smolts_etaB"
 #modelName<-"Smolts_etaB_sdP"
@@ -76,10 +78,9 @@ run2 <- extend.jags(run1, combine=F, sample=5000, thin=10, keep.jags.files="prio
 t2<-Sys.time()
 difftime(t2,t1)
 
-run<-run3
+run<-run2
 save(run, file=str_c(pathOut,"Priors_",modelName,"_",dataName,"_run_",compName,".RData"))
 
-run<-run2
 summary(run, var="D")
 summary(run, var="P")
 summary(run, var="N")
