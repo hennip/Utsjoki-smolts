@@ -18,11 +18,12 @@ source("00-Functions/my-palette.r")
 
 
 # Path for input data
-pathIn<-"H:/Projects/ISAMA/data/der/input/Utsjoki-smolts/"
-pathIn2<-"H:/Projects/ISAMA/data/orig/"
+pathIn<-"O:/Projects/ISAMA/data/der/input/Utsjoki-smolts/"
+pathIn2<-"O:/Projects/ISAMA/data/orig/"
 
 # Path for simulation output
-pathOut<-"H:/Projects/ISAMA/prg/output/Utsjoki-smolts/"
+#pathOut<-"H:/Projects/ISAMA/prg/output/Utsjoki-smolts/"
+pathOut<-"C:/output/Utsjoki-smolts/"
 
 
 source("01-Data/data-smolts-covariates.r")

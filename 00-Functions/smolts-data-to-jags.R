@@ -18,6 +18,10 @@
 # x: vector of years of data to include
 # n: maximum number of days to include 
 smolts_data_to_jags<-function(dat,x,n){ 
+  #dat=dat
+  #x=years
+  #n=n_days
+  
   nyears<-length(x)
   
   df_tmp<-array(NA, dim=c(n,nyears))

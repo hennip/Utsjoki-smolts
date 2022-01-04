@@ -47,7 +47,7 @@ D04<-D04%>% mutate(day=c(1:92))%>%
 D05<-read_xls(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2005.xls"),
               sheet=1, na="", 
               range="Z10:AC70", col_names=ColNames)
-D05[23,]<-rep(NA,4) # 23.6. 00-09 missing
+D05[23,]<-array(NA,dim=c(1,4)) # 23.6. 00-09 missing
 tmp<-array(0, dim=c(31,4));colnames(tmp)<-colnames(D05)
 D05<-rbind(D05, tmp) #1.8.-31.8. missing but replace with zeros
 D05<-D05 %>% mutate(day=c(1:92))%>%
@@ -134,6 +134,27 @@ D14<-read_xlsx(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2014.xlsx"),
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
 
+D15<-read_xlsx(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2015.xlsx"),
+               sheet=1, na="", range="Z8:AC83", col_names=ColNames)
+tmp<-array(0, dim=c(16,4));colnames(tmp)<-colnames(D15)
+D15<-rbind(D15, tmp) #16.8.-31.8. missing but replace with zeros
+D15<-D15%>% 
+  mutate(day=c(1:92))%>%
+  mutate(Year=2015)%>%
+  mutate(Day=Day)%>%
+  mutate(Month=Month)%>%
+  select(Year,Month,Day,day,smolts, school_size)
+#View(D15)
+
+D16<-read_xlsx(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2016.xlsx"),
+               sheet=1, na="", range="Z8:AC99", col_names=ColNames)%>% 
+  mutate(day=c(1:92))%>%
+  mutate(Year=2016)%>%
+  mutate(Day=Day)%>%
+  mutate(Month=Month)%>%
+  select(Year,Month,Day,day,smolts, school_size)
+View(D16)
+
 
 dat_smolts<-
   D02%>%full_join(D03, by=NULL)%>%
@@ -148,6 +169,8 @@ dat_smolts<-
   full_join(D12, by=NULL)%>%
   full_join(D13, by=NULL)%>%
   full_join(D14, by=NULL)%>% 
+  full_join(D15, by=NULL)%>% 
+  full_join(D16, by=NULL)%>% 
   
   # What should schools be when smolts==0 ?
   # mutate(schools=if_else(smolts==0, NA_real_, school_size))%>%
@@ -163,10 +186,10 @@ dat_smolts<-
 
 # Flow
 # ============
-dat_flow<-read_xlsx(str_c(pathIn2,"UTSJOKI VIRTAAMADATA/Virtaama_Patoniva 1963-2014.xlsx"),
-               sheet="Patoniva_virtaama_1963-2014", skip=1,
-               col_names = c("Day", "Month", "Year", "flow")) %>%
-  filter(Year>2001)%>%
+dat_flow<-read_xlsx(str_c(pathIn2,"UTSJOKI VIRTAAMADATA/Virtaama_Patoniva 1963-2020.xlsx"),
+               sheet="Patoniva_virtaama_1963-2020", range="A2:D21063",#skip=1,
+               col_names = c("Day", "Month", "Year", "flow"), na=c("", "-") )%>%
+  filter(Year>2001 & Year<2017)%>%
   filter(Month==6 | Month==7 | Month==8)
 
 #View(filter(dat_flow, Year==2012))
@@ -236,6 +259,16 @@ T14<-read_xlsx(str_c(pathIn2,
                sheet="Sheet1", range="B7:C8634", col_names=c("Date", "Temp"))%>%
   mutate(Date=date(as.POSIXct(Date)))
 
+# 2015 Temperature data from Utsjoki is missing, logger failure
+
+#T15<-
+
+T16<-read_xlsx(str_c(pathIn2,
+                     "UTSJOKI_VEDEN LAMPO/Utsjoki_veden lampo_2016.xlsx"),
+               sheet=1, range="B3:C3862", col_names=c("Date", "Temp"))%>%
+  mutate(Date=date(as.POSIXct(Date)))
+
+
 #View(T14)
 
 dat_temp<-T03%>%
@@ -249,6 +282,7 @@ dat_temp<-T03%>%
   full_join(T12, by=NULL)%>%
   full_join(T13, by=NULL)%>%
   full_join(T14, by=NULL)%>%
+  full_join(T16, by=NULL)%>%
   group_by(Date)%>%
   summarize(meanTemp=mean(Temp))%>%
   mutate(Year=year(as.POSIXct(Date)))%>%
@@ -258,6 +292,13 @@ dat_temp<-T03%>%
   full_join(T09, by=NULL)%>%
   filter(Month==6 | Month==7 | Month==8)
 
+# Temperature data 2015 missing, logger failure
+dat15<-filter(dat_temp, Year==2016)%>%
+mutate(Year=2015, meanTemp=NA)
+
+dat_temp<-full_join(dat_temp, dat15)
+
+
 dat_all<-dat_smolts%>%
   full_join(dat_flow, by=NULL)%>%
   full_join(dat_temp, by=NULL)
@@ -265,4 +306,5 @@ dat_all<-dat_smolts%>%
 
 #View(filter(dat_all, is.na(meanTemp)==T, Month<8))
 #View(filter(dat_all, is.na(flow)==T, Month<8))
+#View(filter(dat_all, Year==2015)
 
