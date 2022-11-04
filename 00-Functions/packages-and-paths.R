@@ -5,7 +5,7 @@ load.module("mix")
 library(tidyverse)
 library(ggmcmc)
 library(readxl)
-library(xlsx)
+#library(xlsx)
 library(forcats)
 library(lubridate)
 library(stringr)
@@ -16,17 +16,18 @@ require(gridExtra)
 source("00-Functions/tidy-functions.r")
 source("00-Functions/my-palette.r")
 
+pathMain<-readRDS("C:/Temp/path-main.rds")
 
 # Path for input data
-pathIn<-"O:/Projects/ISAMA/data/der/input/Utsjoki-smolts/"
-pathIn2<-"O:/Projects/ISAMA/data/orig/"
+pathIn<-paste0(pathMain,"05-Vanha_O/Projects/ISAMA/data/der/input/Utsjoki-smolts/")
+pathIn2<-paste0(pathMain,"05-Vanha_O/Projects/ISAMA/data/orig/")
 
 # Path for simulation output
-#pathOut<-"H:/Projects/ISAMA/prg/output/Utsjoki-smolts/"
-pathOut<-"C:/output/Utsjoki-smolts/"
+pathOut<-paste0(pathMain,"output/Utsjoki-smolts/")
 
 
 source("01-Data/data-smolts-covariates.r")
 source("01-Data/data-simul.r")
 source("00-Functions/smolts-data-to-jags.r")
+source("00-Functions/s-dat-jags_AR.r")
 

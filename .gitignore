@@ -15,7 +15,8 @@ example*
 .Rapp.history
 
 # Session Data files
-.RData
+*.RData
+
 
 # Example code in package build process
 *-Ex.R

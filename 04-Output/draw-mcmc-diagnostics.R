@@ -1,18 +1,22 @@
+source("00-Functions/packages-and-paths.R")
 
 # runjags diagnostics (object "run")
+
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_050914_run_AMD.RData"))
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_AMD.RData"))
 
 # parvimalli:
 summary(run, var="aB")
 summary(run, var="bB")
 summary(run, var="etaB")
 
-summary(run, var="S")
+#summary(run, var="S")
 
-summary(run, var="K")
-summary(run, var="slope")
+#summary(run, var="K")
+#summary(run, var="slope")
 
 
-plot(run, var="S")
+#plot(run, var="S")
 
 
 summary(run, var="D")
@@ -32,7 +36,6 @@ plot(run, var="eta_alphaN")
 
 chains<-as.mcmc.list(run)
 chains<-window(chains,start=500000)
-#save(chains, file="H:/Projects/ISAMA/prg/output/Utsjoki-smolts/Smolts_fixedObsProp_0714_chains.RData")
 
 
 
@@ -42,6 +45,8 @@ gelman.diag(chains[,"Ntot[3]"])
 gelman.diag(chains[,"Ntot[4]"])
 gelman.diag(chains[,"Ntot[5]"])
 gelman.diag(chains[,"Ntot[6]"])
+gelman.diag(chains[,"Ntot[7]"])
+gelman.diag(chains[,"Ntot[8]"])
 
 gelman.diag(chains[,"aP"])
 gelman.diag(chains[,"bP"])
@@ -52,15 +57,9 @@ gelman.diag(chains[,"cvmuD"])
 
 # Traces
 par(mfrow=c(3,3),mar=c(2.5,4,4,1))
-traceplot(chains[,"Ntot[1]"],main="Ntot1", cex.main=1.5)
-traceplot(chains[,"Ntot[2]"],main="Ntot2", cex.main=1.5)
-traceplot(chains[,"Ntot[3]"],main="Ntot3", cex.main=1.5)
-traceplot(chains[,"Ntot[4]"],main="Ntot4", cex.main=1.5)
-traceplot(chains[,"Ntot[5]"],main="Ntot5", cex.main=1.5)
-traceplot(chains[,"Ntot[6]"],main="Ntot6", cex.main=1.5)
-traceplot(chains[,"Ntot[7]"],main="Ntot7", cex.main=1.5)
-traceplot(chains[,"Ntot[8]"],main="Ntot8", cex.main=1.5)
-traceplot(chains[,"Ntot[9]"],main="Ntot9", cex.main=1.5)
+for(i in 1:20){
+  traceplot(chains[,paste0("Ntot[",i,"]")],main=paste0("Ntot",i), cex.main=1.5)
+}
 
 traceplot(chains[,"aP"],main=expression("aP"), cex.main=1.5)
 traceplot(chains[,"bP"],main=expression("bP"), cex.main=1.5)

@@ -153,7 +153,7 @@ D16<-read_xlsx(str_c(pathIn2,"UTSJOKI VIDEODATA/Utsjoki_smoltit 2016.xlsx"),
   mutate(Day=Day)%>%
   mutate(Month=Month)%>%
   select(Year,Month,Day,day,smolts, school_size)
-View(D16)
+#View(D16)
 
 
 dat_smolts<-
@@ -192,7 +192,7 @@ dat_flow<-read_xlsx(str_c(pathIn2,"UTSJOKI VIRTAAMADATA/Virtaama_Patoniva 1963-2
   filter(Year>2001 & Year<2017)%>%
   filter(Month==6 | Month==7 | Month==8)
 
-#View(filter(dat_flow, Year==2012))
+#View(filter(dat_flow, Year==2016))
 
 # Temperature
 # ============
@@ -306,5 +306,5 @@ dat_all<-dat_smolts%>%
 
 #View(filter(dat_all, is.na(meanTemp)==T, Month<8))
 #View(filter(dat_all, is.na(flow)==T, Month<8))
-#View(filter(dat_all, Year==2015)
+#View(filter(dat_all, Year==2016)
 

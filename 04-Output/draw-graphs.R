@@ -2,11 +2,22 @@
 
 # years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
 
-years<-c(2002:2014) # 13 years, total time series
+#years<-c(2002:2014) # 13 years, total time series
 
-years<-c(2005:2009,2014) # 6 years of data for testing  
+#years<-c(2005:2009,2014) # 6 years of data for testing  
+
+#years<-c(2005:2009,2011,2013:2014)  
+
+years<-c(2002:2021)  
 n_days<-61
-df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
+#df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
+
+
+load("01-Data/dat0221.RData")
+df<-s_dat_jags(dat,years, n_days) # 61: only june & july
+
+
+
 
 
 # Number of smolts
@@ -19,9 +30,11 @@ df<-boxplot.jags.df(chains, "Ntot",Year)
 #chains2<-chainsP
 df2<-boxplot.jags.df(chains2, "Ntot",Year)
 
+dat<-as_tibble(dat)
+
 Ntot<-c()
 for(i in 1:length(years)){
-  Ntot[i]<-sum(filter(dat_all, Year==years[i])$smolts, na.rm=T) 
+  Ntot[i]<-sum(filter(dat, Year==years[i])$smolts, na.rm=T) 
 }
 
 df<-df%>%
@@ -33,16 +46,16 @@ df2<-df2%>%
   mutate(x2=as.factor(x))
 
 ggplot(df, aes(x2))+
-  geom_boxplot(data=df2,
-    aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
-    stat = "identity", col="grey", fill="grey95")+
+#  geom_boxplot(data=df2,
+#    aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
+#    stat = "identity", col="grey", fill="grey95")+
   labs(x="Year", y="Number of smolts (in 1000's)", title="Annual size of the smolt run")+
   coord_cartesian(ylim=c(0,40))+
   theme_bw()+
   geom_boxplot(
     aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
     stat = "identity",fill=rgb(1,1,1,0.1))+
-  geom_point(aes(x=x2, y=Ntot/1000), size=3)+
+  geom_point(aes(x=x2, y=Ntot/1000), size=2)+
   theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
 
 
@@ -71,7 +84,7 @@ for(i in 1:length(years)){
 df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","Year"))
 
 df<-df2%>%
-  left_join(dat_all)%>%
+  left_join(dat)%>%
   select(Day,Month, Year,day, smolts, q50, everything())
 
 df_tmp<-df%>%
@@ -79,7 +92,7 @@ df_tmp<-df%>%
 #mutate(incl=ifelse((Year=="2007" & day<25) | (Year=="2014" & day<41 & day>35), 0, 1))
 #View(df_tmp)
 
-ggplot(df, aes(day))+
+ggplot(df, aes(day, group=day))+
   geom_line(aes(day,q50))+
   geom_line(aes(day,smolts), col="grey50")+
   # geom_line(aes(day,meanTemp*100), col="red")+
