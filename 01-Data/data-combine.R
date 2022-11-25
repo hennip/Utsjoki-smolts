@@ -45,7 +45,9 @@ dat<-full_join(data0221,side_east)%>%# Combine with side stream data
 
 dat_m <- left_join(dat, tempsum %>% select(date,tempSum30), by = "date")
 
-saveRDS(dat_m)
+df0221<-s_dat_jags(dat_m, years, n_days) 
+
+saveRDS(df0221, file="01-Data/df0221.RDS")
 
 
 #View(data0221%>%filter(Year==2018))
