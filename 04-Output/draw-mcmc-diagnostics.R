@@ -2,8 +2,10 @@ source("00-Functions/packages-and-paths.R")
 
 # runjags diagnostics (object "run")
 
-load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_050914_run_AMD.RData"))
-load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_AMD.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_050914_run_AMD.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_AMD.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs2_all_run_AMD.RData")) # lwr & upr bound priors replaced
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_susi5.RData")) # lwr & upr bound priors replaced
 
 # parvimalli:
 summary(run, var="aB")
@@ -24,7 +26,7 @@ summary(run, var="P")
 summary(run, var="B")
 summary(run, var="Ntot")
 summary(run, var="eta_alphaN")
-summary(run, var="sum")
+summary(run, var="fl")
 
 
 plot(run, var="D")
@@ -32,7 +34,8 @@ plot(run, var="P")
 plot(run, var="B")
 plot(run, var="Ntot")
 plot(run, var="eta_alphaN")
-#plot(run, var="sum")
+plot(run, var="fl")
+plot(run, var="temp")
 
 chains<-as.mcmc.list(run)
 chains<-window(chains,start=500000)

@@ -7,93 +7,101 @@ source("00-Functions/packages-and-paths.R")
 M1<-"
 model{
 
-  # Predicting missing values of flow and water temperature using weatherdata
+  # Predicting missing values of flow and water temperature using weather data
   # ==========================================================================
   for(y in 1:nYears){
     for(i in 1:nDays ){
       
-      #   Water temperature is estimated from air temperature
+      #   Water temperature is estimated using 30 days moving average air temperature
       Temp[i,y] ~ dlnorm(log(mu_temp[i,y])-0.5*log(cv_temp[i,y]*cv_temp[i,y]+1), 1/log(cv_temp[i,y]*cv_temp[i,y]+1))
-      mu_temp_r[i,y] = a_temp + b_temp[1]*Temp_air_MA[i,y]
-      #   this is to make sure it stays positive
-      mu_temp[i,y] =  ifelse(mu_temp_r[i,y]>=0.0001, mu_temp_r[i,y], 0.0001)
-      
+      mu_temp_r[i,y] = a_temp + b_temp*Temp_air_MA[i,y]
+      mu_temp[i,y] =  ifelse(mu_temp_r[i,y]>=0.0001, mu_temp_r[i,y], 0.0001)      #   this is to make sure it stays positive
+
       #   Flow is estimetetd using water temperature, rain and days since last rain 
       flow[i,y] ~ dlnorm(log(mu_fl[i,y])-0.5*log(cv_fl[i,y]*cv_fl[i,y]+1), 1/log(cv_fl[i,y]*cv_fl[i,y]+1))
       mu_fl_r[i,y] =  a_fl + b_fl[1]*Temp[i,y] + b_fl[2]*Rain_bf[i,y] + b_fl[3]*Rain[i,y]
-      #   this is to make sure it stays positive
-      mu_fl[i,y] =  ifelse(mu_fl_r[i,y]>=0.0001, mu_fl_r[i,y], 0.0001)
-      
+      mu_fl[i,y] =  ifelse(mu_fl_r[i,y]>=0.0001, mu_fl_r[i,y], 0.0001)      #   this is to make sure it stays positive
+
     }
   }
   #   uninformative priors
   a_temp ~ dnorm(0, 100^-2)
+  b_temp ~ dnorm(0, 100^-2)
   a_fl ~ dnorm(0, 100^-2)
-  
-  b_temp[1] ~ dnorm(0, 100^-2)
-  
   for(i in 1:3){
     b_fl[i] ~ dnorm(0, 100^-2)
   }
-
  
   for(y in 1:nYears){
     for(i in 1:nDays){
-      
       cv_temp[i,y] <- phi_temp[i,y]*2+0.01
       phi_temp[i,y]~dbeta(mu_phi_temp*eta_phi_temp, (1-mu_phi_temp)*eta_phi_temp)
-
       cv_fl[i,y] <- phi_fl[i,y]*2+0.01
       phi_fl[i,y]~dbeta(mu_phi_fl*eta_phi_fl, (1-mu_phi_fl)*eta_phi_fl)
     }
   }
-      mu_phi_temp~dbeta(2,2)
-      eta_phi_temp~dunif(1,1000) 
-      mu_phi_fl~dbeta(2,2)
-      eta_phi_fl~dunif(1,1000) 
-
+  mu_phi_temp~dbeta(2,2)
+  eta_phi_temp~dunif(1,1000) 
+  mu_phi_fl~dbeta(2,2)
+  eta_phi_fl~dunif(1,1000) 
 
   # Observation process
   # ====================
   for(y in 1:nYears){
     for(i in 1:nDays){ # 61 days in June-July
     
-      # Observed number of fish
-      Nobs[i,y]~dbin(p_obs[i,y],N[i,y])  
-      p_obs[i,y]~dbeta(muB[i,y]*etaB, (1-muB[i,y])*etaB)
-      #Nobs[i,y]~dbetabin(muB[i,y]*etaB,(1-muB[i,y])*etaB,N[i,y])  
-      #Nobs[i,y]~dbetabin(muB[i,y]*etaStarB[i,y],(1-muB[i,y])*etaStarB[i,y],N[i,y])
+      # Observed number of fish in the middle of the river
+      Nobs_mid[i,y]~dbin(p_obs_mid[i,y]*(1-rho[i,y]),N[i,y])  
+      p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB_mid, (1-muB_mid[i,y])*etaB_mid)
+      muB_mid[i,y]<-0.6*(exp(BB_mid[i,y])/(1+exp(BB_mid[i,y])))+0.3
+      BB_mid[i,y]~dnorm(aB_mid-bB_mid*flow[i,y],1/pow(sdBB_mid,2))
+
+      # Observed number of fish at sides
+      # Eastern side (data from 2020) is slightly more preferred a priori
+      Nobs_east[i,y]~dbin(p_obs_side[i,y]*rho[i,y]*pref,N[i,y])  
       
-      muB[i,y]<-0.6*(exp(BB[i,y])/(1+exp(BB[i,y])))+0.3
-      BB[i,y]~dnorm(aB-bB*flow[i,y],1/pow(sdBB,2))
+      # Western side (data from 2004) is slightly less preferred a priori
+      Nobs_west[i,y]~dbin(p_obs_side[i,y]*rho[i,y]*(1-pref),N[i,y])  
       
-      #etaStarB[i,y]<-(N[i,y]-s[i,y])/(s[i,y]-1+0.01)+1
-      
-      #s[i,y]~dlnorm(log((K*N[i,y])/((K/slope)+N[i,y])+0.0001)-0.5/TS,TS)
+      # Probability to be observed at given flow at either side
+      p_obs_side[i,y]~dbeta(muB_side[i,y]*etaB_side, (1-muB_side[i,y])*etaB_side)
+      muB_side[i,y]<-0.5*(exp(BB_side[i,y])/(1+exp(BB_side[i,y])))+0.45
+      BB_side[i,y]~dnorm(aB_side-bB_side*flow[i,y],1/pow(sdBB_side,2))
+
+      # Proportion that passes cameras in the middle of the river  
+      rho[i,y]~dbeta(mu_rho[i,y]*eta_rho, (1-mu_rho[i,y])*eta_rho)
+      mu_rho[i,y]<-0.5*(exp(rhoe[i,y])/(1+exp(rhoe[i,y])))+0.5
+      rhoe[i,y]~dnorm(a_rho-b_rho*flow[i,y],1/pow(sd_rho,2))
+
     }
   }
   # priors for observation process
-# wide priors 
-#aB~dnorm(2.9,1)
-#bB~dlnorm(-2.6,1)
-  aB~dnorm(2.9,60)
-  bB~dlnorm(-2.6,984)
-  sdBB~dlnorm(-0.23,210)
-  etaB~dunif(5,1000)
+  # wide priors 
+  #aB~dnorm(2.9,1)
+  #bB~dlnorm(-2.6,1)
   
-  # priors for schooling
-  K~dlnorm(6.07,0.7)
-  slope~dlnorm(-1.94,66)
-  cvS~dunif(0.001,2)
-  TS<-1/log(cvS*cvS+1)
+  aB_mid~dnorm(2.9,60)
+  bB_mid~dlnorm(-2.6,984)
+  sdBB_mid~dlnorm(-0.23,210)
+  etaB_mid~dunif(5,1000)
+
+  aB_side~dnorm(5.63,86)
+  bB_side~dlnorm(-1.88,6073)
+  sdBB_side~dlnorm(-0.59,2.04)
+  etaB_side~dunif(5,1000)
   
+  # rho
+  a_rho~dnorm(3.86,47.5)
+  b_rho~dlnorm(-2.59,798)
+  sd_rho~dlnorm(0.67,1076)
+  eta_rho~dunif(5,1000)
+
   # Abundance
   # ==============
   for(y in 1:nYears){
     Ntot[y]<-exp(LNtot[y])
     LNtot[y]~dunif(7,15) # total run size in year y
-    #Ntot[y]<-100000
-    
+
     #N[1:nDays,y]~dmulti(qN[1:nDays,y],Ntot[y]) # daily true number of fish
     for(i in 1:(nDays-1)){
       N[i,y]<-round(qN[i,y]*Ntot[y])
@@ -208,15 +216,17 @@ cat(M1,file=Mname)
 # Select data
 # =================================
 
+dat_m<-readRDS("01-Data/dat_all.RDS")
+dat<-readRDS("01-Data/d0221_m2.RDS")
+filter(dat, is.na(side_east)==F)
+filter(dat, is.na(side_west)==F)
+
 #dat_m<-readRDS("/home/henni/Utsjoki-smolts/01-Data/dat_all.RDS")
 
 #load("/home/henni/Utsjoki-smolts/01-Data/dat0221.RData")
 #summary(dat)
 
-# length(dat$smolts)
-# df<-dat%>%filter(Year>2016, Month<8)
-# View(df)
-# df
+dat_m%>%filter(is.na(side)==F)
 
 #View(dat)
 years<-c(2002:2021)
@@ -239,11 +249,10 @@ s_dat_jags <- function(dat, years, days){
     Flow = dat_f %>% select(matches("flow\\.|flow$")) %>% as.matrix(),
     Temp = dat_f %>% select(matches("meanTemp\\.|meanTemp$")) %>% as.matrix(),
     Temp_air = dat_f %>% select(matches("temp_air\\.|temp_air$")) %>% as.matrix(), 
-    Temp_air_sum30 = dat_f %>% select(matches("tempSum30\\.|tempSum30$")) %>% as.matrix(), 
+    Temp_air_sum = dat_f %>% select(matches("tempSum\\.|tempSum$")) %>% as.matrix(), 
     Rain = dat_f %>% select(matches("rain\\.|rain$")) %>% as.matrix(),
     Rain_bf = dat_f %>% select(matches("rainbf\\.|rainbf$")) %>% as.matrix(),
-    side_east = dat_f %>% select(matches("side_east\\.|side_east$")) %>% as.matrix(),
-    side_west = dat_f %>% select(matches("side_west\\.|side_west$")) %>% as.matrix()
+    side_east = dat_f %>% select(matches("side\\.|side$")) %>% as.matrix()
   )
   return(data)
 }
@@ -251,8 +260,7 @@ s_dat_jags <- function(dat, years, days){
 
 
 
-df<-s_dat_jags(dat_m, years, n_days) # 61: only june & july
-#df$Temp_air_sum30
+df<-s_dat_jags(dat_m,years, n_days) # 61: only june & july
 
 data<-list(
   nYears=length(years),
@@ -260,9 +268,10 @@ data<-list(
   #s=df$Schools,
   flow=df$Flow,
   Nobs=df$Smolts,
-  #Nobs_side=df$side,
+  Nobs_east=df$side_east,
+  Nobs_west=df$side_west,
   Temp = df$Temp,
-  Temp_air_MA = df$Temp_air_sum30,
+  Temp_air_MA = df$Temp_air_sum/30,
   #Temp_air = df$Temp_air,
   Rain = df$Rain,
   Rain_bf = df$Rain_bf
@@ -289,13 +298,13 @@ var_names<-c(
 
 
 
-run0 <- run.jags(M1,
-                 monitor= var_names,data=data,inits = inits,
-                 n.chains = 2, method = 'parallel',
-                 thin=1, burnin =0,
-                 modules = "mix",
-                 keep.jags.files=F,sample =1000, adapt=100,
-                 progress.bar=TRUE)
+# run0 <- run.jags(M1, 
+#                  monitor= var_names,data=data,inits = inits,
+#                  n.chains = 2, method = 'parallel', 
+#                  thin=1, burnin =0, 
+#                  modules = "mix",
+#                  keep.jags.files=F,sample =1000, adapt=100, 
+#                  progress.bar=TRUE)
 
 
 t1<-Sys.time();t1

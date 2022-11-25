@@ -45,6 +45,8 @@ df2<-df2%>%
   mutate(Ntot)%>%
   mutate(x2=as.factor(x))
 
+
+#windows()
 ggplot(df, aes(x2))+
 #  geom_boxplot(data=df2,
 #    aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),

@@ -2,26 +2,26 @@
 # simuloidaan dataa jonka avulla voidaan sovittaa priorit 
 # virtaaman vaikutukselle havaitsemistodennakoisyyteen
 
-# Panun expert-info 16.6.17:
-# Mahdolliset arvot välillä [0.9,0.3], 
-# matalilla virtaamilla (<20m3/s) korkea tn tulla nähdyksi(0.75-0.9), 
-# tästä verkkaisesti laskee (ei romahda) minimiin, jossa kuitenkin 
-# suuri epävarmuus (0.3-0.6), jakauma ennemmin tasainen kuin huipukas.
-# Virtaamilla 50-60 m3/s olosuhteet havaita ovat selkeästi huonot.
-# Kun virtaama nousee 10m3/s->60m3/s, veden korkeus nousee metrin.
+# Panun expert-info 10.11.22:
+# Mahdolliset arvot välillä [0.95,0.45], 
+# matalilla virtaamilla (<20m3/s) korkea tn tulla nähdyksi(0.95-0.9), 
+# tästä lähtee laskemaan kun virtaama kasvaa. 
+# Samankaltainen käyrä kuin keskiosan hav tn:llä (prior-obsprop-vs-flow.R)
+# mutta havaittavuus pysyy pitempään korkeana
+
 
 Flow<-seq(-10,100, by=0.5)
 nF<-length(Flow)
 
-a<-2.2
+a<-5.5
 b<-0.15
 mu<-c();P<-c();p<-c();sd<-c()
-sd<-0.8
+sd<-0.6
 for(i in 1:nF){
   mu[i]<-a-b*Flow[i]
   
   P[i]<-rnorm(1,mu[i],sd)
-  p[i]<-0.6*(exp(P[i])/(1+exp(P[i]))) +0.3
+  p[i]<-0.5*(exp(P[i])/(1+exp(P[i]))) +0.45
 }
 
 tF<-as.tibble(cbind(Flow,p))
@@ -29,35 +29,37 @@ tF<-as.tibble(cbind(Flow,p))
 ggplot(tF) + 
   geom_point(aes(Flow, p))+
   coord_cartesian(ylim=c(0,1))+
-  labs(title=paste(sep="","a=",a," b=",b))
+  labs(title=paste(sep="","a=",a," b=",b))+
+  geom_vline(xintercept=20)
 
 
 # Sovitetaan P:t edellisestä ja estimoidaan aB, bB ja sdB
 
-Flow<-seq(-10,100, by=1)
-nF<-length(Flow)
+# Sopivien priorien etsimiseksi
+# mu<-0.01
+# cv<-10
+# Tau<-1/(log(cv*cv+1))
+# M<-log(mu)-0.5/Tau
+# M;Tau
+
 
 M2<-"
 model{
 for(i in 1:n){
-#p[i]<-0.6*p2[i]+0.3
-#logit(p2[i])<-P[i]
+
 P[i]~dnorm(muB[i],tauB)
 muB[i]<-aB-bB*Flow[i]
 }
 tauB<-1/pow(sdB,2)
 
-#sdB<-0.7
-#aB~dnorm(5,1)
-#bB~dlnorm(log(1)-0.5/tau_bB,tau_bB)
-#cv_bB<-0.3
-#tau_bB<-1/log(cv_bB*cv_bB+1)
 
-aB~dnorm(1,0.01)
-bB~dlnorm(0.1,1)
-sdB~dlnorm(1,0.1)
-#sdB~dlnorm(log(0.7)-0.5/tau_sdB,tau_sdB)
-#tau_sdB<-1
+aB~dunif(0,100)#dnorm(1,0.01)
+bB~dunif(0,100)#dlnorm(-3.4,0.43)
+sdB~dunif(0.001,5)#dlnorm(1,0.1)
+
+aBX~dunif(0,100)#dnorm(1,0.01)
+bBX~dunif(0,100)#dlnorm(-3.4,0.43)
+sdBX~dunif(0.001,5)#dlnorm(1,0.1)
 }"
 
 cat(M2,file="prior-obs.txt")
@@ -70,13 +72,16 @@ system.time(jm<-jags.model('prior-obs.txt',
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "aB","bB", "sdB"
+                                    #"p",
+                                    "aB","bB", "sdB",
+                                    "aBX","bBX", "sdBX"
                                   ),
                                   n.iter=5000,
                                   thin=1))
 
 chainsM<-chains1
 summary(chainsM)
+
 
 
 
@@ -108,29 +113,29 @@ nF<-length(Flow)
 M2<-"
 model{
 for(i in 1:n){
-p[i]<-0.6*p2[i]+0.3
+p[i]<-0.5*p2[i]+0.45
 logit(p2[i])<-P[i]
 P[i]~dnorm(muB[i],tauB)
 muB[i]<-aB-bB*Flow[i]
 }
 tauB<-1/pow(sdB,2)
 
-#aB~dnorm(mu.aB,t.aB)
-#bB~dlnorm(M.bB,T.bB)
-#sdB~dlnorm(M.sdB,T.sdB)
+# aB~dnorm(mu.aB,t.aB)
+# bB~dlnorm(M.bB,T.bB)
+# sdB~dlnorm(M.sdB,T.sdB)
 
-aB~dnorm(2.9,60)
-bB~dlnorm(-2.6,984)
-sdB~dlnorm(-0.23,210)
+aB~dnorm(5.63,86)
+bB~dlnorm(-1.88,6073)
+sdB~dlnorm(-0.59,2.04)
 
 }"
 
 cat(M2,file="prior-obs.txt")
 
 data<-list( 
-  #  mu.aB=muaB,t.aB=tauaB, 
-  #  M.bB=MbB, T.bB=taubB, 
-  #  M.sdB=MsdB, T.sdB=tausdB,
+    mu.aB=muaB,t.aB=tauaB, 
+    M.bB=MbB, T.bB=taubB, 
+    M.sdB=MsdB, T.sdB=tausdB,
   Flow=Flow, n=nF
 )
 
@@ -156,6 +161,8 @@ ggplot(df, aes(x, group=x))+
     stat = "identity")+
   coord_cartesian(ylim=c(0,1))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 5))+
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 5))
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5))+
+  labs(title="Havaitsemistodennäköisyys sivu-uomassa")+
+  xlab("Virtaama")
 
 filter(df, x==10 | x==20 |x==50 |x==60)
