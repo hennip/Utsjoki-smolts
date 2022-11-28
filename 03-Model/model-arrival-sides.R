@@ -51,17 +51,17 @@ model{
     for(i in 1:nDays){ # 61 days in June-July
     
       # Observed number of fish in the middle of the river
-      Nobs_mid[i,y]~dbin(p_obs_mid[i,y]*(1-rho[i,y]),N[i,y])  
+      Nobs_mid[i,y]~dbin(p_obs_mid[i,y]*rho[i,y],N[i,y])  
       p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB_mid, (1-muB_mid[i,y])*etaB_mid)
       muB_mid[i,y]<-0.6*(exp(BB_mid[i,y])/(1+exp(BB_mid[i,y])))+0.3
       BB_mid[i,y]~dnorm(aB_mid-bB_mid*flow[i,y],1/pow(sdBB_mid,2))
 
       # Observed number of fish at sides
       # Eastern side (data from 2020) is slightly more preferred a priori
-      Nobs_east[i,y]~dbin(p_obs_side[i,y]*rho[i,y]*pref,N[i,y])  
+      Nobs_east[i,y]~dbin(p_obs_side[i,y]*(1-rho[i,y])*pref,N[i,y])  
       
       # Western side (data from 2004) is slightly less preferred a priori
-      Nobs_west[i,y]~dbin(p_obs_side[i,y]*rho[i,y]*(1-pref),N[i,y])  
+      Nobs_west[i,y]~dbin(p_obs_side[i,y]*(1-rho[i,y])*(1-pref),N[i,y])  
       
       # Probability to be observed at given flow at either side
       p_obs_side[i,y]~dbeta(muB_side[i,y]*etaB_side, (1-muB_side[i,y])*etaB_side)
@@ -69,9 +69,9 @@ model{
       BB_side[i,y]~dnorm(aB_side-bB_side*flow[i,y],1/pow(sdBB_side,2))
 
       # Proportion that passes cameras in the middle of the river  
-      rho[i,y]~dbeta(mu_rho[i,y]*eta_rho, (1-mu_rho[i,y])*eta_rho)
+      rho[i,y]~dbeta(mu_rho[i,y]*eta_rho, (1-mu_rho[i,y])*eta_rho)T(0.001,0.999)
       mu_rho[i,y]<-0.5*(exp(rhoe[i,y])/(1+exp(rhoe[i,y])))+0.5
-      rhoe[i,y]~dnorm(a_rho-b_rho*flow[i,y],1/pow(sd_rho,2))
+      rhoe[i,y]~dnorm(a_rho-b_rho*flow[i,y],1/(pow(sd_rho,2)))
 
     }
   }
@@ -90,11 +90,15 @@ model{
   sdBB_side~dlnorm(-0.59,2.04)
   etaB_side~dunif(5,1000)
   
-  # rho
+  # rho: proportion of smolts passing site at mid river
   a_rho~dnorm(3.86,47.5)
   b_rho~dlnorm(-2.59,798)
-  sd_rho~dlnorm(0.67,1076)
+  sd_rho<-0.1#~dlnorm(0.67,1076) # <-0.1
   eta_rho~dunif(5,1000)
+
+  # Preferability of eastern side (1-pref for western side)
+  pref ~ dbeta(50,40)
+
 
   # Abundance
   # ==============
@@ -205,9 +209,7 @@ model{
   
 }"
 
-modelName<-"Smolts_etaB_sdP_extracovs"
-#modelName<-"Smolts_etaB_wideB"
-#modelName<-"Smolts_etaStarB_s" # school size ==0.001 when Nobs==0
+modelName<-"Smolts_etaB_sdP_sides"
 
 
 Mname<-str_c("03-Model/",modelName, ".txt")
@@ -216,58 +218,22 @@ cat(M1,file=Mname)
 # Select data
 # =================================
 
-dat_m<-readRDS("01-Data/dat_all.RDS")
-dat<-readRDS("01-Data/d0221_m2.RDS")
-filter(dat, is.na(side_east)==F)
-filter(dat, is.na(side_west)==F)
+df<-readRDS("01-Data/df0221.RDS")
+summary(df)
+#df<-readRDS("/home/henni/Utsjoki-smolts/01-Data/df0221.RDS")
 
-#dat_m<-readRDS("/home/henni/Utsjoki-smolts/01-Data/dat_all.RDS")
-
-#load("/home/henni/Utsjoki-smolts/01-Data/dat0221.RData")
-#summary(dat)
-
-dat_m%>%filter(is.na(side)==F)
 
 #View(dat)
 years<-c(2002:2021)
 n_days<-61
 
 
-s_dat_jags <- function(dat, years, days){
-  nYears <- length(years)
-  nDays <- days
-  #   filter data first
-  #   needed variables: smolts, schools, flow, temp, temp_air, rain, rainbf
-  dat_f <- dat %>% filter(Year %in% years, day <= days) %>% group_by(Year) %>% 
-    group_split(.keep=F) %>% unlist(recursive = F) %>% as.data.frame() 
-  
-  data = list(
-    nYears = nYears,
-    nDays = nDays,
-    Smolts = dat_f %>% select(matches("smolts\\.|smolts$")) %>% as.matrix(),
-    Schools = dat_f %>% select(matches("schools\\.|schools$")) %>% as.matrix(),
-    Flow = dat_f %>% select(matches("flow\\.|flow$")) %>% as.matrix(),
-    Temp = dat_f %>% select(matches("meanTemp\\.|meanTemp$")) %>% as.matrix(),
-    Temp_air = dat_f %>% select(matches("temp_air\\.|temp_air$")) %>% as.matrix(), 
-    Temp_air_sum = dat_f %>% select(matches("tempSum\\.|tempSum$")) %>% as.matrix(), 
-    Rain = dat_f %>% select(matches("rain\\.|rain$")) %>% as.matrix(),
-    Rain_bf = dat_f %>% select(matches("rainbf\\.|rainbf$")) %>% as.matrix(),
-    side_east = dat_f %>% select(matches("side\\.|side$")) %>% as.matrix()
-  )
-  return(data)
-}
-
-
-
-
-df<-s_dat_jags(dat_m,years, n_days) # 61: only june & july
-
 data<-list(
   nYears=length(years),
   nDays = n_days,
   #s=df$Schools,
   flow=df$Flow,
-  Nobs=df$Smolts,
+  Nobs_mid=df$Smolts,
   Nobs_east=df$side_east,
   Nobs_west=df$side_west,
   Temp = df$Temp,
@@ -284,27 +250,28 @@ inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
 
 
 var_names<-c(
+  "pref",
   "a_temp", "b_temp", "a_fl", "b_fl", 
   "mu_phi_temp", "eta_phi_temp","mu_phi_fl", "eta_phi_fl",
   #"muT", "cvT", "muF", "cvF",
   "aD","bD","cvD","cvmuD",
   "aP","bP","sdP",
-  "aB","bB","sdBB",
-  "etaB",
+  "aB_mid","bB_mid","sdBB_mid","etaB_mid",
+  "aB_side","bB_side","sdBB_side","etaB_side",
+  "a_rho","b_rho","sd_rho","eta_rho",
   # "K","slope","cvS", 
-  # "sums1","sums2",
   "Ntot","N","eta_alphaN"
 )
 
 
 
-# run0 <- run.jags(M1, 
-#                  monitor= var_names,data=data,inits = inits,
-#                  n.chains = 2, method = 'parallel', 
-#                  thin=1, burnin =0, 
-#                  modules = "mix",
-#                  keep.jags.files=F,sample =1000, adapt=100, 
-#                  progress.bar=TRUE)
+run0 <- run.jags(M1,
+                 monitor= var_names,data=data,inits = inits,
+                 n.chains = 2, method = 'parallel',
+                 thin=1, burnin =0,
+                 modules = "mix",
+                 keep.jags.files=F,sample =1000, adapt=100,
+                 progress.bar=TRUE)
 
 
 t1<-Sys.time();t1

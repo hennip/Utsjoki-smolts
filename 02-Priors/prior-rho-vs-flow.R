@@ -22,7 +22,7 @@ for(i in 1:nF){
   p[i]<-0.5*(exp(P[i])/(1+exp(P[i]))) +0.5
 }
 
-tF<-as.tibble(cbind(Flow,p))
+tF<-as_tibble(cbind(Flow,p))
 
 ggplot(tF) + 
   geom_point(aes(Flow, p))+
@@ -105,7 +105,7 @@ tausdB<-1/log(cvsdB*cvsdB+1)
 MsdB<-log(musdB)-0.5/tausdB
 MsdB;tausdB
 
-Flow<-seq(-10,100, by=5)
+Flow<-seq(-10,100, by=2)
 nF<-length(Flow)
 
 M2<-"
@@ -143,7 +143,7 @@ system.time(jm<-jags.model('prior-obs.txt',
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "p"
+                                    "p", "rho"
                                   ),
                                   n.iter=5000,
                                   thin=1))
