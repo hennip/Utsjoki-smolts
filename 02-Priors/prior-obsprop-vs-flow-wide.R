@@ -102,7 +102,7 @@ tausdB<-1/log(cvsdB*cvsdB+1)
 MsdB<-log(musdB)-0.5/tausdB
 MsdB;tausdB
 
-Flow<-seq(0,100, by=5)
+Flow<-seq(0,100, by=2)
 nF<-length(Flow)
 
 M2<-"
@@ -119,11 +119,11 @@ tauB<-1/pow(sdB,2)
 #bB~dlnorm(M.bB,T.bB)
 #sdB~dlnorm(M.sdB,T.sdB)
 
-#aB~dnorm(2.9,1)
-#bB~dlnorm(-2.6,1)
+aB~dnorm(2.9,1)
+bB~dlnorm(-2.6,1)
 
-aB~dnorm(2.9,60)
-bB~dlnorm(-2.6,984)
+#aB~dnorm(2.9,60)
+#bB~dlnorm(-2.6,984)
 
 sdB~dlnorm(-0.23,210)
 
@@ -154,7 +154,7 @@ df<-boxplot.jags.df(chains1,"p",Flow)
 df<-as.tibble(df)
 df<-filter(df, x>=0)
 
-ggplot(df, aes(x))+
+ggplot(df, aes(x, group=x))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+
