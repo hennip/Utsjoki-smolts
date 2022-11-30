@@ -1,24 +1,13 @@
 
+source("00-Functions/p_vs_flow.R")
+# Get chains & chains2 from draw-mcmc-diagnostics.R
 
-# years<-c(2005,2006,2008) # 3 years of data for testing- schools model  
-
-#years<-c(2002:2014) # 13 years, total time series
-
-#years<-c(2005:2009,2014) # 6 years of data for testing  
-
-#years<-c(2005:2009,2011,2013:2014)  
 
 years<-c(2002:2021)  
 n_days<-61
-#df<-smolts_data_to_jags(dat_all,years, n_days) # 61: only june & july
+dat<-readRDS("01-Data/dat0221.RDS")
 
-
-load("01-Data/dat0221.RData")
-df<-s_dat_jags(dat,years, n_days) # 61: only june & july
-
-
-
-
+chains2<-chainsP
 
 # Number of smolts
 ##################################################
@@ -215,13 +204,11 @@ grid.arrange(plot1, plot2, nrow=2)
 
 
 #################################
-# Observation probability vs flow
-source("04-Output/sample-obs-prob-flow.r")
+# Observation probability at mid stream vs flow
+df<-p_vs_flow(chains, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
+df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
 
-df<-boxplot.df(muB_samp, Flow)
-df.prior<-boxplot.df(muB_sampP, Flow)
-
-ggplot(df, aes(x))+
+ggplot(df, aes(x, group=x))+
   geom_boxplot(data=df.prior,
                mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
                stat = "identity",
@@ -238,15 +225,50 @@ scale_x_continuous(breaks = scales::pretty_breaks(n = 5))
 #  theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
 
 # filter(df, x==5 |x==8 |x==10 |x==15 | x==20 |x==50 |x==60|x==80)
-# x        q5       q25       q50       q75       q95
-# 1  5 0.7590412 0.8271434 0.8551095 0.8733315 0.8874915
-# 2 10 0.7169385 0.8001522 0.8374087 0.8624795 0.8827453
-# 3 15 0.6613586 0.7650941 0.8135906 0.8475497 0.8752510
-# 4 20 0.6116740 0.7252465 0.7842389 0.8265176 0.8645508
-# 5 50 0.3621924 0.4219654 0.4834368 0.5622097 0.6796654
-# 6 60 0.3310110 0.3643165 0.4046579 0.4612673 0.5722501
-# 7 80 0.3072731 0.3159281 0.3274754 0.3466719 0.3956391
 
+#################################
+# Observation probability at side stream vs flow
+df<-p_vs_flow(chains, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
+df.prior<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
+
+ggplot(df, aes(x, group=x))+
+  geom_boxplot(data=df.prior,
+               mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+               stat = "identity",
+               col="grey", fill="grey95")+
+  geom_boxplot(
+    mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.6))+
+  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Probability that a smolt is observed")+
+  geom_line(aes(x,q50))+
+  geom_line(data=df.prior, aes(x,q50), color="grey")+
+  theme_bw()+
+  coord_cartesian(ylim=c(0,1))+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 5))
+#  theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
+
+# filter(df, x==5 |x==8 |x==10 |x==15 | x==20 |x==50 |x==60|x==80)
+
+#################################
+# Rho vs flow
+
+df<-p_vs_flow(chains, "a_rho", "b_rho", "sd_rho", 0.5, 0.5)
+df.prior<-p_vs_flow(chainsP, "a_rho", "b_rho", "sd_rho", 0.5, 0.5)
+
+ggplot(df, aes(x, group=x))+
+  geom_boxplot(data=df.prior,
+               mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+               stat = "identity",
+               col="grey", fill="grey95")+
+  geom_boxplot(
+    mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.6))+
+  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Probability that a smolt is observed")+
+  geom_line(aes(x,q50))+
+  geom_line(data=df.prior, aes(x,q50), color="grey")+
+  theme_bw()+
+  coord_cartesian(ylim=c(0,1))+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 5))
 
 #################################
 # Daily passage vs school size

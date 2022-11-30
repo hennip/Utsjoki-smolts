@@ -2,10 +2,16 @@ source("00-Functions/packages-and-paths.R")
 
 # runjags diagnostics (object "run")
 
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_priors_0221_run_susi5.RData"))
+chainsP<-as.mcmc.list(run)
+chainsP<-window(chainsP,start=50000)
+
+
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_050914_run_AMD.RData"))
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_AMD.RData"))
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs2_all_run_AMD.RData")) # lwr & upr bound priors replaced
-load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_susi5.RData")) # lwr & upr bound priors replaced
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_susi5.RData")) # lwr & upr bound priors replaced
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_0221_run_susi5.RData")) # lwr & upr bound priors replaced
 
 # parvimalli:
 summary(run, var="aB")
@@ -38,6 +44,7 @@ plot(run, var="fl")
 plot(run, var="temp")
 
 chains<-as.mcmc.list(run)
+#chains<-window(chains,start=100000)
 chains<-window(chains,start=500000)
 
 
@@ -78,11 +85,6 @@ traceplot(chains[,"sdBB"],main=expression("sdBB"), cex.main=1.5)
 traceplot(chains[,"etaB"],main=expression("etaB"), cex.main=1.5)
 traceplot(chains[,"eta_alphaN"],main=expression("eta_alphaN"), cex.main=1.5)
 
-traceplot(chains[,"sums1[48]"],main=expression("sums1"))
-traceplot(chains[,"sums2[61]"],main=expression("sums2"))
-
-#summary(chains[,"sums1[48]"])
-#summary(chains[,"sums2[48]"])
 summary(chains[,"sdP"])
 
 traceplot(chains[,"K"],main=expression("K"), cex.main=1.5)

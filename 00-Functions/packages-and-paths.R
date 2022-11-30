@@ -19,7 +19,7 @@ source("00-Functions/smwrg_m.r")
 source("00-Functions/sustemp.r")
 source("00-Functions/rollsum.r")
 #source("00-Functions/smolts-data-to-jags.r")
-source("00-Functions/s-dat-jags_AR.r")
+source("00-Functions/s-dat-jags.r")
 
 pathMain<-readRDS("C:/Temp/path-main.rds")
 
