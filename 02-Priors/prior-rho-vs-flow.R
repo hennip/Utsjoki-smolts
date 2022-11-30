@@ -143,7 +143,7 @@ system.time(jm<-jags.model('prior-obs.txt',
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "p", "rho"
+                                    "p"#, "rho"
                                   ),
                                   n.iter=5000,
                                   thin=1))

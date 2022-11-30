@@ -107,7 +107,7 @@ tausdB<-1/log(cvsdB*cvsdB+1)
 MsdB<-log(musdB)-0.5/tausdB
 MsdB;tausdB
 
-Flow<-seq(-10,100, by=5)
+Flow<-seq(-10,100, by=2)
 nF<-length(Flow)
 
 M2<-"
@@ -124,8 +124,10 @@ tauB<-1/pow(sdB,2)
 # bB~dlnorm(M.bB,T.bB)
 # sdB~dlnorm(M.sdB,T.sdB)
 
-aB~dnorm(5.63,86)
-bB~dlnorm(-1.88,6073)
+#aB~dnorm(5.63,86)
+#bB~dlnorm(-1.88,6073)
+aB~dnorm(5.63,1)
+bB~dlnorm(-1.88,1)
 sdB~dlnorm(-0.59,2.04)
 
 }"
