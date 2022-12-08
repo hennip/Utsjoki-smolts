@@ -24,7 +24,7 @@ for(i in 1:nF){
   p[i]<-0.6*(exp(P[i])/(1+exp(P[i]))) +0.3
 }
 
-tF<-as.tibble(cbind(Flow,p))
+tF<-as_tibble(cbind(Flow,p))
 
 ggplot(tF) + 
   geom_point(aes(Flow, p))+
@@ -111,6 +111,7 @@ for(i in 1:n){
 p[i]<-0.6*p2[i]+0.3
 logit(p2[i])<-P[i]
 P[i]~dnorm(muB[i],tauB)
+#muB[i]<-aB*2-bB*Flow[i]
 muB[i]<-aB-bB*Flow[i]
 }
 tauB<-1/pow(sdB,2)

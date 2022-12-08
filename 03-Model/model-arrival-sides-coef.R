@@ -52,7 +52,7 @@ model{
     
       # Observed number of fish in the middle of the river
       Nobs_mid[i,y]~dbin(p_obs_mid[i,y]*rho[i,y],N[i,y])  
-      p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB_mid, (1-muB_mid[i,y])*etaB_mid)
+      p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB, (1-muB_mid[i,y])*etaB)
       muB_mid[i,y]<-0.6*(exp(BB_mid[i,y])/(1+exp(BB_mid[i,y])))+0.3
       BB_mid[i,y]~dnorm(aB_mid-bB_mid*flow[i,y],1/pow(sdBB_mid,2))
 
@@ -64,13 +64,12 @@ model{
       Nobs_west[i,y]~dbin(p_obs_side[i,y]*(1-rho[i,y])*(1-pref),N[i,y])  
       
       # Probability to be observed at given flow at either side
-      p_obs_side[i,y]<-ifelse(p2_obs_side[i,y]<p_obs_mid[i,y],p_obs_mid[i,y],p2_obs_side[i,y])
-      p2_obs_side[i,y]~dbeta(muB_side[i,y]*etaB_side, (1-muB_side[i,y])*etaB_side)
+      p_obs_side[i,y]~dbeta(muB_side[i,y]*etaB, (1-muB_side[i,y])*etaB)
       muB_side[i,y]<-0.5*(exp(BB_side[i,y])/(1+exp(BB_side[i,y])))+0.45
       BB_side[i,y]~dnorm(aB_side-bB_side*flow[i,y],1/pow(sdBB_side,2))
 
       # Proportion that passes cameras in the middle of the river  
-      rho[i,y]~dbeta(mu_rho[i,y]*eta_rho, (1-mu_rho[i,y])*eta_rho)T(0.001,0.999)
+      rho[i,y]~dbeta(mu_rho[i,y]*etaB, (1-mu_rho[i,y])*etaB)T(0.001,0.999)
       mu_rho[i,y]<-0.5*(exp(rhoe[i,y])/(1+exp(rhoe[i,y])))+0.5
       rhoe[i,y]~dnorm(a_rho-b_rho*flow[i,y],1/(pow(sd_rho,2)))
 
@@ -80,27 +79,31 @@ model{
   # wide priors 
   aB_mid~dnorm(2.9,1)
   bB_mid~dlnorm(-2.6,1)
-  aB_side~dnorm(5.63,1)
-  bB_side~dlnorm(-1.88,1)
+#  aB_side~dnorm(5.63,1)
+#  bB_side~dlnorm(-1.88,1)
   
   #aB_mid~dnorm(2.9,60)
   #bB_mid~dlnorm(-2.6,984)
   sdBB_mid~dlnorm(-0.23,210)
-  etaB_mid~dunif(5,1000)
 
-  #aB_side~dnorm(5.63,86)
-  #bB_side~dlnorm(-1.88,6073)
-  sdBB_side~dlnorm(-0.59,2.04)
-  etaB_side~dunif(5,1000)
-  
+
+  aB_side<-aB_mid*(coef_side+1)#~dnorm(5.63,86)
+  bB_side<-bB_mid#~dlnorm(-1.88,6073)
+  sdBB_side<-sdBB_mid#~dlnorm(-0.59,2.04)
+
   # rho: proportion of smolts passing site at mid river
   a_rho~dnorm(3.86,47.5)
   b_rho~dlnorm(-2.59,798)
-  sd_rho<-0.1#~dlnorm(0.67,1076) # <-0.1
-  eta_rho~dunif(5,1000)
+  sd_rho~dlnorm(0.67,1076)
+  #eta_rho~dunif(5,1000)
 
   # Preferability of eastern side (1-pref for western side)
   pref ~ dbeta(50,40)
+
+  # overdisperison in beta-binomial rho & obs prop due to overdispersion
+  etaB~dunif(5,1000)
+
+  coef_side~dbeta(2,2) # for proportion at sides
 
 
   # Abundance
@@ -253,15 +256,14 @@ inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
 
 
 var_names<-c(
-  "pref",
+  "coef_side","pref",
   "a_temp", "b_temp", "a_fl", "b_fl", 
   "mu_phi_temp", "eta_phi_temp","mu_phi_fl", "eta_phi_fl",
-  #"muT", "cvT", "muF", "cvF",
   "aD","bD","cvD","cvmuD",
   "aP","bP","sdP",
-  "aB_mid","bB_mid","sdBB_mid","etaB_mid",
-  "aB_side","bB_side","sdBB_side","etaB_side",
-  "a_rho","b_rho","sd_rho","eta_rho",
+  "aB_mid","bB_mid","sdBB_mid","etaB",
+  #"aB_side","bB_side","sdBB_side","etaB_side",
+  "a_rho","b_rho","sd_rho",#"eta_rho",
   # "K","slope","cvS", 
   "Ntot","N","eta_alphaN"
 )

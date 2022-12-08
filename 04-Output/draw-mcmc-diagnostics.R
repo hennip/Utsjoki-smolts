@@ -2,21 +2,25 @@ source("00-Functions/packages-and-paths.R")
 
 # runjags diagnostics (object "run")
 
-load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_priors_0221_run_susi5.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_priors_0221_run_susi5.RData"))
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_priors_0221_run_susi5.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coefaB_priors_0221_run_susi5.RData"))
 chainsP<-as.mcmc.list(run)
-chainsP<-window(chainsP,start=50000)
-
+#chainsP<-window(chainsP,start=50000, thin=3000)
+length(chainsP[,"aB_mid"][[1]])
 
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_050914_run_AMD.RData"))
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_AMD.RData"))
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs2_all_run_AMD.RData")) # lwr & upr bound priors replaced
-#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_susi5.RData")) # lwr & upr bound priors replaced
-load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_0221_run_susi5.RData")) # lwr & upr bound priors replaced
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_susi5.RData")) 
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_0221_run_susi5.RData")) 
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_0221_run_susi5.RData")) 
 
-# parvimalli:
-summary(run, var="aB")
-summary(run, var="bB")
+summary(run, var="a")
+summary(run, var="sdBB")
 summary(run, var="etaB")
+summary(run, var="coef")
+summary(run, var="pref")
 
 #summary(run, var="S")
 
@@ -26,20 +30,28 @@ summary(run, var="etaB")
 
 #plot(run, var="S")
 
+summary(run, var="a")
+summary(run, var="b")
+summary(run, var="sd")
 
 summary(run, var="D")
 summary(run, var="P")
 summary(run, var="B")
 summary(run, var="Ntot")
-summary(run, var="eta_alphaN")
+summary(run, var="eta")
 summary(run, var="fl")
+summary(run, var="temp")
 
 
+plot(run, var="coef")
+plot(run, var="a")
+plot(run, var="b")
+plot(run, var="sd")
 plot(run, var="D")
 plot(run, var="P")
 plot(run, var="B")
 plot(run, var="Ntot")
-plot(run, var="eta_alphaN")
+plot(run, var="eta")
 plot(run, var="fl")
 plot(run, var="temp")
 
@@ -120,17 +132,19 @@ gelman.diag(chains[,"etaB"])
 #################################
 # Densities
 
+
+
 par(mfrow=c(4,3),mar=c(2.5,4,4,1))
-plot(density(chains[,"aP"][[1]]), main="aP", xlim=c(-25,-10), ylim=c(0,1))
+plot(density(chains[,"aP"][[1]]), main="aP", xlim=c(-25,-15), ylim=c(0,0.8))
 lines(density(chains[,"aP"][[2]]))
 lines(density(chainsP[,"aP"][[1]]), lty=2)
-plot(density(chains[,"bP"][[1]]), main="bP", xlim=c(0.7,1.2))
+plot(density(chains[,"bP"][[1]]), main="bP", xlim=c(1,2))
 lines(density(chains[,"bP"][[2]]))
 lines(density(chainsP[,"bP"][[1]]), lty=2)
-plot(density(chains[,"sdP"][[1]]), main="sdP", xlim=c(0,4), ylim=c(0,0.8))
+plot(density(chains[,"sdP"][[1]]), main="sdP", xlim=c(0,6), ylim=c(0,1.5))
 lines(density(chains[,"sdP"][[2]]))
 lines(density(chainsP[,"sdP"][[1]]), lty=2)
-plot(density(chains[,"eta_alphaN"][[1]]), main="eta_alphaN", ylim=c(0,0.06))
+plot(density(chains[,"eta_alphaN"][[1]]), main="eta_alphaN", ylim=c(0,0.01))
 lines(density(chains[,"eta_alphaN"][[2]]))
 lines(density(chainsP[,"eta_alphaN"][[1]]), lty=2)
 plot(density(chains[,"aD"][[1]]), main="aD", ylim=c(0,3))
@@ -139,49 +153,86 @@ lines(density(chainsP[,"aD"][[1]]), lty=2)
 plot(density(chains[,"bD"][[1]]), main="bD", ylim=c(0,250))
 lines(density(chains[,"bD"][[2]]))
 lines(density(chainsP[,"bD"][[1]]), lty=2)
-plot(density(chains[,"aB"][[1]]), main="aB", ylim=c(0,4))#c(0,.06))
-lines(density(chains[,"aB"][[2]]))
-lines(density(chainsP[,"aB"][[1]]), lty=2)
-plot(density(chains[,"bB"][[1]]), main="bB", ylim=c(0,200))#c(0,20))
-lines(density(chains[,"bB"][[2]]))
-lines(density(chainsP[,"bB"][[1]]), lty=2)
-plot(density(chains[,"sdBB"][[1]]), main="sdBB", ylim=c(0,8))
-lines(density(chains[,"sdBB"][[2]]))
-lines(density(chainsP[,"sdBB"][[1]]), lty=2)
+plot(density(chains[,"aB_mid"][[1]]), main="aB mid", ylim=c(0,1))#c(0,.06))
+lines(density(chains[,"aB_mid"][[2]]))
+lines(density(chainsP[,"aB_mid"][[1]]), lty=2)
+plot(density(chains[,"bB_mid"][[1]]), main="bB mid", ylim=c(0,20))#c(0,20))
+lines(density(chains[,"bB_mid"][[2]]))
+lines(density(chainsP[,"bB_mid"][[1]]), lty=2)
+plot(density(chains[,"sdBB_mid"][[1]]), main="sdBB", ylim=c(0,8))
+lines(density(chains[,"sdBB_mid"][[2]]))
+lines(density(chainsP[,"sdBB_mid"][[1]]), lty=2)
+plot(density(chains[,"etaB"][[1]]), main="etaB", ylim=c(0,0.5))
+lines(density(chains[,"etaB"][[2]]))
+lines(density(chainsP[,"etaB"][[1]]), lty=2)
+
+plot(density(chains[,"a_rho"][[1]]), main="aB rho", ylim=c(0,6))#c(0,.06))
+lines(density(chains[,"a_rho"][[2]]))
+lines(density(chainsP[,"a_rho"][[1]]), lty=2)
+plot(density(chains[,"b_rho"][[1]]), main="bB rho", ylim=c(0,300))#c(0,20))
+lines(density(chains[,"b_rho"][[2]]))
+lines(density(chainsP[,"b_rho"][[1]]), lty=2)
+plot(density(chains[,"sd_rho"][[1]]), main="sd rho", ylim=c(0,50))
+lines(density(chains[,"sd_rho"][[2]]))
+lines(density(chainsP[,"sd_rho"][[1]]), lty=2)
 
 plot(density(chains[,"cvD"][[1]]), main="cvD", ylim=c(0,4))
 lines(density(chains[,"cvD"][[2]]))
 lines(density(chainsP[,"cvD"][[1]]), lty=2)
-plot(density(chains[,"cvmuD"][[1]]), main="cvmuD", ylim=c(0,20))
+plot(density(chains[,"cvmuD"][[1]]), main="cvmuD", ylim=c(0,5))
 lines(density(chains[,"cvmuD"][[2]]))
 lines(density(chainsP[,"cvmuD"][[1]]), lty=2)
 
-plot(density(chains[,"K"][[1]]), main="K")
-lines(density(chains[,"K"][[2]]))
-lines(density(chainsP[,"K"][[1]]), lty=2)
-plot(density(chains[,"slope"][[1]]), main="slope", xlim=c(0.2,0.8))
-lines(density(chains[,"slope"][[2]]))
-lines(density(chainsP[,"slope"][[1]]), lty=2)
-
-plot(density(chains[,"cvS"][[1]]), main="cvS", ylim=c(0,3))
-lines(density(chains[,"cvS"][[2]]))
-lines(density(chainsP[,"cvS"][[1]]), lty=2)
-plot(density(chains[,"cvmuS"][[1]]), main="cvmuS", ylim=c(0,4))
-lines(density(chains[,"cvmuS"][[2]]))
-lines(density(chainsP[,"cvmuS"][[1]]), lty=2)
-
-plot(density(chains[,"etaB"][[1]]), main="etaB", ylim=c(0,0.0015))
+plot(density(chains[,"etaB"][[1]]), main="etaB", ylim=c(0,0.5))
 lines(density(chains[,"etaB"][[2]]))
 lines(density(chainsP[,"etaB"][[1]]), lty=2)
 
+plot(density(chains[,"coef_side"][[1]]), main="coef_side", ylim=c(0,3))
+lines(density(chains[,"coef_side"][[2]]))
+lines(density(chainsP[,"coef_side"][[1]]), lty=2)
 
-plot(density(chains[,"aB"][[1]]), main="aB", ylim=c(0,4))
-lines(density(chains[,"aB"][[2]]))
-lines(density(chainsP[,"aB"][[1]]), lty=2)
+plot(density(chains[,"pref"][[1]]), main="pref", ylim=c(0,10))
+lines(density(chains[,"pref"][[2]]))
+lines(density(chainsP[,"pref"][[1]]), lty=2)
 
-plot(density(chains[,"aB"][[1]]), main="aB", ylim=c(0,0.4))
-lines(density(chains[,"aB"][[2]]))
-lines(density(chainsP[,"aB"][[1]]), lty=2)
+
+# plot(density(chains[,"K"][[1]]), main="K")
+# lines(density(chains[,"K"][[2]]))
+# lines(density(chainsP[,"K"][[1]]), lty=2)
+# plot(density(chains[,"slope"][[1]]), main="slope", xlim=c(0.2,0.8))
+# lines(density(chains[,"slope"][[2]]))
+# lines(density(chainsP[,"slope"][[1]]), lty=2)
+
+# plot(density(chains[,"cvS"][[1]]), main="cvS", ylim=c(0,3))
+# lines(density(chains[,"cvS"][[2]]))
+# lines(density(chainsP[,"cvS"][[1]]), lty=2)
+# plot(density(chains[,"cvmuS"][[1]]), main="cvmuS", ylim=c(0,4))
+# lines(density(chains[,"cvmuS"][[2]]))
+# lines(density(chainsP[,"cvmuS"][[1]]), lty=2)
+
+
+
+
+# Nämä eivät päivity prioreista, koska priorimallissa ympäristökovariaatit mukana
+# plot(density(chains[,"a_temp"][[1]]), main="aB temp", ylim=c(0,6))#c(0,.06))
+# lines(density(chains[,"a_temp"][[2]]))
+# lines(density(chainsP[,"a_temp"][[1]]), lty=2)
+# plot(density(chains[,"b_temp"][[1]]), main="bB temp", ylim=c(0,30))#c(0,20))
+# lines(density(chains[,"b_temp"][[2]]))
+# lines(density(chainsP[,"b_temp"][[1]]), lty=2)
+# 
+# 
+# plot(density(chains[,"a_fl"][[1]]), main="aB fl", ylim=c(0,0.5))#c(0,.06))
+# lines(density(chains[,"a_fl"][[2]]))
+# lines(density(chainsP[,"a_fl"][[1]]), lty=2)
+# plot(density(chains[,"b_fl[1]"][[1]]), main="bB fl", ylim=c(0,5))#c(0,20))
+# lines(density(chains[,"b_fl[1]"][[2]]))
+# lines(density(chainsP[,"b_fl[1]"][[1]]), lty=2)
+
+#"a_temp", "b_temp", "a_fl", "b_fl", 
+#"mu_phi_temp", "eta_phi_temp","mu_phi_fl", "eta_phi_fl",
+
+
 
 
 # correlations
@@ -212,6 +263,10 @@ plot(cvD_orig[,1],cvmuD_orig[,1], xlab="cvD", ylab="cvmuD", col="red")
 #points(cvD_samp,cvmuD_samp)
 
 ##################################################
+par(mfrow=c(3,6))
+for(i in 1:20){
+  traceplot(chains[,paste(sep="","Ntot[",i,"]")],main=i, cex.main=1.5, col=c("black", "red"))
+}  
 
 
 #windows(record=T)

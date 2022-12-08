@@ -127,7 +127,7 @@ df.prior<-boxplot.df(p_sampP, Temp)
 
 
 # In black and white
-ggplot(df, aes(x))+
+ggplot(df, aes(x, group=x))+
   theme_bw()+
   geom_boxplot(
     data=df.prior,
@@ -156,7 +156,7 @@ source("04-Output/sample-travel-time-flow.r")
 df<-boxplot.df(qD_cumul_samp, fn)
 df.prior<-boxplot.df(qD_cumul_sampP, fn)
 
-plot1<-ggplot(df, aes(x))+
+plot1<-ggplot(df, aes(x, group=x))+
   geom_boxplot(
     data=df.prior,
     mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
@@ -170,7 +170,7 @@ plot1<-ggplot(df, aes(x))+
        title=expression("Cumulative travel time to video site with discharge 10m"^{3}*"/s on the day of departure"))+
 #         "Cumulative travel time to video site with flow velocity 10m3/s on the day of departure")+
   geom_line(aes(x,q50))+
-  coord_cartesian(xlim=c(1:14), ylim=c(0,1))+
+ # coord_cartesian(xlim=c(1:14), ylim=c(0,1))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6))+
   theme_bw()
 
@@ -182,7 +182,7 @@ source("04-Output/sample-travel-time-flow.r")
 df<-boxplot.df(qD_cumul_samp, fn)
 df.prior<-boxplot.df(qD_cumul_sampP, fn)
 
-plot2<-ggplot(df, aes(x))+
+plot2<-ggplot(df, aes(x, group=x))+
   geom_boxplot(
     data=df.prior,
     mapping= aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
@@ -195,7 +195,7 @@ plot2<-ggplot(df, aes(x))+
   labs(x="Days", y="Cumulative proportion", 
        title=expression("Cumulative travel time to video site with discharge 100m"^{3}*"/s on the day of departure"))+
   geom_line(aes(x,q50))+
-  coord_cartesian(xlim=c(1:14), ylim=c(0,1))+
+  #coord_cartesian(xlim=c(1:14), ylim=c(0,1))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 6))+
   theme_bw()
 
@@ -216,7 +216,7 @@ ggplot(df, aes(x, group=x))+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Probability that a smolt is observed")+
+  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Probability that a smolt is observed at mid stream")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
@@ -228,8 +228,8 @@ scale_x_continuous(breaks = scales::pretty_breaks(n = 5))
 
 #################################
 # Observation probability at side stream vs flow
-df<-p_vs_flow(chains, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
-df.prior<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
+df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
+df<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
 
 ggplot(df, aes(x, group=x))+
   geom_boxplot(data=df.prior,
@@ -239,7 +239,7 @@ ggplot(df, aes(x, group=x))+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Probability that a smolt is observed")+
+  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Probability that a smolt is observed at side stream")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+
@@ -263,7 +263,7 @@ ggplot(df, aes(x, group=x))+
   geom_boxplot(
     mapping=aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",fill=rgb(1,1,1,0.6))+
-  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Probability that a smolt is observed")+
+  labs(x=expression("Discharge (m"^{3}*"/s)"), y="Probability", title="Proportion of smolts travelling at mid stream")+
   geom_line(aes(x,q50))+
   geom_line(data=df.prior, aes(x,q50), color="grey")+
   theme_bw()+

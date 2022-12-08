@@ -1,45 +1,57 @@
 #################################
-# Observation probability vs flow
+# Observation probability at sides vs flow
 
-Flow<-seq(0,100, by=5)
+# First call obs prop at middle
+
+#df<-p_vs_flow(chains, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
+#df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
+
+a<-"aB_mid"  
+b<-"bB_mid"  
+sdX<-"sdBB_mid"  
+coef<-"coef_side"  
+
+upr<-0.6
+lwr<-0.3
+
+k1_coef<-0.444
+k2_coef<-1.056
+#  coef_side*0.444+1.056
+
+
+Flow<-seq(0,100, by=2)
 nF<-length(Flow)
 
-# pick chains for comparison
 c1<-chains[[1]]
-#c2<-chains[[2]]
 c2<-chainsP[[1]]
 
 # Posterior
 
-n_samp<-length(c1[,"aB_side"])
-aB_samp<-c1[,"aB_side"]
-bB_samp<-c1[,"bB_side"]
-sdBB_samp<-c1[,"sdBB_side"]
+n_samp<-length(c1[,a])
+a_samp<-c1[,a]
+b_samp<-c1[,b]
+sd_samp<-c1[,sdX]
+coef_samp<-c1[,coef]
 
 BB_samp<-array(NA, dim=c(n_samp,nF))
 muB_samp<-array(NA, dim=c(n_samp,nF))
+muB_side_samp<-array(NA, dim=c(n_samp,nF))
 for(j in 1:n_samp){
   for(i in 1:nF){
-    BB_samp[j,i]<-rnorm(1,aB_samp[j]-bB_samp[j]*Flow[i], sdBB_samp[j])
-    muB_samp[j,i]<-0.5*(exp(BB_samp[j,i])/(1+exp(BB_samp[j,i])))+0.45
+    BB_samp[j,i]<-rnorm(1,a_samp[j]-b_samp[j]*Flow[i], sd_samp[j])
+    muB_samp[j,i]<-upr*(exp(BB_samp[j,i])/(1+exp(BB_samp[j,i])))+lwr
+    muB_side_samp[j,i]<-muB_samp[j,i]*(coef_samp[j]*k1_coef+k2_coef)
   }
 }
 
-# Prior
+df<-boxplot.df(muB_side_samp, Flow)
 
-n_samp<-length(c2[,"aB_side"])
-aB_samp<-c2[,"aB_side"]
-bB_samp<-c2[,"bB_side"]
-sdBB_samp<-c2[,"sdBB_side"]
 
-BB_samp<-array(NA, dim=c(n_samp,nF))
-muB_sampP<-array(NA, dim=c(n_samp,nF))
-for(j in 1:n_samp){
-  for(i in 1:nF){
-    BB_samp[j,i]<-rnorm(1,aB_samp[j]-bB_samp[j]*Flow[i], sdBB_samp[j])
-    muB_sampP[j,i]<-0.5*(exp(BB_samp[j,i])/(1+exp(BB_samp[j,i])))+0.45
-  }
-}
 
-#aB_samp-bB_samp*10
-#aB_samp-bB_samp*50
+
+
+
+
+
+
+
