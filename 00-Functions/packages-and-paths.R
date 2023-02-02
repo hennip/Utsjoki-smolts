@@ -21,7 +21,7 @@ source("00-Functions/rollsum.r")
 #source("00-Functions/smolts-data-to-jags.r")
 source("00-Functions/s-dat-jags.r")
 
-pathMain<-readRDS("C:/Temp/path-main.rds")
+source("C:/tmp/path-main.r")
 
 # Path for input data
 #pathIn<-paste0(pathMain,"05-Vanha_O/Projects/ISAMA/data/der/input/Utsjoki-smolts/")

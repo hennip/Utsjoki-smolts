@@ -1,5 +1,6 @@
 # Combine smolt, covariate and side stream datasets for the time series
 
+source("00-Functions/packages-and-paths.R")
 source("01-Data/data-smolts.R")
 source("01-Data/data-covariates.R")
 source("01-Data/data-sides.R")
