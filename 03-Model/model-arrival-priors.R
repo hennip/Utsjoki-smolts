@@ -109,12 +109,12 @@ for(i in 1:length(years)){
 df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","Year"))
 
 df<-df2%>%
-  left_join(dat_all)%>%
+  left_join(dat)%>%
   select(Day,Month, Year,day, smolts, q50, everything())%>%
   mutate(q5=q5/100000, q25=q25/100000,q50=q50/100000,q75=q75/100000,q95=q95/100000)
 
 
-ggplot(df, aes(day))+
+ggplot(df, aes(day, group=day))+
   geom_line(aes(day,q50))+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
@@ -123,7 +123,8 @@ ggplot(df, aes(day))+
   labs(x="Day (in June-July)", y="Proportion of the smolt run")+
   theme_bw()+
   theme(title = element_text(size=15), axis.text = element_text(size=12), 
-        strip.text = element_text(size=15))
+        strip.text = element_text(size=15))+
+  coord_cartesian(ylim=c(0,1.5))
 
 
 

@@ -3,8 +3,9 @@ source("00-Functions/packages-and-paths.R")
 # runjags diagnostics (object "run")
 
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_priors_0221_run_susi5.RData"))
-load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_priors_0221_run_susi5.RData"))
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coefaB_priors_0221_run_susi5.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_priors_0221_run_susi5.RData"))
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_priors_0221_run_susi5.RData"))
 chainsP<-as.mcmc.list(run)
 #chainsP<-window(chainsP,start=50000, thin=3000)
 length(chainsP[,"aB_mid"][[1]])
@@ -14,36 +15,31 @@ length(chainsP[,"aB_mid"][[1]])
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs2_all_run_AMD.RData")) # lwr & upr bound priors replaced
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_susi5.RData")) 
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_0221_run_susi5.RData")) 
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_0221_run_susi5.RData")) 
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coefaB_0221_run_susi5.RData")) 
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_0221_run_susi5.RData")) 
 load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_0221_run_susi5.RData")) 
 
-summary(run, var="a")
-summary(run, var="sdBB")
-summary(run, var="etaB")
-summary(run, var="coef")
-summary(run, var="pref")
-
-#summary(run, var="S")
-
-#summary(run, var="K")
-#summary(run, var="slope")
-
-
-#plot(run, var="S")
+plot(run, var="etaB")
 
 summary(run, var="a")
 summary(run, var="b")
 summary(run, var="sd")
-
 summary(run, var="D")
 summary(run, var="P")
 summary(run, var="B")
+summary(run, var="pref")
+#summary(run, var="coef")
+
 summary(run, var="Ntot")
 summary(run, var="eta")
 summary(run, var="fl")
 summary(run, var="temp")
 
-
 plot(run, var="coef")
+plot(run, var="rho")
+plot(run, var="eta")
+plot(run, var="pref")
 plot(run, var="a")
 plot(run, var="b")
 plot(run, var="sd")
@@ -51,13 +47,17 @@ plot(run, var="D")
 plot(run, var="P")
 plot(run, var="B")
 plot(run, var="Ntot")
-plot(run, var="eta")
 plot(run, var="fl")
 plot(run, var="temp")
 
+#summary(run, var="K")
+#summary(run, var="slope")
+#plot(run, var="S")
+
+
 chains<-as.mcmc.list(run)
 #chains<-window(chains,start=100000)
-chains<-window(chains,start=500000)
+chains<-window(chains,start=700000)
 
 
 
@@ -70,6 +70,7 @@ gelman.diag(chains[,"Ntot[6]"])
 gelman.diag(chains[,"Ntot[7]"])
 gelman.diag(chains[,"Ntot[8]"])
 
+gelman.diag(chains[,"etaB"])
 gelman.diag(chains[,"aP"])
 gelman.diag(chains[,"bP"])
 gelman.diag(chains[,"aD"])
@@ -84,6 +85,9 @@ for(i in 1:20){
 }
 
 traceplot(chains[,"aP"],main=expression("aP"), cex.main=1.5)
+
+
+traceplot(chains[,"aP"],main=expression("aP"), cex.main=1.5)
 traceplot(chains[,"bP"],main=expression("bP"), cex.main=1.5)
 traceplot(chains[,"sdP"],main=expression("sdP"), cex.main=1.5)
 traceplot(chains[,"aD"],main=expression("aD"), cex.main=1.5)
@@ -91,13 +95,20 @@ traceplot(chains[,"bD"],main=expression("bD"), cex.main=1.5)
 traceplot(chains[,"cvD"],main=expression("cvD"), cex.main=1.5)
 traceplot(chains[,"cvmuD"],main=expression("cvmuD"), cex.main=1.5)
 
-traceplot(chains[,"aB"],main=expression("aB"), cex.main=1.5)
-traceplot(chains[,"bB"],main=expression("bB"), cex.main=1.5)
-traceplot(chains[,"sdBB"],main=expression("sdBB"), cex.main=1.5)
-traceplot(chains[,"etaB"],main=expression("etaB"), cex.main=1.5)
+traceplot(chains[,"aB_mid"],main=expression("aB"), cex.main=1.5)
+traceplot(chains[,"bB_mid"],main=expression("bB"), cex.main=1.5)
+traceplot(chains[,"sdBB_mid"],main=expression("sdBB"), cex.main=1.5)
+traceplot(chains[,"aB_side"],main=expression("aB"), cex.main=1.5)
+traceplot(chains[,"bB_side"],main=expression("bB"), cex.main=1.5)
+traceplot(chains[,"sdBB_side"],main=expression("sdBB"), cex.main=1.5)
+traceplot(chains[,"etaB_mid"],main=expression("etaB"), cex.main=1.5)
+traceplot(chains[,"etaB_side"],main=expression("etaB"), cex.main=1.5)
 traceplot(chains[,"eta_alphaN"],main=expression("eta_alphaN"), cex.main=1.5)
+traceplot(chains[,"a_rho"],main=expression("a rho"), cex.main=1.5)
+traceplot(chains[,"b_rho"],main=expression("b rho"), cex.main=1.5)
+traceplot(chains[,"sd_rho"],main=expression("sd rho"), cex.main=1.5)
+traceplot(chains[,"pref"],main=expression("pref"), cex.main=1.5)
 
-summary(chains[,"sdP"])
 
 traceplot(chains[,"K"],main=expression("K"), cex.main=1.5)
 traceplot(chains[,"slope"],main=expression("slope"), cex.main=1.5)
@@ -156,23 +167,33 @@ lines(density(chainsP[,"bD"][[1]]), lty=2)
 plot(density(chains[,"aB_mid"][[1]]), main="aB mid", ylim=c(0,1))#c(0,.06))
 lines(density(chains[,"aB_mid"][[2]]))
 lines(density(chainsP[,"aB_mid"][[1]]), lty=2)
-plot(density(chains[,"bB_mid"][[1]]), main="bB mid", ylim=c(0,20))#c(0,20))
+plot(density(chains[,"aB_side"][[1]]), main="aB side", ylim=c(0,1))#c(0,.06))
+lines(density(chains[,"aB_side"][[2]]))
+lines(density(chainsP[,"aB_side"][[1]]), lty=2)
+
+plot(density(chains[,"bB_mid"][[1]]), main="bB mid", ylim=c(0,50))#c(0,20))
 lines(density(chains[,"bB_mid"][[2]]))
 lines(density(chainsP[,"bB_mid"][[1]]), lty=2)
-plot(density(chains[,"sdBB_mid"][[1]]), main="sdBB", ylim=c(0,8))
+plot(density(chains[,"sdBB_mid"][[1]]), main="sdBB mid", ylim=c(0,1))
 lines(density(chains[,"sdBB_mid"][[2]]))
 lines(density(chainsP[,"sdBB_mid"][[1]]), lty=2)
-plot(density(chains[,"etaB"][[1]]), main="etaB", ylim=c(0,0.5))
+plot(density(chains[,"etaB"][[1]]), main="etaB", ylim=c(0,0.002), xlim=c(0,1000))
 lines(density(chains[,"etaB"][[2]]))
 lines(density(chainsP[,"etaB"][[1]]), lty=2)
+plot(density(chains[,"etaB_mid"][[1]]), main="etaB_mid", ylim=c(0,0.01))
+lines(density(chains[,"etaB_mid"][[2]]))
+lines(density(chainsP[,"etaB_mid"][[1]]), lty=2)
+plot(density(chains[,"etaB_side"][[1]]), main="etaB_side", ylim=c(0,0.001))
+lines(density(chains[,"etaB_side"][[2]]))
+lines(density(chainsP[,"etaB_side"][[1]]), lty=2)
 
-plot(density(chains[,"a_rho"][[1]]), main="aB rho", ylim=c(0,6))#c(0,.06))
+plot(density(chains[,"a_rho"][[1]]), main="a rho", ylim=c(0,2))#c(0,.06))
 lines(density(chains[,"a_rho"][[2]]))
 lines(density(chainsP[,"a_rho"][[1]]), lty=2)
-plot(density(chains[,"b_rho"][[1]]), main="bB rho", ylim=c(0,300))#c(0,20))
+plot(density(chains[,"b_rho"][[1]]), main="b rho", ylim=c(0,50))#c(0,20))
 lines(density(chains[,"b_rho"][[2]]))
 lines(density(chainsP[,"b_rho"][[1]]), lty=2)
-plot(density(chains[,"sd_rho"][[1]]), main="sd rho", ylim=c(0,50))
+plot(density(chains[,"sd_rho"][[1]]), main="sd rho", ylim=c(0,2), xlim=c(0,5))
 lines(density(chains[,"sd_rho"][[2]]))
 lines(density(chainsP[,"sd_rho"][[1]]), lty=2)
 
@@ -183,13 +204,10 @@ plot(density(chains[,"cvmuD"][[1]]), main="cvmuD", ylim=c(0,5))
 lines(density(chains[,"cvmuD"][[2]]))
 lines(density(chainsP[,"cvmuD"][[1]]), lty=2)
 
-plot(density(chains[,"etaB"][[1]]), main="etaB", ylim=c(0,0.5))
-lines(density(chains[,"etaB"][[2]]))
-lines(density(chainsP[,"etaB"][[1]]), lty=2)
-
-plot(density(chains[,"coef_side"][[1]]), main="coef_side", ylim=c(0,3))
-lines(density(chains[,"coef_side"][[2]]))
-lines(density(chainsP[,"coef_side"][[1]]), lty=2)
+par(mfrow=c(1,2))
+ plot(density(chains[,"coef_side"][[1]]), main="coef_side", ylim=c(0,3))
+ lines(density(chains[,"coef_side"][[2]]))
+ lines(density(chainsP[,"coef_side"][[1]]), lty=2)
 
 plot(density(chains[,"pref"][[1]]), main="pref", ylim=c(0,10))
 lines(density(chains[,"pref"][[2]]))
@@ -261,6 +279,19 @@ plot(bD_orig[,1],cvmuD_orig[,1], xlab="bD", ylab="cvmuD", col="red")
 
 plot(cvD_orig[,1],cvmuD_orig[,1], xlab="cvD", ylab="cvmuD", col="red")
 #points(cvD_samp,cvmuD_samp)
+
+
+aB_side<-as.data.frame(chains[,"aB_side"][[1]])
+bB_side<-as.data.frame(chains[,"bB_side"][[1]])
+a_rho<-as.data.frame(chains[,"a_rho"][[1]])
+sdBB_mid<-as.data.frame(chains[,"sdBB_mid"][[1]])
+sd_rho<-as.data.frame(chains[,"sd_rho"][[1]])
+
+par(mfrow=c(2,3))
+plot(aB_side[,1],bB_side[,1], xlab="aB_side", ylab="bB_side", col="red")
+plot(aB_side[,1],a_rho[,1], xlab="aB_side", ylab="a_rho", col="red")
+plot(sdBB_mid[,1],sd_rho[,1], xlab="sdBB_mid", ylab="sd_rho", col="red")
+
 
 ##################################################
 par(mfrow=c(3,6))

@@ -122,9 +122,16 @@ tauB<-1/pow(sdB,2)
 # bB~dlnorm(M.bB,T.bB)
 # sdB~dlnorm(M.sdB,T.sdB)
 
-aB~dnorm(3.86,47.5)
-bB~dlnorm(-2.59,798)
-sdB~dlnorm(0.67,1076)
+aB~dnorm(3.86,1)
+bB~dlnorm(-2.59,10)
+#sdB~dlnorm(0.67,1076)
+#sdB<-0.01#~dlnorm(0.67,10)
+
+sdB<-0.01#~dunif(0.1,5)
+#sdB~dlnorm(log(musd)-0.5/Tsd,Tsd)
+musd<-1
+Tsd<-1/log(cvsd*cvsd+1)
+cvsd<-1
 
 }"
 
@@ -141,12 +148,26 @@ system.time(jm<-jags.model('prior-obs.txt',
                            n.adapt=100,data=data,n.chains=2))
 
 
+
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "p"#, "rho"
+                                    "p", "sdB", "aB", "bB"
                                   ),
                                   n.iter=5000,
                                   thin=1))
+
+# var_names=c("p", "sdB", "aB", "bB")
+# run<-run.jags(M2,
+#          monitor= var_names,data=data,#inits = inits,
+#          n.chains = 2, method = 'parallel', 
+#          thin=1,modules = "mix",sample =5000, adapt = 100,
+#          progress.bar=F)
+# 
+# summary(run, var="B")
+# 
+ summary(chains1[,"aB"])
+ summary(chains1[,"bB"])
+ summary(chains1[,"sdB"])
 
 
 df<-boxplot.jags.df(chains1,"p",Flow)

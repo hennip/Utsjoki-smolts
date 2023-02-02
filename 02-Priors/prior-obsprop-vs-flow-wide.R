@@ -111,8 +111,15 @@ for(i in 1:n){
 p[i]<-0.6*p2[i]+0.3
 logit(p2[i])<-P[i]
 P[i]~dnorm(muB[i],tauB)
-#muB[i]<-aB*2-bB*Flow[i]
 muB[i]<-aB-bB*Flow[i]
+
+
+muB_side[i]<-aB*1.5-bB*Flow[i]
+P_side[i]~dnorm(muB_side[i],tauB)
+p_side[i]<-0.5*p2_side[i]+0.45
+#p_side[i]<-0.6*p2_side[i]+0.3 # only to compare curves with the same limits
+logit(p2_side[i])<-P_side[i]
+
 }
 tauB<-1/pow(sdB,2)
 
@@ -120,13 +127,16 @@ tauB<-1/pow(sdB,2)
 #bB~dlnorm(M.bB,T.bB)
 #sdB~dlnorm(M.sdB,T.sdB)
 
-aB~dnorm(2.9,1)
-bB~dlnorm(-2.6,1)
+#aB~dnorm(2.9,1)
+#bB~dlnorm(-2.6,1)
 
 #aB~dnorm(2.9,60)
 #bB~dlnorm(-2.6,984)
+aB~dnorm(2.9,3)
+bB~dlnorm(-2.6,50)
 
-sdB~dlnorm(-0.23,210)
+#sdB<-0.001#~dlnorm(-0.23,210)
+sdB~dlnorm(-0.23,1)
 
 }"
 
@@ -145,7 +155,7 @@ system.time(jm<-jags.model('prior-obs.txt',
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "p"
+                                    "p", "p_side"
                                   ),
                                   n.iter=5000,
                                   thin=1))
@@ -154,13 +164,23 @@ system.time(chains1<-coda.samples(jm,
 df<-boxplot.jags.df(chains1,"p",Flow)
 df<-as.tibble(df)
 df<-filter(df, x>=0)
+df_side<-boxplot.jags.df(chains1,"p_side",Flow)
+df_side<-as.tibble(df_side)
+d_sidef<-filter(df_side, x>=0)
 
 ggplot(df, aes(x, group=x))+
   geom_boxplot(
+    data=df_side,
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity")+
+    stat = "identity",colour="grey", fill="grey95")+
+  geom_boxplot(
+    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.6))+
   coord_cartesian(ylim=c(0,1))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 5))+
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 5))
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5))+
+  labs(x="Flow", y="Probability to be observed", title="Obs prop mid stream/ side stream")
+  
+
 
 filter(df, x==10 |x==15 | x==20 |x==50 |x==60|x==80)

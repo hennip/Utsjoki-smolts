@@ -1,8 +1,5 @@
 
 
-source("00-Functions/packages-and-paths.R")
-
-
 
 M1<-"
 model{
@@ -51,8 +48,8 @@ model{
     for(i in 1:nDays){ # 61 days in June-July
     
       # Observed number of fish in the middle of the river
-      Nobs_mid[i,y]~dbin(p_obs_mid[i,y]*rho[i,y],N[i,y])  
-      p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB_mid, (1-muB_mid[i,y])*etaB_mid)
+      Nobs_mid  [i,y]~dbin(p_obs_mid[i,y]*rho[i,y],N[i,y])  
+      p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB, (1-muB_mid[i,y])*etaB)
       muB_mid[i,y]<-0.6*(exp(BB_mid[i,y])/(1+exp(BB_mid[i,y])))+0.3
       BB_mid[i,y]~dnorm(aB_mid-bB_mid*flow[i,y],1/pow(sdBB_mid,2))
 
@@ -64,40 +61,49 @@ model{
       Nobs_west[i,y]~dbin(p_obs_side[i,y]*(1-rho[i,y])*(1-pref),N[i,y])  
       
       # Probability to be observed at given flow at either side
-      p_obs_side[i,y]~dbeta(muB_side[i,y]*etaB_side, (1-muB_side[i,y])*etaB_side)
+      p_obs_side[i,y]~dbeta(muB_side[i,y]*etaB, (1-muB_side[i,y])*etaB)
       muB_side[i,y]<-0.5*(exp(BB_side[i,y])/(1+exp(BB_side[i,y])))+0.45
       BB_side[i,y]~dnorm(aB_side-bB_side*flow[i,y],1/pow(sdBB_side,2))
 
       # Proportion that passes cameras in the middle of the river  
-      rho[i,y]~dbeta(mu_rho[i,y]*eta_rho, (1-mu_rho[i,y])*eta_rho)T(0.001,0.999)
+      rho[i,y]~dbeta(mu_rho[i,y]*etaB, (1-mu_rho[i,y])*etaB)T(0.001,0.999)
       mu_rho[i,y]<-0.5*(exp(rhoe[i,y])/(1+exp(rhoe[i,y])))+0.5
       rhoe[i,y]~dnorm(a_rho-b_rho*flow[i,y],1/(pow(sd_rho,2)))
+
+      N_mid[i,y]<-N[i,y]*rho[i,y]
+      N_sides[i,y]<-N[i,y]*(1-rho[i,y])
 
     }
   }
   # priors for observation process
   # wide priors 
-  #aB~dnorm(2.9,1)
-  #bB~dlnorm(-2.6,1)
-  
-  aB_mid~dnorm(2.9,60)
-  bB_mid~dlnorm(-2.6,984)
-  sdBB_mid~dlnorm(-0.23,210)
-  etaB_mid~dunif(5,1000)
+#  aB_mid~dnorm(2.9,1)
+#  bB_mid~dlnorm(-2.6,1)
+  #aB_mid~dnorm(2.9,60)
+  #bB_mid~dlnorm(-2.6,984)
+#  sdBB_mid~dlnorm(-0.23,210)
 
-  aB_side~dnorm(5.63,86)
-  bB_side~dlnorm(-1.88,6073)
-  sdBB_side~dlnorm(-0.59,2.04)
-  etaB_side~dunif(5,1000)
-  
+aB_mid~dnorm(2.9,3)
+bB_mid~dlnorm(-2.6,50)
+sdBB_mid~dlnorm(-0.23,1)
+
+
+  aB_side<-aB_mid*1.5#(coef_side*0.5+1)#~dnorm(5.63,86)
+  bB_side<-bB_mid#~dlnorm(-1.88,6073)
+  sdBB_side<-sdBB_mid#~dlnorm(-0.59,2.04)
+
   # rho: proportion of smolts passing site at mid river
-  a_rho~dnorm(3.86,47.5)
-  b_rho~dlnorm(-2.59,798)
-  sd_rho<-0.1#~dlnorm(0.67,1076) # <-0.1
-  eta_rho~dunif(5,1000)
+  a_rho~dnorm(3.86,1)#~dnorm(3.86,47.5)
+  b_rho~dlnorm(-2.59,10)#~dlnorm(-2.59,798)
+  sd_rho~dlnorm(-0.5,1)#~dlnorm(0.67,1076)
 
   # Preferability of eastern side (1-pref for western side)
   pref ~ dbeta(50,40)
+
+  # overdisperison in beta-binomial rho & obs prop due to overdispersion
+  etaB~dunif(5,1000)
+
+ # coef_side~dbeta(2,2) # for aB_side
 
 
   # Abundance
@@ -209,110 +215,6 @@ model{
   
 }"
 
-modelName<-"Smolts_etaB_sdP_sides"
 
-
-Mname<-str_c("03-Model/",modelName, ".txt")
-cat(M1,file=Mname)
-
-# Select data
-# =================================
-
-df<-readRDS("01-Data/df0221.RDS")
-summary(df)
-#df<-readRDS("/home/henni/Utsjoki-smolts/01-Data/df0221.RDS")
-
-
-#View(dat)
-years<-c(2002:2021)
-n_days<-61
-
-
-data<-list(
-  nYears=length(years),
-  nDays = n_days,
-  #s=df$Schools,
-  flow=df$Flow,
-  Nobs_mid=df$Smolts,
-  Nobs_east=df$side_east,
-  Nobs_west=df$side_west,
-  Temp = df$Temp,
-  Temp_air_MA = df$Temp_air_sum/30,
-  #Temp_air = df$Temp_air,
-  Rain = df$Rain,
-  Rain_bf = df$Rain_bf
-)
-
-
-
-inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
-            list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
-
-
-var_names<-c(
-  "pref",
-  "a_temp", "b_temp", "a_fl", "b_fl", 
-  "mu_phi_temp", "eta_phi_temp","mu_phi_fl", "eta_phi_fl",
-  #"muT", "cvT", "muF", "cvF",
-  "aD","bD","cvD","cvmuD",
-  "aP","bP","sdP",
-  "aB_mid","bB_mid","sdBB_mid","etaB_mid",
-  "aB_side","bB_side","sdBB_side","etaB_side",
-  "a_rho","b_rho","sd_rho","eta_rho",
-  # "K","slope","cvS", 
-  "Ntot","N","eta_alphaN"
-)
-
-
-
-run0 <- run.jags(M1,
-                 monitor= var_names,data=data,inits = inits,
-                 n.chains = 2, method = 'parallel',
-                 thin=1, burnin =0,
-                 modules = "mix",
-                 keep.jags.files=F,sample =1000, adapt=100,
-                 progress.bar=TRUE)
-
-
-t1<-Sys.time();t1
-run1 <- run.jags(M1,
-                 monitor= var_names,data=data,inits = inits,
-                 n.chains = 2, method = 'parallel', thin=300, burnin =0,
-                 modules = "mix",keep.jags.files=T,sample =1000, adapt = 100,
-                 progress.bar=TRUE)
-t2<-Sys.time()
-difftime(t2,t1)
-# 7d
-run<-run1
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
-
-t1<-Sys.time();t1
-run2 <- extend.jags(run1, combine=T, sample=4000, thin=300, keep.jags.files=T)
-t2<-Sys.time()
-difftime(t2,t1)
-#3.3d?
-run<-run2
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
-
-t1<-Sys.time();t1
-run3 <- extend.jags(run2, combine=T, sample=4000, thin=300, keep.jags.files=T)
-t2<-Sys.time()
-difftime(t2,t1)
-run<-run3
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
-
-t1<-Sys.time();t1
-run4 <- extend.jags(run3, combine=T, sample=4000, thin=300, keep.jags.files=T)
-t2<-Sys.time()
-difftime(t2,t1)
-run<-run4
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
-
-t1<-Sys.time();t1
-run5 <- extend.jags(run4, combine=T, sample=4000, thin=300, keep.jags.files=T)
-t2<-Sys.time()
-difftime(t2,t1)
-run<-run5
-save(run, file=str_c(pathOut,modelName,"_",dataName,"_run_",compName,".RData"))
 
 

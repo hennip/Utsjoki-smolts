@@ -8,35 +8,31 @@ n_days<-61
 dat<-readRDS("01-Data/dat0221.RDS")
 
 chains2<-chainsP
+#chains<-chainsP
 
 # Number of smolts
 ##################################################
 
 # Annual totals
 Year<-years
-df<-boxplot.jags.df(chains, "Ntot",Year)
+df<-boxplot.jags.df(chains, "Ntot",Year)%>%
+  mutate(Year=x)
 
 #chains2<-chainsP
 df2<-boxplot.jags.df(chains2, "Ntot",Year)
 
 dat<-as_tibble(dat)
 
-Ntot<-c()
-for(i in 1:length(years)){
-  Ntot[i]<-sum(filter(dat, Year==years[i])$smolts, na.rm=T) 
-}
+dat<-dat%>%
+  group_by(Year)%>%
+  summarise(Ntot=sum(smolts, na.rm=T)+sum(side_east,side_west, na.rm=T))
 
-df<-df%>%
-  mutate(Ntot)%>%
-  mutate(x2=as.factor(x))
+df<-full_join(df, dat)
 
-df2<-df2%>%
-  mutate(Ntot)%>%
-  mutate(x2=as.factor(x))
 
 
 #windows()
-ggplot(df, aes(x2))+
+ggplot(df, aes(Year, group=Year))+
 #  geom_boxplot(data=df2,
 #    aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
 #    stat = "identity", col="grey", fill="grey95")+
@@ -46,23 +42,25 @@ ggplot(df, aes(x2))+
   geom_boxplot(
     aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
     stat = "identity",fill=rgb(1,1,1,0.1))+
-  geom_point(aes(x=x2, y=Ntot/1000), size=2)+
-  theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
+  geom_point(aes(x=Year, y=Ntot/1000), size=2)+
+  theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))+
+  scale_x_continuous(breaks = scales::pretty_breaks(n = 10))+
+  coord_cartesian(xlim=c(2002,2021), ylim=c(0,40))
 
 
-
-# ARKTIKO poster
-ggplot(df, aes(x2))+
-  labs(x="", y="Number of migratory juveniles in Utsjoki (in 1000's)", title="")+
-  coord_cartesian(ylim=c(7,35))+
-  theme_bw()+
-  geom_boxplot(
-    aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
-    stat = "identity",fill=rgb(1,1,1,0.6), size=1)+
-  geom_point(aes(x=x2, y=Ntot/1000), size=3)+
-  theme(title = element_text(size=15), axis.text = element_text(size=17), 
-        strip.text = element_text(size=15))
-
+# 
+# # ARKTIKO poster
+# ggplot(df, aes(x2))+
+#   labs(x="", y="Number of migratory juveniles in Utsjoki (in 1000's)", title="")+
+#   coord_cartesian(ylim=c(7,35))+
+#   theme_bw()+
+#   geom_boxplot(
+#     aes(ymin = q5/1000, lower = q25/1000, middle = q50/1000, upper = q75/1000, ymax = q95/1000),
+#     stat = "identity",fill=rgb(1,1,1,0.6), size=1)+
+#   geom_point(aes(x=x2, y=Ntot/1000), size=3)+
+#   theme(title = element_text(size=15), axis.text = element_text(size=17), 
+#         strip.text = element_text(size=15))
+# 
   
 
 
@@ -100,22 +98,32 @@ ggplot(df, aes(day, group=day))+
   theme(title = element_text(size=15), axis.text = element_text(size=12), 
         strip.text = element_text(size=15))
 
-# For priors only, see model-arrival-priors.R
+# Daily priors only
+
+for(i in 1:length(years)){
+  df<-boxplot.jags.df2(chainsP, "N[",str_c(i,"]"),1:n_days)%>%
+    mutate(Year=years[i])
+  ifelse(i>1, df2<-bind_rows(df2,df),df2<-df)
+}
+df2<-setNames(df2,c("day","q5","q25","q50","q75","q95","Year"))
+
+df<-df2%>%
+  left_join(dat)%>%
+  select(Day,Month, Year,day, smolts, q50, everything())%>%
+  mutate(q5=q5/100000, q25=q25/100000,q50=q50/100000,q75=q75/100000,q95=q95/100000)
 
 
-# Poster
-df<-filter(df, Year==2007)
-ggplot(df, aes(day))+
+ggplot(df, aes(day, group=day))+
   geom_line(aes(day,q50))+
-  geom_line(aes(day,smolts), col="grey50")+
   geom_boxplot(
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity")+
   facet_wrap(~Year)+
-  geom_point(mapping=aes(day,smolts), col="grey50")+
-  geom_point(filter(df, day<25),mapping=aes(day,smolts), col="red")+
-  labs(x="Day (in June-July)", y="Number of smolts")+
-  theme(title = element_text(size=15), axis.text = element_text(size=12), strip.text = element_text(size=15))
+  labs(x="Day (in June-July)", y="Proportion of the smolt run")+
+  theme_bw()+
+  theme(title = element_text(size=15), axis.text = element_text(size=12), 
+        strip.text = element_text(size=15))+
+  coord_cartesian(ylim=c(0,1.5))
 
 
 # Prob to start migration vs. temperature
@@ -228,8 +236,10 @@ scale_x_continuous(breaks = scales::pretty_breaks(n = 5))
 
 #################################
 # Observation probability at side stream vs flow
-df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
-df<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
+#df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
+#df<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
+df<-p_vs_flow(chains, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
+df.prior<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
 
 ggplot(df, aes(x, group=x))+
   geom_boxplot(data=df.prior,
