@@ -14,7 +14,7 @@ require(gridExtra)
 
 
 source("00-Functions/tidy-functions.r")
-source("00-Functions/my-palette.r")
+#source("00-Functions/my-palette.r")
 source("00-Functions/smwrg_m.r")
 source("00-Functions/sustemp.r")
 source("00-Functions/rollsum.r")

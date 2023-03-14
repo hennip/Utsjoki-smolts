@@ -195,3 +195,5 @@ nls20 <- read_excel(str_c(pathIn,"01.5-Data_raw/Utsjoki_nousulohet ja smoltit_20
   rename(Klo = Hours)
 nls21 <- read_excel(str_c(pathIn,"01.5-Data_raw/Utsjoki_nousulohet ja smoltit_2021_30112021.xlsx"), sheet="RAAKADATA") %>% 
   rename(Klo = Hours)
+nls22 <- read_excel(str_c(pathIn,"01.5-Data_raw/Utsjoki_nousulohet ja smoltit_10112022.xlsx"), sheet="RAAKADATA") %>% 
+  rename(Klo = Hours)

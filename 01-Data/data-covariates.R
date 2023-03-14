@@ -209,7 +209,7 @@ tempsum <- t0221 %>%
   mutate(date= as.Date(date))
 #tempsum
 
-
+# Water temperatures 2017-present
 wtemp17 <- read_excel(str_c(pathIn,"01.5-Data_raw/Utsjoki_veden lampo_2016-2017.xlsx"),range="A2:C8903")%>% 
   mutate(`Date Time, GMT+03:00` = as.POSIXct(`Date Time, GMT+03:00`, format= "%d.%m.%y" ))
 wtemp18 <- read_excel(str_c(pathIn,"01.5-Data_raw/Utsjoki2018.xls"),range="A2:C2892") %>% 
@@ -231,4 +231,7 @@ wttr20 <- read_excel(str_c(pathIn,"FMI/wttr_20.xlsx"), sheet = "Havainnot")
 wttr21 <- read_excel(str_c(pathIn,"FMI/wttr_21.xlsx"), sheet = "Havainnot")
 
 
+tmp<-readRDS(str_c(pathIn,"FMI/weather2022.rds"))
+
+#data22 <- smdwrg_m(nls22, wtemp22, disc_all, wttr22)
 

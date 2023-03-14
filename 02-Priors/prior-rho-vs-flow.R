@@ -122,16 +122,17 @@ tauB<-1/pow(sdB,2)
 # bB~dlnorm(M.bB,T.bB)
 # sdB~dlnorm(M.sdB,T.sdB)
 
-aB~dnorm(3.86,1)
+aB~dnorm(2.5,1) # mean 2.5 -> mediaani matalammalle alussa kun virtaama on pieni, lisää myös epävarmuuta matalampiin osuuksiin
 bB~dlnorm(-2.59,10)
 #sdB~dlnorm(0.67,1076)
 #sdB<-0.01#~dlnorm(0.67,10)
 
-sdB<-0.01#~dunif(0.1,5)
-#sdB~dlnorm(log(musd)-0.5/Tsd,Tsd)
+ #sdB<-0.01#~dunif(0.1,5)
 musd<-1
-Tsd<-1/log(cvsd*cvsd+1)
 cvsd<-1
+Tsd<-1/log(cvsd*cvsd+1)
+#sdB~dlnorm(log(musd)-0.5/Tsd,Tsd) # dlnorm(-0.35,1.44)
+sdB~dlnorm(-0.35,1.44)
 
 }"
 
@@ -185,3 +186,4 @@ ggplot(df, aes(x, group=x))+
   xlab("Virtaama")
 
 filter(df, x==10 | x==20 |x==50 |x==60)
+

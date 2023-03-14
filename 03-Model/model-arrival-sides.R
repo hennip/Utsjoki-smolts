@@ -93,7 +93,7 @@ sdBB_mid~dlnorm(-0.23,1)
   sdBB_side<-sdBB_mid#~dlnorm(-0.59,2.04)
 
   # rho: proportion of smolts passing site at mid river
-  a_rho~dnorm(3.86,1)#~dnorm(3.86,47.5)
+  a_rho~dnorm(2.5,1)#~dnorm(3.86,1)
   b_rho~dlnorm(-2.59,10)#~dlnorm(-2.59,798)
   sd_rho~dlnorm(-0.5,1)#~dlnorm(0.67,1076)
 
