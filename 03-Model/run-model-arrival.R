@@ -6,7 +6,7 @@ RunPost<-T # T for posteriors, F for priors only (covariate data is included)
 
 # Select model
 # =================================
-source("03-Model/model-arrival-sides.R")
+source("03-Model/model-arrival-sides-coef.R")
 #source("/home/henni/Utsjoki-smolts/03-Model/model-arrival-sides.R")
 
 
