@@ -23,11 +23,11 @@ df2<-boxplot.jags.df(chains2, "Ntot",Year)
 
 dat<-as_tibble(dat)
 
-dat<-dat%>%
+dat_sum<-dat%>%
   group_by(Year)%>%
   summarise(Ntot=sum(smolts, na.rm=T)+sum(side_east,side_west, na.rm=T))
 
-df<-full_join(df, dat)
+df<-full_join(df, dat_sum)
 
 
 

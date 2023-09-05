@@ -1,6 +1,5 @@
 
 
-
 M1<-"
 model{
 
@@ -49,7 +48,7 @@ model{
     
       # Observed number of fish in the middle of the river
       Nobs_mid[i,y]~dbin(p_obs_mid[i,y]*rho[i,y],N[i,y])  
-      p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB, (1-muB_mid[i,y])*etaB)
+      p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB, (1-muB_mid[i,y])*etaB)T(0.001,0.999)
       muB_mid[i,y]<-0.6*(exp(BB_mid[i,y])/(1+exp(BB_mid[i,y])))+0.3
       BB_mid[i,y]~dnorm(aB_mid-bB_mid*flow[i,y],1/pow(sdBB_mid,2))
 
@@ -61,7 +60,7 @@ model{
       Nobs_west[i,y]~dbin(p_obs_side[i,y]*(1-rho[i,y])*(1-pref),N[i,y])  
       
       # Probability to be observed at given flow at either side
-      p_obs_side[i,y]~dbeta(muB_side[i,y]*etaB, (1-muB_side[i,y])*etaB)
+      p_obs_side[i,y]~dbeta(muB_side[i,y]*etaB, (1-muB_side[i,y])*etaB)T(0.001,0.999)
       muB_side[i,y]<-0.5*(exp(BB_side[i,y])/(1+exp(BB_side[i,y])))+0.45
       BB_side[i,y]~dnorm(aB_side-bB_side*flow[i,y],1/pow(sdBB_side,2))
 
@@ -85,7 +84,7 @@ bB_mid~dlnorm(-2.6,50)
 sdBB_mid~dlnorm(-0.23,1)
 
 
-  aB_side<-aB_mid*1.5#(coef_side+1)#~dnorm(5.63,86)
+  aB_side<-aB_mid*(coef_side*0.5+1)#~dnorm(5.63,86)
   bB_side<-bB_mid#~dlnorm(-1.88,6073)
   sdBB_side<-sdBB_mid#~dlnorm(-0.59,2.04)
 
@@ -95,12 +94,12 @@ sdBB_mid~dlnorm(-0.23,1)
   sd_rho~dlnorm(-0.5,1)#~dlnorm(0.67,1076)
 
   # Preferability of eastern side (1-pref for western side)
-  pref ~ dbeta(50,40)
+  pref ~ dbeta(50,40)T(0.001,0.999)
 
   # overdisperison in beta-binomial rho & obs prop due to overdispersion
   etaB~dunif(5,1000)
 
- # coef_side~dbeta(2,2) # for aB_side
+  coef_side~dbeta(2,2)T(0.02,0.98) # for aB_side
 
 
   # Abundance
