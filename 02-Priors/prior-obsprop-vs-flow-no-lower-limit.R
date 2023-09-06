@@ -10,6 +10,16 @@
 # Virtaamilla 50-60 m3/s olosuhteet havaita ovat selkeästi huonot.
 # Kun virtaama nousee 10m3/s->60m3/s, veden korkeus nousee metrin.
 
+# Panun expert-info 10.11.22:
+# Mahdolliset arvot välillä [0.95,0.45], 
+# matalilla virtaamilla (<20m3/s) korkea tn tulla nähdyksi(0.95-0.9), 
+# tästä lähtee laskemaan kun virtaama kasvaa. 
+# Samankaltainen käyrä kuin keskiosan hav tn:llä (prior-obsprop-vs-flow.R)
+# mutta havaittavuus pysyy pitempään korkeana
+
+# Yhdistetään aikaisemmat prior-obsprop-vs-flow - tiedostot ja poistetaan ylimääräiset
+# -> yksi perustiedosto, gitissä versiot
+
 Flow<-seq(-10,100, by=0.5)
 nF<-length(Flow)
 

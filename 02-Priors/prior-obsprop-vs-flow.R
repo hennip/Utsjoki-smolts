@@ -10,21 +10,31 @@
 # Virtaamilla 50-60 m3/s olosuhteet havaita ovat selkeästi huonot.
 # Kun virtaama nousee 10m3/s->60m3/s, veden korkeus nousee metrin.
 
+# Panun expert-info 10.11.22:
+# Mahdolliset arvot välillä [0.95,0.45], 
+# matalilla virtaamilla (<20m3/s) korkea tn tulla nähdyksi(0.95-0.9), 
+# tästä lähtee laskemaan kun virtaama kasvaa. 
+# Samankaltainen käyrä kuin keskiosan hav tn:llä (prior-obsprop-vs-flow.R)
+# mutta havaittavuus pysyy pitempään korkeana
+
+# Yhdistetään aikaisemmat prior-obsprop-vs-flow - tiedostot ja poistetaan ylimääräiset
+# -> yksi perustiedosto, gitissä versiot
+
 Flow<-seq(-10,100, by=0.5)
 nF<-length(Flow)
 
-a<-2.2
-b<-0.15
+a<-4
+b<-0.10
 mu<-c();P<-c();p<-c();sd<-c()
-sd<-0.8
+sd<-1
 for(i in 1:nF){
   mu[i]<-a-b*Flow[i]
   
   P[i]<-rnorm(1,mu[i],sd)
-  p[i]<-0.6*(exp(P[i])/(1+exp(P[i]))) +0.3
+  p[i]<-0.9*(exp(P[i])/(1+exp(P[i])))
 }
 
-tF<-as.tibble(cbind(Flow,p))
+tF<-as_tibble(cbind(Flow,p))
 
 ggplot(tF) + 
   geom_point(aes(Flow, p))+
@@ -102,35 +112,50 @@ tausdB<-1/log(cvsdB*cvsdB+1)
 MsdB<-log(musdB)-0.5/tausdB
 MsdB;tausdB
 
-Flow<-seq(-10,100, by=5)
+Flow<-seq(0,100, by=2)
 nF<-length(Flow)
 
 M2<-"
 model{
 for(i in 1:n){
-p[i]<-0.6*p2[i]+0.3
+p[i]<-0.9*p2[i]
 logit(p2[i])<-P[i]
 P[i]~dnorm(muB[i],tauB)
 muB[i]<-aB-bB*Flow[i]
+
+
+muB_side[i]<-aB*(coef_side*0.5+1)-bB*Flow[i]
+P_side[i]~dnorm(muB_side[i],tauB)
+p_side[i]<-0.5*p2_side[i]+0.45
+#p_side[i]<-0.6*p2_side[i]+0.3 # only to compare curves with the same limits
+logit(p2_side[i])<-P_side[i]
+
 }
 tauB<-1/pow(sdB,2)
+coef_side~dbeta(2,2)T(0.02,0.98) # for aB_side
+
 
 #aB~dnorm(mu.aB,t.aB)
 #bB~dlnorm(M.bB,T.bB)
 #sdB~dlnorm(M.sdB,T.sdB)
 
-aB~dnorm(2.9,60)
-bB~dlnorm(-2.6,984)
-sdB~dlnorm(-0.23,210)
+#aB~dnorm(4.5,10)
+#bB~dlnorm(-3,10)
+#sdB~dlnorm(0.01,20)
+
+
+aB~dnorm(4.5,3)
+bB~dlnorm(-3,50)
+sdB~dlnorm(0.01,20)
 
 }"
 
 cat(M2,file="prior-obs.txt")
 
 data<-list( 
-  #  mu.aB=muaB,t.aB=tauaB, 
-  #  M.bB=MbB, T.bB=taubB, 
-  #  M.sdB=MsdB, T.sdB=tausdB,
+  #   mu.aB=muaB,t.aB=tauaB, 
+  #   M.bB=MbB, T.bB=taubB, 
+  #   M.sdB=MsdB, T.sdB=tausdB,
   Flow=Flow, n=nF
 )
 
@@ -140,22 +165,32 @@ system.time(jm<-jags.model('prior-obs.txt',
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "p"
+                                    "p", "p_side"
                                   ),
                                   n.iter=5000,
                                   thin=1))
 
 
 df<-boxplot.jags.df(chains1,"p",Flow)
-df<-as.tibble(df)
-df<-filter(df, x>0)
+df<-as_tibble(df)
+df<-filter(df, x>=0)
+df_side<-boxplot.jags.df(chains1,"p_side",Flow)
+df_side<-as_tibble(df_side)
+d_sidef<-filter(df_side, x>=0)
 
 ggplot(df, aes(x, group=x))+
   geom_boxplot(
+    data=df_side,
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-    stat = "identity")+
-  coord_cartesian(ylim=c(0,1))+
+    stat = "identity",colour="grey", fill="grey95")+
+  geom_boxplot(
+    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.6))+
+  coord_cartesian(ylim=c(0,1), xlim=c(0,100))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 5))+
-  scale_y_continuous(breaks = scales::pretty_breaks(n = 5))
+  scale_y_continuous(breaks = scales::pretty_breaks(n = 5))+
+  labs(x="Flow", y="Probability to be observed", title="Obs prop mid stream/ side stream")
 
-filter(df, x==10 | x==20 |x==50 |x==60)
+
+
+filter(df, x==10 |x==15 | x==20 |x==50 |x==60|x==80)
