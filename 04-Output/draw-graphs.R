@@ -213,8 +213,15 @@ grid.arrange(plot1, plot2, nrow=2)
 
 #################################
 # Observation probability at mid stream vs flow
-df<-p_vs_flow(chains, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
-df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
+#df<-p_vs_flow(chains, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
+#df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
+df<-p_vs_flow(chains, "aB_mid", "bB_mid", "sdBB_mid", 0.9, 0, F)
+df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.9, 0, F)
+
+# 7. parametri == T jos z on mukana mallissa. Rajat voi tällöin olla mitä vain
+#df<-p_vs_flow(chains, "aB_mid", "bB_mid", "sdBB_mid", NA, NA, T)
+#df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", NA, NA, T)
+
 
 ggplot(df, aes(x, group=x))+
   geom_boxplot(data=df.prior,
@@ -238,8 +245,8 @@ scale_x_continuous(breaks = scales::pretty_breaks(n = 5))
 # Observation probability at side stream vs flow
 #df.prior<-p_vs_flow(chainsP, "aB_mid", "bB_mid", "sdBB_mid", 0.6, 0.3)
 #df<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
-df<-p_vs_flow(chains, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
-df.prior<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45)
+df<-p_vs_flow(chains, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45, F)
+df.prior<-p_vs_flow(chainsP, "aB_side", "bB_side", "sdBB_side", 0.5, 0.45, F)
 
 ggplot(df, aes(x, group=x))+
   geom_boxplot(data=df.prior,
@@ -262,8 +269,8 @@ ggplot(df, aes(x, group=x))+
 #################################
 # Rho vs flow
 
-df<-p_vs_flow(chains, "a_rho", "b_rho", "sd_rho", 0.5, 0.5)
-df.prior<-p_vs_flow(chainsP, "a_rho", "b_rho", "sd_rho", 0.5, 0.5)
+df<-p_vs_flow(chains, "a_rho", "b_rho", "sd_rho", 0.5, 0.5, F)
+df.prior<-p_vs_flow(chainsP, "a_rho", "b_rho", "sd_rho", 0.5, 0.5, F)
 
 ggplot(df, aes(x, group=x))+
   geom_boxplot(data=df.prior,

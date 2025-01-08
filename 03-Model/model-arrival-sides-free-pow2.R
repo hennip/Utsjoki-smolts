@@ -50,7 +50,7 @@ model{
       Nobs_mid[i,y]~dbin(p_obs_mid[i,y]*rho[i,y],N[i,y])  
       p_obs_mid[i,y]~dbeta(muB_mid[i,y]*etaB, (1-muB_mid[i,y])*etaB)T(0.001,0.999)
       muB_mid[i,y]<-0.9*(exp(BB_mid[i,y])/(1+exp(BB_mid[i,y]))) # NO LOWER LIMIT!
-      BB_mid[i,y]~dnorm(aB_mid-bB_mid*flow[i,y],1/pow(sdBB_mid,2))
+      BB_mid[i,y]~dnorm(aB_mid-bB_mid*flow[i,y]-cB_mid*pow(flow[i,y],2),1/pow(sdBB_mid,2))
 
       # Observed number of fish at sides
       # Eastern side (data from 2020) is slightly more preferred a priori
@@ -62,7 +62,7 @@ model{
       # Probability to be observed at given flow at either side
       p_obs_side[i,y]~dbeta(muB_side[i,y]*etaB, (1-muB_side[i,y])*etaB)T(0.001,0.999)
       muB_side[i,y]<-0.5*(exp(BB_side[i,y])/(1+exp(BB_side[i,y])))+0.45 # LOWER LIMIT KEPT FOR THE MOMENT
-      BB_side[i,y]~dnorm(aB_side-bB_side*flow[i,y],1/pow(sdBB_side,2))
+      BB_side[i,y]~dnorm(aB_side-bB_side*flow[i,y]-cB_side*pow(flow[i,y],2),1/pow(sdBB_side,2))
 
       # Proportion that passes cameras in the middle of the river  
       rho[i,y]~dbeta(mu_rho[i,y]*etaB, (1-mu_rho[i,y])*etaB)T(0.001,0.999)
@@ -75,11 +75,13 @@ model{
   # wide priors, note lower limit removed for muB_mid! 
   aB_mid~dnorm(3.6,10)
   bB_mid~dlnorm(-2.5,10)
+  cB_mid~dlnorm(-7.5,10)
   sdBB_mid~dlnorm(0.01,20)
 
   aB_side<-aB_mid*(coef_side*0.5+1)
-  bB_side<-bB_mid
-  sdBB_side<-sdBB_mid
+  bB_side~dlnorm(-2.5,10)#<-bB_mid
+  cB_side~dlnorm(-7.5,10)
+  sdBB_side~dlnorm(0.01,20)#<-sdBB_mid
 
   # rho: proportion of smolts passing site at mid river
   a_rho~dnorm(3.86,1)#~dnorm(3.86,47.5)

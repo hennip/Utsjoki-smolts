@@ -25,14 +25,15 @@ nF<-length(Flow)
 
 # Nämä kun alarajaa ei ole
 a<-3.5
-b<-0.08
+b<--0.08
+c<--0.0005
 # Alaraja 0.3
 #a<-2.5
 #b<-0.15
 mu<-c();P<-c();p<-c();sd<-c()
 sd<-.5
 for(i in 1:nF){
-  mu[i]<-a-b*Flow[i]
+  mu[i]<-a+b*Flow[i]+c*Flow[i]^2
   
   P[i]<-rnorm(1,mu[i],sd)
   #p[i]<-0.6*(exp(P[i])/(1+exp(P[i])))+0.3
@@ -44,78 +45,9 @@ tF<-as_tibble(cbind(Flow,p))
 ggplot(tF) + 
   geom_point(aes(Flow, p))+
   coord_cartesian(ylim=c(0,1))+
-  labs(title=paste(sep="","a=",a," b=",b))
+  labs(title=paste(sep="","a=",a," b=",b," c=",c))
 
-
-# Sovitetaan P:t edellisestä ja estimoidaan aB, bB ja sdB
-
-Flow<-seq(0,100, by=1)
-nF<-length(Flow)
-
-M2<-"
-model{
-for(i in 1:n){
-P[i]~dnorm(muB[i],tauB)
-muB[i]<-aB-bB*Flow[i]
-}
-tauB<-1/pow(sdB,2)
-
-#sdB<-0.7
-#aB~dnorm(5,1)
-#bB~dlnorm(log(1)-0.5/tau_bB,tau_bB)
-#cv_bB<-0.3
-#tau_bB<-1/log(cv_bB*cv_bB+1)
-
-aB~dnorm(1,0.01)
-bB~dlnorm(0.1,1)
-sdB~dlnorm(1,0.1)
-#sdB~dlnorm(log(0.7)-0.5/tau_sdB,tau_sdB)
-#tau_sdB<-1
-}"
-
-cat(M2,file="prior-obs.txt")
-
-data<-list(Flow=Flow,P=P, n=nF)
-
-system.time(jm<-jags.model('prior-obs.txt',
-                           n.adapt=100,data=data,n.chains=2))
-
-
-system.time(chains1<-coda.samples(jm,
-                                  variable.names=c(
-                                    "aB","bB", "sdB"
-                                  ),
-                                  n.iter=5000,
-                                  thin=1))
-
-chainsM<-chains1
-summary(chainsM)
-
-
-
-# Sitten katsotaan millaista matskua saadut priorit tuottaisivat
-
-# odotusarvot ja hajonnat edellisesta ajosta
-muaB<-summary(chainsM[,"aB"])$statistics[1]
-sdaB<-summary(chainsM[,"aB"])$statistics[2]
-tauaB<-1/(sdaB*sdaB)
-
-mubB<-summary(chainsM[,"bB"])$statistics[1]
-sdbB<-summary(chainsM[,"bB"])$statistics[2]
-cvbB<-sdbB/mubB
-taubB<-1/log(cvbB*cvbB+1)
-MbB<-log(mubB)-0.5/taubB
-
-musdB<-summary(chainsM[,"sdB"])$statistics[1]
-sdsdB<-summary(chainsM[,"sdB"])$statistics[2]
-cvsdB<-sdsdB/musdB
-tausdB<-1/log(cvsdB*cvsdB+1)
-MsdB<-log(musdB)-0.5/tausdB
-
-
-muaB;tauaB
-MbB;taubB
-MsdB;tausdB
+# ================================================
 
 Flow<-seq(0,100, by=2)
 nF<-length(Flow)
@@ -123,46 +55,47 @@ nF<-length(Flow)
 M2<-"
 model{
 for(i in 1:n){
-#p[i]<-0.6*p2[i]+0.3
 p[i]<-0.9*p2[i]
 #p[i]<-(0.9-z)*p2[i]+z
 
 logit(p2[i])<-P[i]
-P[i]~dnorm(muB[i],tauB)
-muB[i]<-aB-bB*Flow[i]
+P[i]~dnorm(mu[i],tau)
+mu[i]<-a-b*Flow[i]-c*pow(Flow[i],2)
 
 
-muB_side[i]<-aB*(coef_side*0.5+1)-bB_side*Flow[i]
-P_side[i]~dnorm(muB_side[i],tauB_side)
-#p_side[i]<-0.5*p2_side[i]+0.45
-p_side[i]<-0.6*p2_side[i]+0.3 # only to compare curves with the same limits
+mu_side[i]<-a_side-b_side*Flow[i]-c_side*pow(Flow[i],2)
+P_side[i]~dnorm(mu_side[i],tau_side)
+p_side[i]<-0.5*p2_side[i]+0.45
+#p_side[i]<-0.6*p2_side[i]+0.3 # only to compare curves with the same limits
 logit(p2_side[i])<-P_side[i]
 
 }
-tauB<-1/pow(sdB,2)
-tauB_side<-1/pow(sdB_side,2)
-coef_side~dbeta(2,2)T(0.02,0.98) # for aB_side
-#z~dbeta(0.3*20,0.7*20)
+tau<-1/pow(sd,2)
+tau_side<-1/pow(sd_side,2)
+coef_side~dbeta(2,2)T(0.02,0.98) # for a_side
 
-#aB~dnorm(mu.aB,t.aB)
-#bB~dlnorm(M.bB,T.bB)
-#sdB~dlnorm(M.sdB,T.sdB)
+a~dnorm(3.5,10)
 
-#Ei alarajaa
-aB~dnorm(3.6,10)
-bB~dlnorm(-2.5,10)
-sdB~dlnorm(0.01,20)
+#b~dlnorm(-4,10)
+b~dlnorm(log(0.08)-0.5/10,10)
+# b~dlnorm(log(0.08)-0.5/tau_b,tau_b)
+# cv_b<-0.2
+# tau_b<-1/log(cv_b*cv_b+1)
 
-# # Alaraja, E(z)=0.3
-# aB~dnorm(3,10)
-# bB~dlnorm(-2.5,10)
-# sdB~dlnorm(0.01,20)
+c~dlnorm(log(0.0005)-0.5/10,10)
+#c~dlnorm(log(0.0005)-0.5/tau_c,tau_c)
+#tau_c<-1/log(cv_c*cv_c+1)
+#cv_c<-0.2
+
+sd~dlnorm(0.01,20)
+
 
 
 #Sivuoma vapaasti päivittyvillä prioreilla
-# aB_side = aB*(coef_side*0.5+1)
-bB_side~dlnorm(-2.5,10)
-sdB_side~dlnorm(0.01,20)
+a_side = a*(coef_side*0.5+1)
+b_side~dlnorm(-2.5,10)
+c_side~dlnorm(-7.5,10)
+sd_side~dlnorm(0.01,20)
 
 
 }"
@@ -170,9 +103,6 @@ sdB_side~dlnorm(0.01,20)
 cat(M2,file="prior-obs.txt")
 
 data<-list( 
-  #   mu.aB=muaB,t.aB=tauaB, 
-  #   M.bB=MbB, T.bB=taubB, 
-  #   M.sdB=MsdB, T.sdB=tausdB,
   Flow=Flow, n=nF
 )
 
@@ -182,12 +112,12 @@ system.time(jm<-jags.model('prior-obs.txt',
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "p", "p_side", "z"
+                                    "p", "p_side"#, "z"
                                   ),
                                   n.iter=5000,
                                   thin=1))
 
-summary(chains1[,"z"])
+#summary(chains1[,"z"])
 
 df<-boxplot.jags.df(chains1,"p",Flow)
 df<-as_tibble(df)
@@ -201,9 +131,9 @@ ggplot(df, aes(x, group=x))+
     data=df_side,
     aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
     stat = "identity",colour="grey", fill="grey95")+
-  #geom_boxplot(
-  #  aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
-  #  stat = "identity",fill=rgb(1,1,1,0.6))+
+  geom_boxplot(
+    aes(ymin = q5, lower = q25, middle = q50, upper = q75, ymax = q95),
+    stat = "identity",fill=rgb(1,1,1,0.6))+
   coord_cartesian(ylim=c(0,1), xlim=c(0,100))+
   scale_x_continuous(breaks = scales::pretty_breaks(n = 5))+
   scale_y_continuous(breaks = scales::pretty_breaks(n = 5))+

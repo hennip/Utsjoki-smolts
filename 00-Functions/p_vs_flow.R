@@ -2,12 +2,13 @@
 #  probability X vs flow
 
 
-p_vs_flow<-function(C, a, b, sd, upr, lwr){
+p_vs_flow<-function(C, a, b, sd, upr, lwr, Z){
   
 #C<-chains
 #a<-"aB_side"  
 #b<-"bB_side"  
-#sdX<-"sdBB_side"  
+#sdX<-"sdBB_side"
+# Z== T or F
 #  upr<-0.6
 #  lwr<-0.3
 
@@ -25,12 +26,17 @@ a_samp<-c1[,a]
 b_samp<-c1[,b]
 sd_samp<-c1[,sd]
 
+if(Z==T){z<-c1[,"z"]}
+
 BB_samp<-array(NA, dim=c(n_samp,nF))
 muB_samp<-array(NA, dim=c(n_samp,nF))
 for(j in 1:n_samp){
   for(i in 1:nF){
     BB_samp[j,i]<-rnorm(1,a_samp[j]-b_samp[j]*Flow[i], sd_samp[j])
-    muB_samp[j,i]<-upr*(exp(BB_samp[j,i])/(1+exp(BB_samp[j,i])))+lwr
+    if(Z==T){
+      muB_samp[j,i]<-(0.9-z[j])*(exp(BB_samp[j,i])/(1+exp(BB_samp[j,i])))+z[j]
+    }else{
+      muB_samp[j,i]<-upr*(exp(BB_samp[j,i])/(1+exp(BB_samp[j,i])))+lwr}
   }
 }
 

@@ -1,20 +1,23 @@
 
-source("00-Functions/packages-and-paths.R")
+source("/home/henni/Utsjoki-smolts/00-Functions/packages-and-paths.R")
 
-RunPost<-T # T for posteriors, F for priors only (covariate data is included) 
+RunPost<-F # T for posteriors, F for priors only (covariate data is included) 
 
 
 # Select model
 # =================================
-source("03-Model/model-arrival-sides-no-lower-limit.R")
-#source("/home/henni/Utsjoki-smolts/03-Model/model-arrival-sides.R")
+#source("03-Model/model-arrival-sides-no-lower-limit.R")
+#source("/home/henni/Utsjoki-smolts/03-Model/model-arrival-sides-no-lower-limit.R");modelName<-"Smolts_sides_no_limit"
+#source("/home/henni/Utsjoki-smolts/03-Model/model-arrival-sides-z.R")
+#source("/home/henni/Utsjoki-smolts/03-Model/model-arrival-sides-free.R");modelName<-"Smolts_sides_free"
+source("/home/henni/Utsjoki-smolts/03-Model/model-arrival-sides-free-pow2.R");modelName<-"Smolts_sides_free_pow2"
 
 
 # Select data
 # =================================
-df<-readRDS("01-Data/df0221.RDS")
+#df<-readRDS("01-Data/df0221.RDS")
+df<-readRDS("/home/henni/Utsjoki-smolts/01-Data/df0221.RDS")
 summary(df)
-#df<-readRDS("/home/henni/Utsjoki-smolts/01-Data/df0221.RDS")
 
 
 #View(dat)
@@ -22,7 +25,7 @@ years<-c(2002:2021)
 n_days<-61
 
 dataName<-"0221"
-compName<-"dell"
+compName<-"susi5"
 
 
 if(RunPost==T){
@@ -39,7 +42,7 @@ if(RunPost==T){
     Rain = df$Rain,
     Rain_bf = df$Rain_bf
   )
-  modelName<-"Smolts_sides"
+  #modelName<-"Smolts_sides_no_limit"
 }
 
 if(RunPost==F){
@@ -56,7 +59,7 @@ if(RunPost==F){
     Rain = df$Rain,
     Rain_bf = df$Rain_bf
   )
-  modelName<-"Smolts_sides_priors"
+  modelName<-paste0(modelName, "_priors")
 }
 
 
@@ -67,13 +70,13 @@ inits<-list(list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))),
             list(LNtot=rep(14,data$nYears),zN=array(1, dim=c(61,data$nYears))))
 
 var_names<-c(
-  "coef_side","pref",
+  "coef_side","pref","z",
   "a_temp", "b_temp", "a_fl", "b_fl", 
   "mu_phi_temp", "eta_phi_temp","mu_phi_fl", "eta_phi_fl",
   "aD","bD","cvD","cvmuD",
   "aP","bP","sdP",
-  "aB_mid","bB_mid","sdBB_mid","etaB",
-  "aB_side","bB_side","sdBB_side",
+  "aB_mid","bB_mid","cB_mid","sdBB_mid","etaB",
+  "aB_side","bB_side","cB_side","sdBB_side",
   "a_rho","b_rho","sd_rho",
   # "K","slope","cvS", 
   "Ntot","N","eta_alphaN"

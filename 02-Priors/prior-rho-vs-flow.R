@@ -114,34 +114,29 @@ for(i in 1:n){
 p[i]<-0.5*p2[i]+0.5
 logit(p2[i])<-P[i]
 P[i]~dnorm(muB[i],tauB)
-muB[i]<-aB-bB*Flow[i]
+muB[i]<-a-b*Flow[i]
 }
-tauB<-1/pow(sdB,2)
+tauB<-1/pow(sd,2)
 
 # aB~dnorm(mu.aB,t.aB)
 # bB~dlnorm(M.bB,T.bB)
 # sdB~dlnorm(M.sdB,T.sdB)
 
-aB~dnorm(2.5,1) # mean 2.5 -> mediaani matalammalle alussa kun virtaama on pieni, lisää myös epävarmuuta matalampiin osuuksiin
-bB~dlnorm(-2.59,10)
-#sdB~dlnorm(0.67,1076)
-#sdB<-0.01#~dlnorm(0.67,10)
 
- #sdB<-0.01#~dunif(0.1,5)
-musd<-1
-cvsd<-1
-Tsd<-1/log(cvsd*cvsd+1)
-#sdB~dlnorm(log(musd)-0.5/Tsd,Tsd) # dlnorm(-0.35,1.44)
-sdB~dlnorm(-0.35,1.44)
+# rho: proportion of smolts passing site at mid river
+  a~dnorm(3.86,1)
+  b~dlnorm(-2.59,10)
+  sd<-0.001#~dlnorm(-0.5,1)
+
 
 }"
 
 cat(M2,file="prior-obs.txt")
 
 data<-list( 
-  mu.aB=muaB,t.aB=tauaB, 
-  M.bB=MbB, T.bB=taubB, 
-  M.sdB=MsdB, T.sdB=tausdB,
+#  mu.aB=muaB,t.aB=tauaB, 
+#  M.bB=MbB, T.bB=taubB, 
+#  M.sdB=MsdB, T.sdB=tausdB,
   Flow=Flow, n=nF
 )
 
@@ -152,7 +147,7 @@ system.time(jm<-jags.model('prior-obs.txt',
 
 system.time(chains1<-coda.samples(jm,
                                   variable.names=c(
-                                    "p", "sdB", "aB", "bB"
+                                    "p", "sd", "a", "b"
                                   ),
                                   n.iter=5000,
                                   thin=1))
@@ -166,9 +161,9 @@ system.time(chains1<-coda.samples(jm,
 # 
 # summary(run, var="B")
 # 
- summary(chains1[,"aB"])
- summary(chains1[,"bB"])
- summary(chains1[,"sdB"])
+ summary(chains1[,"a"])
+ summary(chains1[,"b"])
+ summary(chains1[,"sd"])
 
 
 df<-boxplot.jags.df(chains1,"p",Flow)

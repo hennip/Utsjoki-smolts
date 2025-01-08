@@ -2,23 +2,34 @@ source("00-Functions/packages-and-paths.R")
 
 # runjags diagnostics (object "run")
 
-#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_priors_0221_run_susi5.RData"))
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coefaB_priors_0221_run_susi5.RData"))
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_priors_0221_run_susi5.RData"))
 load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_priors_0221_run_susi5.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_no_limit_priors_0221_run_susi5.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_z_priors_0221_run_susi5.RData"))
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_free_priors_0221_run_susi5.RData"))
+
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_free_pow2_priors_0221_run_susi5.RData"))
+
 chainsP<-as.mcmc.list(run)
 #chainsP<-window(chainsP,start=50000, thin=3000)
 length(chainsP[,"aB_mid"][[1]])
 
-#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_050914_run_AMD.RData"))
-#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_AMD.RData"))
-#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs2_all_run_AMD.RData")) # lwr & upr bound priors replaced
-#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_extracovs_all_run_susi5.RData")) 
-#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_etaB_sdP_sides_0221_run_susi5.RData")) 
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_0221_run_susi5.RData")) 
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coefaB_0221_run_susi5.RData")) 
 #load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_0221_run_susi5.RData")) 
 load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_coef_0221_run_susi5.RData")) 
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_no_limit_sdrho001_0221_run_susi5.RData")) # Huono idea, a_rho ja b_rho päivittyvät kehnosti 
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_z_0221_run_susi5.RData")) 
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_no_limit_0221_run_susi5.RData")) 
+#load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_free_0221_run_susi5.RData")) 
+
+
+load(file=paste0(pathMain,"output/utsjoki-smolts/Smolts_sides_free_pow2_0221_run_susi5.RData")) 
+
+chains<-as.mcmc.list(run)
+#chains<-window(chains,start=800000)#, thin=3000)
+length(chains[,"aB_mid"][[1]])
 
 plot(run, var="etaB")
 
@@ -29,13 +40,14 @@ summary(run, var="D")
 summary(run, var="P")
 summary(run, var="B")
 summary(run, var="pref")
-#summary(run, var="coef")
+summary(run, var="coef")
 
 summary(run, var="Ntot")
 summary(run, var="eta")
 summary(run, var="fl")
 summary(run, var="temp")
 
+plot(run, var="z")
 plot(run, var="coef")
 plot(run, var="rho")
 plot(run, var="eta")
@@ -56,8 +68,8 @@ plot(run, var="temp")
 
 
 chains<-as.mcmc.list(run)
-#chains<-window(chains,start=100000)
-chains<-window(chains,start=700000)
+chains<-window(chains,start=350000)
+#chains<-window(chains,start=700000)
 
 
 
@@ -164,19 +176,28 @@ lines(density(chainsP[,"aD"][[1]]), lty=2)
 plot(density(chains[,"bD"][[1]]), main="bD", ylim=c(0,250))
 lines(density(chains[,"bD"][[2]]))
 lines(density(chainsP[,"bD"][[1]]), lty=2)
-plot(density(chains[,"aB_mid"][[1]]), main="aB mid", ylim=c(0,1))#c(0,.06))
+
+par(mfrow=c(4,3),mar=c(2.5,4,4,1))
+plot(density(chains[,"aB_mid"][[1]]), main="aB mid", ylim=c(0,2))#c(0,.06))
 lines(density(chains[,"aB_mid"][[2]]))
 lines(density(chainsP[,"aB_mid"][[1]]), lty=2)
-plot(density(chains[,"aB_side"][[1]]), main="aB side", ylim=c(0,1))#c(0,.06))
-lines(density(chains[,"aB_side"][[2]]))
-lines(density(chainsP[,"aB_side"][[1]]), lty=2)
-
 plot(density(chains[,"bB_mid"][[1]]), main="bB mid", ylim=c(0,50))#c(0,20))
 lines(density(chains[,"bB_mid"][[2]]))
 lines(density(chainsP[,"bB_mid"][[1]]), lty=2)
-plot(density(chains[,"sdBB_mid"][[1]]), main="sdBB mid", ylim=c(0,1))
+plot(density(chains[,"sdBB_mid"][[1]]), main="sdBB mid", ylim=c(0,3))
 lines(density(chains[,"sdBB_mid"][[2]]))
 lines(density(chainsP[,"sdBB_mid"][[1]]), lty=2)
+
+plot(density(chains[,"aB_side"][[1]]), main="aB side", ylim=c(0,1))#c(0,.06))
+lines(density(chains[,"aB_side"][[2]]))
+lines(density(chainsP[,"aB_side"][[1]]), lty=2)
+plot(density(chains[,"bB_side"][[1]]), main="bB side", ylim=c(0,50))#c(0,20))
+lines(density(chains[,"bB_side"][[2]]))
+lines(density(chainsP[,"bB_side"][[1]]), lty=2)
+plot(density(chains[,"sdBB_side"][[1]]), main="sdBB side", ylim=c(0,2))
+lines(density(chains[,"sdBB_side"][[2]]))
+lines(density(chainsP[,"sdBB_side"][[1]]), lty=2)
+
 plot(density(chains[,"etaB"][[1]]), main="etaB", ylim=c(0,0.002), xlim=c(0,1000))
 lines(density(chains[,"etaB"][[2]]))
 lines(density(chainsP[,"etaB"][[1]]), lty=2)
@@ -203,6 +224,10 @@ lines(density(chainsP[,"cvD"][[1]]), lty=2)
 plot(density(chains[,"cvmuD"][[1]]), main="cvmuD", ylim=c(0,5))
 lines(density(chains[,"cvmuD"][[2]]))
 lines(density(chainsP[,"cvmuD"][[1]]), lty=2)
+
+plot(density(chains[,"z"][[1]]), main="z")
+lines(density(chains[,"z"][[2]]))
+lines(density(chainsP[,"z"][[1]]), lty=2)
 
 par(mfrow=c(1,2))
  plot(density(chains[,"coef_side"][[1]]), main="coef_side", ylim=c(0,3))

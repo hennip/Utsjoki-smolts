@@ -10,6 +10,7 @@ source("01-Data/data-smolts-covariates.r")
 #  geom_point()+
 #  geom_line()
 
+dat_all<-data0221
 # number of observed smolts vs average school size per day
 ggplot(dat_all)+
   geom_point(aes(x=smolts, y=schools))
@@ -44,16 +45,17 @@ plot1 <-
 
 # Flow
 ## ---- draw-some-data-flow ----
-dat<-filter(dat_all, (Year<2010 & Year>2004) |Year==2014)%>%
+dat<-filter(dat_all, (Year>2016))%>%
+#dat<-filter(dat_all)%>%#, (Year<2010 & Year>2004) |Year==2014)%>%
   mutate(Year=as.factor(Year))
 #dat<-dat_all
 plot2 <-
   ggplot(dat)+
   geom_line(aes(x = day, y = flow, color=Year, linetype=Year), size=1.1)+
-  scale_linetype_manual(values=rep(c("solid","longdash"),3))+
-  scale_color_manual(values = rep(c("black","grey50", "grey75"),2))+
+  scale_linetype_manual(values=rep(c("solid","longdash"),10))+
+  scale_color_manual(values = rep(c("black","grey50", "grey75"),10))+
   #scale_colour_grey()+
-  coord_cartesian(ylim=c(0,160))+
+  coord_cartesian(ylim=c(0,300))+
   labs(x="Day (June-July)", y=expression("Discharge (m"^{3}*"/s)"), color="Year")+
   theme_bw()+
   theme(legend.position = c(0.7,0.75), legend.key.width = unit(1.5,"cm") )+
